@@ -1,0 +1,13 @@
+node_modules
+.next
+out
+build
+coverage
+pnpm-lock.yaml
+package-lock.json
+*.min.js
+.env*
+
+# Regras/referências do workspace (evitar diffs só de formatação)
+AGENTS.md
+CLAUDE.md

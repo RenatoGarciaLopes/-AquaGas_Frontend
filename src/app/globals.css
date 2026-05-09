@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+:root {
+  --background: #081a34;
+  --foreground: #f0f7ff;
+  --aquagas-panel: #0e2848;
+  --aquagas-panel-border: rgba(255, 255, 255, 0.1);
+  --aquagas-input: rgba(255, 255, 255, 0.08);
+  --aquagas-input-border: rgba(255, 255, 255, 0.14);
+  --aquagas-primary: #00abea;
+  --aquagas-primary-hover: #0099d1;
+  --aquagas-muted: rgba(210, 229, 255, 0.64);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-aquagas-panel: var(--aquagas-panel);
+  --color-aquagas-panel-border: var(--aquagas-panel-border);
+  --color-aquagas-input: var(--aquagas-input);
+  --color-aquagas-input-border: var(--aquagas-input-border);
+  --color-aquagas-primary: var(--aquagas-primary);
+  --color-aquagas-primary-hover: var(--aquagas-primary-hover);
+  --color-aquagas-muted: var(--aquagas-muted);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-inter: var(--font-inter);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #081a34;
+    --foreground: #f0f7ff;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+}
