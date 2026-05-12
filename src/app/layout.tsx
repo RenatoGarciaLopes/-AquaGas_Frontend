@@ -1,3 +1,4 @@
+import { Toaster } from "sonner";
 import type { Metadata } from "next";
 import { Geist, Inter, Geist_Mono } from "next/font/google";
 
@@ -33,7 +34,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        <Toaster richColors position="top-right" />
+      </body>
     </html>
   );
 }

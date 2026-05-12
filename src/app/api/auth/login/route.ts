@@ -2,6 +2,12 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getApiBaseUrl } from "@/shared/lib/env";
 
+import {
+  extractUserRole,
+  ROLE_COOKIE_NAME,
+  roleFromLoginHint,
+} from "@/shared/auth/roles";
+
 type LoginRequestBody = {
   userName?: string;
   password?: string;
@@ -47,8 +53,27 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  return NextResponse.json(payload, {
+  const response = NextResponse.json(payload, {
     status: backendResponse.status,
-    headers: setCookie ? { "set-cookie": setCookie } : undefined,
   });
+
+  if (setCookie) {
+    response.headers.append("set-cookie", setCookie);
+  }
+
+  if (backendResponse.ok) {
+    response.cookies.set(
+      ROLE_COOKIE_NAME,
+      extractUserRole(payload) ?? roleFromLoginHint(body.userName),
+      {
+        httpOnly: true,
+        path: "/",
+        sameSite: "lax",
+      },
+    );
+  } else {
+    response.cookies.delete(ROLE_COOKIE_NAME);
+  }
+
+  return response;
 }
