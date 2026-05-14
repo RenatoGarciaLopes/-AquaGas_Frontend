@@ -1,21 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { Icon } from "@iconify/react";
 import { usePathname } from "next/navigation";
-import {
-  X,
-  Zap,
-  Users,
-  Package,
-  UserCog,
-  Droplets,
-  FileText,
-  BarChart3,
-  ShoppingCart,
-  LayoutDashboard,
-} from "lucide-react";
+import type { IconifyIcon } from "@iconify/react";
 
 import { cn } from "@/shared/lib/cn";
+import { SidebarIcons } from "@/shared/lib/icons";
 
 import { useUiStore } from "@/shared/store/ui-store";
 
@@ -23,25 +14,30 @@ type NavItem = {
   exact?: boolean;
   highlight?: boolean;
   href: string;
-  icon: React.ElementType;
+  icon: IconifyIcon;
   label: string;
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { exact: true, href: "/", icon: LayoutDashboard, label: "Visão geral" },
-  { href: "/sales", icon: ShoppingCart, label: "Vendas" },
+  {
+    exact: true,
+    href: "/",
+    icon: SidebarIcons.layoutDashboard,
+    label: "Visão geral",
+  },
+  { href: "/sales", icon: SidebarIcons.shoppingCart, label: "Vendas" },
   {
     exact: true,
     highlight: true,
     href: "/sales/new",
-    icon: Zap,
+    icon: SidebarIcons.zap,
     label: "Nova Venda",
   },
-  { href: "/customers", icon: Users, label: "Clientes" },
-  { href: "/plans", icon: FileText, label: "Planos" },
-  { href: "/products", icon: Package, label: "Produtos" },
-  { href: "/funcionarios", icon: UserCog, label: "Funcionários" },
-  { href: "/reports", icon: BarChart3, label: "Relatórios" },
+  { href: "/customers", icon: SidebarIcons.users, label: "Clientes" },
+  { href: "/plans", icon: SidebarIcons.fileText, label: "Planos" },
+  { href: "/products", icon: SidebarIcons.package, label: "Produtos" },
+  { href: "/employees", icon: SidebarIcons.userCog, label: "Funcionários" },
+  { href: "/reports", icon: SidebarIcons.barChart, label: "Relatórios" },
 ];
 
 function isActive(item: NavItem, pathname: string): boolean {
@@ -57,7 +53,11 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       <div className="flex items-center justify-between px-5 py-5">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#00abea]">
-            <Droplets aria-hidden className="h-4 w-4 text-white" />
+            <Icon
+              icon={SidebarIcons.droplets}
+              aria-hidden
+              className="h-4 w-4 text-white"
+            />
           </div>
           <div>
             <p className="text-sm leading-none font-bold text-white">AquaGás</p>
@@ -73,7 +73,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
             className="rounded-lg p-1 text-[#8caad1] hover:bg-white/10 hover:text-white"
             onClick={onClose}
           >
-            <X className="h-5 w-5" />
+            <Icon icon={SidebarIcons.x} className="h-5 w-5" />
           </button>
         )}
       </div>
@@ -81,7 +81,6 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-1">
         {NAV_ITEMS.map((item) => {
           const active = isActive(item, pathname);
-          const Icon = item.icon;
 
           return (
             <Link
@@ -97,7 +96,11 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
               href={item.href}
               onClick={onClose}
             >
-              <Icon aria-hidden className="h-[18px] w-[18px] shrink-0" />
+              <Icon
+                icon={item.icon}
+                aria-hidden
+                className="h-[18px] w-[18px] shrink-0"
+              />
               {item.label}
             </Link>
           );

@@ -1,4 +1,6 @@
-import { Flame, Droplets } from "lucide-react";
+import { Icon } from "@iconify/react";
+
+import { Icons } from "@/shared/lib/icons";
 
 export function LoginBranding() {
   return (
@@ -12,7 +14,11 @@ export function LoginBranding() {
 
       <div className="relative z-10 mt-12">
         <div className="flex items-center gap-3">
-          <Droplets className="h-12 w-12 fill-cyan-400 text-cyan-400" />
+          <Icon
+            icon={Icons.droplets}
+            className="h-12 w-12 text-cyan-400"
+            style={{ color: "rgb(34 211 238)" }}
+          />
           <div>
             <h1 className="text-5xl font-semibold tracking-tight">AquaGás</h1>
             <p className="mt-2 text-base text-slate-300">
@@ -24,12 +30,12 @@ export function LoginBranding() {
 
       <div className="relative z-10 mb-16 flex gap-10">
         <div className="space-y-1">
-          <Droplets className="h-7 w-7 fill-cyan-400 text-cyan-400" />
+          <Icon icon={Icons.droplets} className="h-7 w-7 text-cyan-400" />
           <p className="text-2xl font-semibold">Água</p>
           <p className="text-sm text-slate-300">Distribuição</p>
         </div>
         <div className="space-y-1">
-          <Flame className="h-7 w-7 fill-orange-400 text-orange-400" />
+          <Icon icon={Icons.flame} className="h-7 w-7 text-orange-400" />
           <p className="text-2xl font-semibold">Gás</p>
           <p className="text-sm text-slate-300">Fornecimento</p>
         </div>

@@ -1,15 +1,15 @@
 "use client";
 
+import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
-import { Bell, Menu, LogOut, ChevronDown } from "lucide-react";
 
 import { cn } from "@/shared/lib/cn";
-
+import { Icons } from "@/shared/lib/icons";
 import type { UserRole } from "@/shared/auth/roles";
 import { useUiStore } from "@/shared/store/ui-store";
-
 import { useAuthStore } from "@/features/auth/stores/auth-store";
+import { ThemeToggle } from "@/shared/ui/theme-toggle";
 
 type TopbarClientProps = {
   greeting: string;
@@ -50,35 +50,36 @@ export function TopbarClient({ greeting, role, userName }: TopbarClientProps) {
   const initial = userName.charAt(0).toUpperCase();
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 md:px-6">
+    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-4 md:px-6">
       <div className="flex items-center gap-3">
         <button
           aria-label="Abrir menu de navegação"
-          className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-[#00abea] md:hidden"
+          className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring md:hidden"
           onClick={() => setMobileSidebarOpen(true)}
         >
-          <Menu className="h-5 w-5" />
+          <Icon icon={Icons.menu} className="h-5 w-5" />
         </button>
 
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-muted-foreground">
           {greeting},{" "}
-          <span className="font-semibold text-gray-900">{userName}</span> 👋
+          <span className="font-semibold text-foreground">{userName}</span> 👋
         </span>
       </div>
 
       <div className="flex items-center gap-1">
+        <ThemeToggle />
         <button
           aria-label="Notificações"
-          className="rounded-full p-2 text-gray-500 hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-[#00abea]"
+          className="rounded-full p-2 text-muted-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <Bell className="h-5 w-5" />
+          <Icon icon={Icons.bell} className="h-5 w-5" />
         </button>
 
         <div className="relative" ref={dropdownRef}>
           <button
             aria-expanded={dropdownOpen}
             aria-haspopup="true"
-            className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-[#00abea]"
+            className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
             onClick={() => setDropdownOpen((prev) => !prev)}
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00abea] text-sm font-bold text-white">
@@ -86,7 +87,7 @@ export function TopbarClient({ greeting, role, userName }: TopbarClientProps) {
             </div>
 
             <div className="hidden text-left sm:block">
-              <p className="text-sm leading-none font-semibold text-gray-900">
+              <p className="text-sm leading-none font-semibold text-foreground">
                 {userName}
               </p>
               <p className="mt-0.5 text-xs font-medium text-[#00abea]">
@@ -94,31 +95,32 @@ export function TopbarClient({ greeting, role, userName }: TopbarClientProps) {
               </p>
             </div>
 
-            <ChevronDown
+            <Icon
+              icon={Icons.chevronDown}
               aria-hidden
               className={cn(
-                "h-4 w-4 text-gray-400 transition-transform duration-150",
+                "h-4 w-4 text-muted-foreground transition-transform duration-150",
                 dropdownOpen && "rotate-180",
               )}
             />
           </button>
 
           {dropdownOpen && (
-            <div className="absolute top-full right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
+            <div className="absolute top-full right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl border border-border bg-card shadow-lg">
               <div className="px-4 py-3">
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-sm font-semibold text-foreground">
                   {userName}
                 </p>
                 <p className="text-xs font-medium text-[#00abea]">{role}</p>
               </div>
 
-              <div className="h-px bg-gray-100" />
+              <div className="h-px bg-border" />
 
               <button
-                className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
+                className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10"
                 onClick={() => void handleLogout()}
               >
-                <LogOut aria-hidden className="h-4 w-4" />
+                <Icon icon={Icons.logOut} aria-hidden className="h-4 w-4" />
                 Sair
               </button>
             </div>
