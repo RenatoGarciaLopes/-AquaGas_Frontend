@@ -10,11 +10,11 @@ export function PageHeader({ actions, description, title }: PageHeaderProps) {
   return (
     <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight text-white">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
           {title}
         </h1>
         {description ? (
-          <p className="mt-2 max-w-2xl text-sm text-[var(--aquagas-muted)]">
+          <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground">
             {description}
           </p>
         ) : null}

@@ -4,98 +4,117 @@ import { getApiBaseUrl } from "@/shared/lib/env";
 
 import { ApiError, type ApiFieldErrors } from "@/shared/api/errors";
 
+// ─── Tipos internos ───────────────────────────────────────────────────────────
+
 type ServerFetchParams = Record<
   string,
   boolean | null | number | string | undefined
 >;
 
-type ServerFetchOptions = Omit<RequestInit, "body"> & {
+export type ServerFetchOptions = Omit<RequestInit, "body"> & {
   body?: BodyInit | null;
   params?: ServerFetchParams;
 };
 
-type ApiErrorEnvelope = {
-  code?: string;
+// Shape do envelope de erro do backend (success=false)
+type BackendErrorEnvelope = {
   error?: {
     code?: string;
-    fieldErrors?: ApiFieldErrors;
+    details?: Array<{ field: string; messages: string[] }> | null;
     message?: string;
   } | null;
-  fieldErrors?: ApiFieldErrors;
-  message?: string;
+  message?: string; // fallback para respostas não-envelopadas
+  success?: boolean;
 };
 
-function buildUrl(path: string, params?: ServerFetchParams) {
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function buildUrl(path: string, params?: ServerFetchParams): URL {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   const url = new URL(`${getApiBaseUrl()}${normalizedPath}`);
 
   Object.entries(params ?? {}).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === "") {
-      return;
+    if (value !== undefined && value !== null && value !== "") {
+      url.searchParams.set(key, String(value));
     }
-
-    url.searchParams.set(key, String(value));
   });
 
   return url;
 }
 
-function parsePayload(text: string) {
-  if (!text) {
-    return null;
-  }
-
+function parsePayload(text: string): unknown {
+  if (!text) return null;
   try {
-    return JSON.parse(text) as unknown;
+    return JSON.parse(text);
   } catch {
     return text;
   }
 }
 
-function getErrorMessage(payload: unknown, fallback: string) {
-  if (!payload || typeof payload !== "object") {
-    return fallback;
-  }
-
-  const errorPayload = payload as ApiErrorEnvelope;
-  return errorPayload.error?.message ?? errorPayload.message ?? fallback;
+function getErrorMessage(payload: unknown, fallback: string): string {
+  if (!payload || typeof payload !== "object") return fallback;
+  const env = payload as BackendErrorEnvelope;
+  return env.error?.message ?? env.message ?? fallback;
 }
 
+// Transforma details: [{field, messages[]}] → fieldErrors: {field: messages[]}
+function extractFieldErrors(payload: unknown): ApiFieldErrors | undefined {
+  if (!payload || typeof payload !== "object") return undefined;
+  const details = (payload as BackendErrorEnvelope).error?.details;
+  if (!details?.length) return undefined;
+  return Object.fromEntries(
+    details.map(({ field, messages }) => [field, messages]),
+  );
+}
+
+// ─── serverFetch ─────────────────────────────────────────────────────────────
+
+/**
+ * Cliente HTTP para Server Components e Route Handlers.
+ * Injeta automaticamente o access token como Bearer — nunca repassa cookies
+ * brutos ao backend.
+ */
 export async function serverFetch<T>(
   path: string,
   options: ServerFetchOptions = {},
-) {
+): Promise<T> {
   const { params, ...requestOptions } = options;
+
   const requestCookies = await cookies();
   const headers = new Headers(requestOptions.headers);
-  const cookieHeader = requestCookies.toString();
 
-  if (cookieHeader) {
-    headers.set("cookie", cookieHeader);
-  }
-
+  // Apenas o Bearer token é enviado; refresh token permanece exclusivo
+  // do Next.js e nunca trafega para o backend.
   const accessToken = requestCookies.get("aquagas_access_token")?.value;
   if (accessToken) {
     headers.set("authorization", `Bearer ${accessToken}`);
   }
 
-  const response = await fetch(buildUrl(path, params), {
-    ...requestOptions,
-    cache: requestOptions.cache ?? "no-store",
-    headers,
-  });
+  if (!headers.has("content-type") && requestOptions.body) {
+    headers.set("content-type", "application/json");
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(buildUrl(path, params), {
+      ...requestOptions,
+      cache: requestOptions.cache ?? "no-store",
+      headers,
+    });
+  } catch {
+    // TypeError de rede: backend inacessível, porta errada, etc.
+    throw new ApiError({
+      message: `Não foi possível conectar ao servidor. Verifique se o backend está em execução (${getApiBaseUrl()}).`,
+      status: 503,
+    });
+  }
+
   const payload = parsePayload(await response.text());
 
   if (!response.ok) {
-    const errorPayload =
-      payload && typeof payload === "object"
-        ? (payload as ApiErrorEnvelope)
-        : undefined;
-
     throw new ApiError({
-      code: errorPayload?.error?.code ?? errorPayload?.code,
-      fieldErrors:
-        errorPayload?.error?.fieldErrors ?? errorPayload?.fieldErrors,
+      code: (payload as BackendErrorEnvelope | null)?.error?.code,
+      fieldErrors: extractFieldErrors(payload),
       message: getErrorMessage(payload, "Não foi possível carregar os dados."),
       status: response.status,
     });

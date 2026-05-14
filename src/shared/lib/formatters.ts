@@ -2,6 +2,12 @@ export function onlyDigits(value: string | null | undefined) {
   return value?.replace(/\D/g, "") ?? "";
 }
 
+export function formatCpfMasked(value: string | null | undefined) {
+  const digits = onlyDigits(value);
+  if (digits.length !== 11) return value || "-";
+  return digits.replace(/(\d{3})(\d{3})(\d{3})\d{2}/, "$1.$2.$3-**");
+}
+
 export function formatCpf(value: string | null | undefined) {
   const digits = onlyDigits(value);
 
