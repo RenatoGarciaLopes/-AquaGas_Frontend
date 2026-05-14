@@ -74,6 +74,11 @@ export async function serverFetch<T>(
     headers.set("cookie", cookieHeader);
   }
 
+  const accessToken = requestCookies.get("aquagas_access_token")?.value;
+  if (accessToken) {
+    headers.set("authorization", `Bearer ${accessToken}`);
+  }
+
   const response = await fetch(buildUrl(path, params), {
     ...requestOptions,
     cache: requestOptions.cache ?? "no-store",

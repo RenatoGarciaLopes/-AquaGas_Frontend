@@ -21,8 +21,12 @@ function normalizeRole(value: unknown): UserRole | null {
 
   const role = value.trim().toUpperCase();
 
-  if (role === "GERENTE" || role === "FUNCIONARIO") {
-    return role;
+  if (role === "GERENTE" || role === "MANAGER") {
+    return "GERENTE";
+  }
+
+  if (role === "FUNCIONARIO" || role === "EMPLOYEE") {
+    return "FUNCIONARIO";
   }
 
   return null;

@@ -43,8 +43,7 @@ export function LoginForm({ sessionExpired = false }: LoginFormProps) {
     try {
       const response = await postLogin(data);
       setAccessToken(response.accessToken);
-      router.push("/");
-      router.refresh();
+      router.push("/funcionarios");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Não foi possível autenticar.";

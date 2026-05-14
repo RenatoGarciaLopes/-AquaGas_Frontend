@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "aquagas-docs": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "/Users/renatolopes/Desktop/C/docs/aquagas-docs-mcp/dist/index.js"
+      ],
+      "env": {
+        "AQUAGAS_DOCS_ROOT": "/Users/renatolopes/Desktop/C/docs"
+      }
+    }
+  }
+}
