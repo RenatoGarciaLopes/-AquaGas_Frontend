@@ -9,7 +9,9 @@ export function middleware(request: NextRequest) {
   const refreshCookie = request.cookies.get(REFRESH_COOKIE_NAME);
   const isLoginRoute = request.nextUrl.pathname.startsWith(LOGIN_PATH);
 
-  if (isLoginRoute && refreshCookie) {
+  const isExpiredRedirect = request.nextUrl.searchParams.get("expired") === "1";
+
+  if (isLoginRoute && refreshCookie && !isExpiredRedirect) {
     return NextResponse.redirect(new URL(DASHBOARD_PATH, request.url));
   }
 

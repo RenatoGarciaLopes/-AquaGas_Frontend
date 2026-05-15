@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
+    "@iconify-json/solar": "^1.2.5",
+    "@iconify/react": "^6.0.2",
     "@tanstack/react-query": "^5.62.8",
     "@tanstack/react-table": "^8.20.6",
     "axios": "^1.7.9",
