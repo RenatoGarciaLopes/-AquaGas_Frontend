@@ -16,6 +16,13 @@ export type ProductsQuery = {
   sort?: string;
 };
 
+export type RegisterProductInput = {
+  name: string;
+  type: ProductType;
+  price: number;
+  quantity: number;
+};
+
 export type PaginatedProducts = {
   data: ProductResponse[];
   hasNextPage: boolean;

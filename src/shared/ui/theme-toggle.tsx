@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
 import { Icon } from "@iconify/react";
+import { useTheme } from "next-themes";
+import { useState, useEffect } from "react";
 
 import { Icons } from "@/shared/lib/icons";
 

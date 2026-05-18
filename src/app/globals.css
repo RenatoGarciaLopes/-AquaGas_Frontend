@@ -194,8 +194,19 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Focus ring acessível em todos os interativos */
+/* Focus ring acessível em interativos.
+   Form fields (input/textarea/select) controlam o foco no nível do componente
+   — o anel global causava borda azul duplicada em campos com estilo próprio. */
 :focus-visible {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
+}
+
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible {
+  outline: none;
 }
