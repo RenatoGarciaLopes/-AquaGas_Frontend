@@ -32,6 +32,17 @@ export function formatPhone(value: string | null | undefined) {
   return value || "-";
 }
 
+export function formatCurrency(value: number | null | undefined) {
+  if (value === null || value === undefined || Number.isNaN(value)) {
+    return "-";
+  }
+
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(value);
+}
+
 export function formatDate(value: string | null | undefined) {
   if (!value) {
     return "-";

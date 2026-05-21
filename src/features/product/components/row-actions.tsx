@@ -9,22 +9,22 @@ import { useRef, useState, useEffect } from "react";
 
 import { Icons } from "@/shared/lib/icons";
 
-import type { EmployeeWithUser } from "@/features/employee/types";
+import type { ProductResponse } from "@/features/product/types";
 
 type RowActionsProps = {
   canManage: boolean;
-  employee: EmployeeWithUser;
+  product: ProductResponse;
 };
 
 type MenuPosition = { top: number; right: number };
 
-export function RowActions({ canManage, employee }: RowActionsProps) {
+export function RowActions({ canManage, product }: RowActionsProps) {
   const [isDeactivating, setIsDeactivating] = useState(false);
   const [menuPos, setMenuPos] = useState<MenuPosition | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const { id, name } = employee.employee;
+  const { id, name } = product;
 
   function openMenu() {
     const rect = triggerRef.current?.getBoundingClientRect();
@@ -66,24 +66,24 @@ export function RowActions({ canManage, employee }: RowActionsProps) {
   async function handleDeactivate() {
     closeMenu();
     const confirmed = window.confirm(
-      `Desativar ${name}? Esta ação impedirá o acesso do funcionário ao sistema.`,
+      `Desativar ${name}? O produto deixará de aparecer no catálogo.`,
     );
     if (!confirmed) return;
 
     setIsDeactivating(true);
     try {
-      const res = await fetch(`/api/employees/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
 
       if (res.status === 401) {
         router.push("/login?expired=1");
         return;
       }
       if (res.status === 403) {
-        toast.error("Sem permissão para desativar funcionários.");
+        toast.error("Sem permissão para desativar produtos.");
         return;
       }
       if (!res.ok) {
-        toast.error("Não foi possível desativar o funcionário.");
+        toast.error("Não foi possível desativar o produto.");
         return;
       }
 
@@ -117,7 +117,7 @@ export function RowActions({ canManage, employee }: RowActionsProps) {
             className="border-border bg-card fixed z-50 min-w-44 overflow-hidden rounded-xl border py-1 shadow-lg shadow-black/10"
           >
             <Link
-              href={`/employees/${id}`}
+              href={`/products/${id}`}
               role="menuitem"
               onClick={closeMenu}
               className="text-foreground hover:bg-muted flex items-center gap-2.5 px-3 py-2 text-sm transition"
@@ -131,7 +131,7 @@ export function RowActions({ canManage, employee }: RowActionsProps) {
             {canManage ? (
               <>
                 <Link
-                  href={`/employees/${id}/edit`}
+                  href={`/products/${id}/edit`}
                   role="menuitem"
                   onClick={closeMenu}
                   className="text-foreground hover:bg-muted flex items-center gap-2.5 px-3 py-2 text-sm transition"
@@ -148,7 +148,7 @@ export function RowActions({ canManage, employee }: RowActionsProps) {
                   role="menuitem"
                   disabled={isDeactivating}
                   onClick={handleDeactivate}
-                  className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-red-950/40"
                 >
                   <Icon icon={Icons.trash} className="h-4 w-4 shrink-0" />
                   {isDeactivating ? "Desativando…" : "Desativar"}
