@@ -1,19 +1,19 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { AUTH_COOKIE_CANDIDATES, getCookieValue } from "@/shared/auth/session";
+
 const LOGIN_PATH = "/login";
 const DASHBOARD_PATH = "/";
-const REFRESH_COOKIE_NAME =
-  process.env.AQUAGAS_REFRESH_COOKIE_NAME ?? "aquagas_refresh_token";
 
 export function middleware(request: NextRequest) {
-  const refreshCookie = request.cookies.get(REFRESH_COOKIE_NAME);
+  const authCookie = getCookieValue(request.cookies, AUTH_COOKIE_CANDIDATES);
   const isLoginRoute = request.nextUrl.pathname.startsWith(LOGIN_PATH);
 
-  if (isLoginRoute && refreshCookie) {
+  if (isLoginRoute && authCookie) {
     return NextResponse.redirect(new URL(DASHBOARD_PATH, request.url));
   }
 
-  if (!isLoginRoute && !refreshCookie) {
+  if (!isLoginRoute && !authCookie) {
     const loginUrl = new URL(LOGIN_PATH, request.url);
     return NextResponse.redirect(loginUrl);
   }

@@ -1,6 +1,11 @@
 import { cookies } from "next/headers";
 
 import { getApiBaseUrl } from "@/shared/lib/env";
+import {
+  ACCESS_TOKEN_COOKIE_CANDIDATES,
+  applyBearerToken,
+  getCookieValue,
+} from "@/shared/auth/session";
 
 import { ApiError, type ApiFieldErrors } from "@/shared/api/errors";
 
@@ -73,6 +78,11 @@ export async function serverFetch<T>(
   if (cookieHeader) {
     headers.set("cookie", cookieHeader);
   }
+
+  applyBearerToken(
+    headers,
+    getCookieValue(requestCookies, ACCESS_TOKEN_COOKIE_CANDIDATES),
+  );
 
   const response = await fetch(buildUrl(path, params), {
     ...requestOptions,

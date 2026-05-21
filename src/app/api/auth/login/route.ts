@@ -7,11 +7,30 @@ import {
   ROLE_COOKIE_NAME,
   roleFromLoginHint,
 } from "@/shared/auth/roles";
+import {
+  ACCESS_TOKEN_COOKIE_NAME,
+  extractAccessToken,
+} from "@/shared/auth/session";
 
 type LoginRequestBody = {
   userName?: string;
   password?: string;
 };
+
+function getSetCookieHeaders(headers: Headers) {
+  const headersWithSetCookie = headers as Headers & {
+    getSetCookie?: () => string[];
+  };
+
+  const setCookieHeaders = headersWithSetCookie.getSetCookie?.();
+
+  if (setCookieHeaders?.length) {
+    return setCookieHeaders;
+  }
+
+  const setCookie = headers.get("set-cookie");
+  return setCookie ? [setCookie] : [];
+}
 
 export async function POST(request: NextRequest) {
   let body: LoginRequestBody;
@@ -42,7 +61,7 @@ export async function POST(request: NextRequest) {
   });
 
   const responseText = await backendResponse.text();
-  const setCookie = backendResponse.headers.get("set-cookie");
+  const setCookieHeaders = getSetCookieHeaders(backendResponse.headers);
 
   let payload: unknown = null;
   if (responseText) {
@@ -57,11 +76,21 @@ export async function POST(request: NextRequest) {
     status: backendResponse.status,
   });
 
-  if (setCookie) {
+  for (const setCookie of setCookieHeaders) {
     response.headers.append("set-cookie", setCookie);
   }
 
   if (backendResponse.ok) {
+    const accessToken = extractAccessToken(payload);
+
+    if (accessToken) {
+      response.cookies.set(ACCESS_TOKEN_COOKIE_NAME, accessToken, {
+        httpOnly: true,
+        path: "/",
+        sameSite: "lax",
+      });
+    }
+
     response.cookies.set(
       ROLE_COOKIE_NAME,
       extractUserRole(payload) ?? roleFromLoginHint(body.userName),
@@ -72,6 +101,7 @@ export async function POST(request: NextRequest) {
       },
     );
   } else {
+    response.cookies.delete(ACCESS_TOKEN_COOKIE_NAME);
     response.cookies.delete(ROLE_COOKIE_NAME);
   }
 

@@ -8,12 +8,6 @@ import {
   getCookieValue,
 } from "@/shared/auth/session";
 
-type RouteContext = {
-  params: Promise<{
-    id: string;
-  }>;
-};
-
 function parsePayload(text: string) {
   if (!text) {
     return null;
@@ -26,11 +20,13 @@ function parsePayload(text: string) {
   }
 }
 
-export async function DELETE(_request: NextRequest, context: RouteContext) {
-  const { id } = await context.params;
+export async function POST(request: NextRequest) {
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
-  const headers = new Headers();
+  const body = await request.text();
+  const headers = new Headers({
+    "content-type": request.headers.get("content-type") ?? "application/json",
+  });
 
   if (cookieHeader) {
     headers.set("cookie", cookieHeader);
@@ -41,14 +37,12 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
     getCookieValue(cookieStore, ACCESS_TOKEN_COOKIE_CANDIDATES),
   );
 
-  const backendResponse = await fetch(
-    `${getApiBaseUrl()}/api/v1/funcionario/${encodeURIComponent(id)}`,
-    {
-      cache: "no-store",
-      headers,
-      method: "DELETE",
-    },
-  );
+  const backendResponse = await fetch(`${getApiBaseUrl()}/api/v1/funcionario`, {
+    body,
+    cache: "no-store",
+    headers,
+    method: "POST",
+  });
   const payload = parsePayload(await backendResponse.text());
 
   return NextResponse.json(payload, {
