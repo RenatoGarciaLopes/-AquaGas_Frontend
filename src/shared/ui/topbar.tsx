@@ -1,4 +1,4 @@
-import { getSessionUser } from "@/shared/auth/session";
+import { getSessionUser } from "@/shared/auth/server";
 
 import { TopbarClient } from "./topbar-client";
 

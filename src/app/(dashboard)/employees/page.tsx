@@ -1,12 +1,14 @@
-import { Icon } from "@iconify/react";
 import Link from "next/link";
+import { Icon } from "@iconify/react";
 import { redirect } from "next/navigation";
 
 import { Icons } from "@/shared/lib/icons";
+
 import { ApiError } from "@/shared/api/errors";
+import { isGerente } from "@/shared/auth/roles";
 import { PageHeader } from "@/shared/ui/page-header";
-import { isGerente, getCurrentUserRole } from "@/shared/auth/roles";
 import { ErrorState } from "@/shared/ui/error-state";
+import { getCurrentUserRole } from "@/shared/auth/server";
 
 import type { EmployeesQuery } from "@/features/employee/types";
 import { listEmployees } from "@/features/employee/api/employee.api";

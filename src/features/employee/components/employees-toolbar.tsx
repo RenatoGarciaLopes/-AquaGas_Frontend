@@ -48,7 +48,7 @@ export function EmployeesToolbar({
       <Icon
         icon={Icons.search}
         aria-hidden
-        className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+        className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2"
       />
       <input
         id="employees-search"
@@ -57,7 +57,7 @@ export function EmployeesToolbar({
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Buscar por nome ou CPF…"
         aria-label="Buscar funcionário"
-        className="w-full rounded-lg border border-border bg-background py-2.5 pr-4 pl-9 text-sm text-foreground transition placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30 focus:outline-none"
+        className="border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-ring/30 w-full rounded-lg border py-2.5 pr-4 pl-9 text-sm transition focus:ring-2 focus:outline-none"
       />
     </div>
   );

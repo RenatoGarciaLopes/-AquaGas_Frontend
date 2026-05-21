@@ -8,7 +8,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { cn } from "@/shared/lib/cn";
 import { Icons } from "@/shared/lib/icons";
-import { postLogin } from "@/features/auth/api/post-login";
+
+import { ApiError } from "@/shared/api/errors";
+
+import { login } from "@/features/auth/api/auth.api";
 import { useAuthStore } from "@/features/auth/stores/auth-store";
 import {
   loginSchema,
@@ -25,7 +28,7 @@ export function LoginForm({ sessionExpired = false }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
   const router = useRouter();
-  const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const setSession = useAuthStore((state) => state.setSession);
 
   const {
     register,
@@ -43,12 +46,16 @@ export function LoginForm({ sessionExpired = false }: LoginFormProps) {
     setRequestError(null);
 
     try {
-      const response = await postLogin(data);
-      setAccessToken(response.accessToken);
+      const user = await login(data);
+      setSession(user);
       router.push("/employees");
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Não foi possível autenticar.";
+        error instanceof ApiError
+          ? error.message
+          : error instanceof Error
+            ? error.message
+            : "Não foi possível autenticar.";
       setRequestError(message);
     }
   });
@@ -158,10 +165,6 @@ export function LoginForm({ sessionExpired = false }: LoginFormProps) {
             <Icon icon={Icons.logIn} className="h-4 w-4" />
           </button>
         </form>
-
-        <p className="mt-6 text-center text-xs text-[#8caad1]/70">
-          Dica: inclua "gerente" no usuário para entrar como GERENTE
-        </p>
       </div>
     </section>
   );

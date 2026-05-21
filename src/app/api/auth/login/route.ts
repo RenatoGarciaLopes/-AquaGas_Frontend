@@ -2,24 +2,43 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getApiBaseUrl } from "@/shared/lib/env";
 
-import { USER_NAME_COOKIE } from "@/shared/auth/session";
+import { readRefreshCookie } from "@/shared/auth/backend-cookies";
 import {
+  type UserRole,
   extractUserRole,
-  ROLE_COOKIE_NAME,
-  roleFromLoginHint,
+  decodeJwtPayload,
 } from "@/shared/auth/roles";
-
-const REFRESH_COOKIE_NAME =
-  process.env.AQUAGAS_REFRESH_COOKIE_NAME ?? "aquagas_refresh_token";
+import {
+  ROLE_COOKIE_NAME,
+  USER_NAME_COOKIE,
+  ACCESS_COOKIE_NAME,
+  REFRESH_COOKIE_NAME,
+} from "@/shared/auth/cookies";
 
 type LoginRequestBody = {
   userName?: string;
   password?: string;
 };
 
+type LoginPayload = {
+  data?: {
+    accessToken?: string;
+    expiresAt?: number;
+    user?: { role?: string; userName?: string };
+  } | null;
+};
+
+function resolveRole(
+  payload: LoginPayload,
+  accessToken: string,
+): UserRole | null {
+  return (
+    extractUserRole(payload) ?? extractUserRole(decodeJwtPayload(accessToken))
+  );
+}
+
 export async function POST(request: NextRequest) {
   let body: LoginRequestBody;
-
   try {
     body = (await request.json()) as LoginRequestBody;
   } catch {
@@ -35,9 +54,7 @@ export async function POST(request: NextRequest) {
 
   const backendResponse = await fetch(`${getApiBaseUrl()}/api/auth/login`, {
     method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
+    headers: { "content-type": "application/json" },
     body: JSON.stringify({
       userName: body.userName,
       password: body.password,
@@ -45,69 +62,88 @@ export async function POST(request: NextRequest) {
     cache: "no-store",
   });
 
-  const responseText = await backendResponse.text();
-  const setCookie = backendResponse.headers.get("set-cookie");
-
-  let payload: unknown = null;
-  if (responseText) {
+  const text = await backendResponse.text();
+  let payload: LoginPayload | null = null;
+  if (text) {
     try {
-      payload = JSON.parse(responseText);
+      payload = JSON.parse(text) as LoginPayload;
     } catch {
-      payload = { message: responseText };
+      payload = null;
     }
   }
 
-  const response = NextResponse.json(payload, {
-    status: backendResponse.status,
+  if (!backendResponse.ok) {
+    const response = NextResponse.json(payload ?? { message: text }, {
+      status: backendResponse.status,
+    });
+    response.cookies.delete(ACCESS_COOKIE_NAME);
+    response.cookies.delete(REFRESH_COOKIE_NAME);
+    response.cookies.delete(ROLE_COOKIE_NAME);
+    response.cookies.delete(USER_NAME_COOKIE);
+    return response;
+  }
+
+  const accessToken = payload?.data?.accessToken;
+  if (!accessToken) {
+    return NextResponse.json(
+      { message: "Resposta de autenticação inválida (sem accessToken)." },
+      { status: 502 },
+    );
+  }
+
+  const role = resolveRole(payload ?? {}, accessToken);
+  if (!role) {
+    return NextResponse.json(
+      { message: "Resposta de autenticação inválida (sem role)." },
+      { status: 502 },
+    );
+  }
+
+  const refresh = readRefreshCookie(backendResponse);
+  if (!refresh) {
+    return NextResponse.json(
+      { message: "Resposta de autenticação inválida (sem refresh token)." },
+      { status: 502 },
+    );
+  }
+
+  const isProduction = process.env.NODE_ENV === "production";
+  const response = NextResponse.json(payload, { status: 200 });
+
+  // expiresAt vem como Unix em segundos; multiplicar por 1000 para Date(ms).
+  const accessExpires = payload?.data?.expiresAt
+    ? new Date(payload.data.expiresAt * 1000)
+    : undefined;
+
+  response.cookies.set(REFRESH_COOKIE_NAME, refresh.value, {
+    httpOnly: true,
+    path: "/",
+    sameSite: isProduction ? "strict" : "lax",
+    secure: isProduction,
+    expires: refresh.expires,
   });
 
-  if (setCookie) {
-    const tokenMatch = setCookie.match(/refreshToken=([^;]+)/);
-    const expiresMatch = setCookie.match(/expires=([^;]+)/);
+  response.cookies.set(ACCESS_COOKIE_NAME, accessToken, {
+    httpOnly: true,
+    path: "/",
+    sameSite: isProduction ? "strict" : "lax",
+    secure: isProduction,
+    expires: accessExpires,
+  });
 
-    if (tokenMatch) {
-      const isProduction = process.env.NODE_ENV === "production";
-      response.cookies.set(REFRESH_COOKIE_NAME, tokenMatch[1], {
-        httpOnly: true,
-        path: "/",
-        sameSite: isProduction ? "strict" : "lax",
-        secure: isProduction,
-        expires: expiresMatch ? new Date(expiresMatch[1]) : undefined,
-      });
-    }
-  }
+  response.cookies.set(ROLE_COOKIE_NAME, role, {
+    httpOnly: true,
+    path: "/",
+    sameSite: isProduction ? "strict" : "lax",
+    secure: isProduction,
+  });
 
-  if (backendResponse.ok) {
-    response.cookies.set(
-      ROLE_COOKIE_NAME,
-      extractUserRole(payload) ?? roleFromLoginHint(body.userName),
-      { httpOnly: true, path: "/", sameSite: "lax" },
-    );
-
-    response.cookies.set(USER_NAME_COOKIE, body.userName, {
-      httpOnly: true,
-      path: "/",
-      sameSite: "lax",
-    });
-
-    const payloadData = (
-      payload as { data?: { accessToken?: string; expiresAt?: number } }
-    )?.data;
-
-    if (payloadData?.accessToken) {
-      response.cookies.set("aquagas_access_token", payloadData.accessToken, {
-        httpOnly: true,
-        path: "/",
-        sameSite: "lax",
-        expires: payloadData.expiresAt
-          ? new Date(payloadData.expiresAt * 1000)
-          : undefined,
-      });
-    }
-  } else {
-    response.cookies.delete(ROLE_COOKIE_NAME);
-    response.cookies.delete("aquagas_access_token");
-  }
+  response.cookies.set(USER_NAME_COOKIE, body.userName, {
+    httpOnly: true,
+    path: "/",
+    sameSite: isProduction ? "strict" : "lax",
+    secure: isProduction,
+  });
 
   return response;
 }

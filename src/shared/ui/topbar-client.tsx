@@ -7,15 +7,15 @@ import { useRef, useState, useEffect } from "react";
 import { cn } from "@/shared/lib/cn";
 import { Icons } from "@/shared/lib/icons";
 
-import type { UserRole } from "@/shared/auth/roles";
 import { useUiStore } from "@/shared/store/ui-store";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
+import { roleToLabel, type UserRole } from "@/shared/auth/roles";
 
 import { useAuthStore } from "@/features/auth/stores/auth-store";
 
 type TopbarClientProps = {
   greeting: string;
-  role: UserRole;
+  role: UserRole | null;
   userName: string;
 };
 
@@ -23,8 +23,9 @@ export function TopbarClient({ greeting, role, userName }: TopbarClientProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const clearAccessToken = useAuthStore((s) => s.clearAccessToken);
+  const clearSession = useAuthStore((s) => s.clear);
   const setMobileSidebarOpen = useUiStore((s) => s.setMobileSidebarOpen);
+  const roleLabel = roleToLabel(role);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -44,7 +45,7 @@ export function TopbarClient({ greeting, role, userName }: TopbarClientProps) {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
     } finally {
-      clearAccessToken();
+      clearSession();
       router.push("/login");
     }
   }
@@ -93,7 +94,7 @@ export function TopbarClient({ greeting, role, userName }: TopbarClientProps) {
                 {userName}
               </p>
               <p className="mt-0.5 text-xs font-medium text-[#00abea]">
-                {role}
+                {roleLabel}
               </p>
             </div>
 
@@ -113,7 +114,9 @@ export function TopbarClient({ greeting, role, userName }: TopbarClientProps) {
                 <p className="text-foreground text-sm font-semibold">
                   {userName}
                 </p>
-                <p className="text-xs font-medium text-[#00abea]">{role}</p>
+                <p className="text-xs font-medium text-[#00abea]">
+                  {roleLabel}
+                </p>
               </div>
 
               <div className="bg-border h-px" />

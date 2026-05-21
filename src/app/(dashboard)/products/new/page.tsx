@@ -1,7 +1,8 @@
 import Link from "next/link";
 
+import { isGerente } from "@/shared/auth/roles";
 import { ErrorState } from "@/shared/ui/error-state";
-import { isGerente, getCurrentUserRole } from "@/shared/auth/roles";
+import { getCurrentUserRole } from "@/shared/auth/server";
 
 import { CreateProductForm } from "@/features/product/components/create-product-form";
 

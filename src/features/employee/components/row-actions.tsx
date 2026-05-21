@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { toast } from "sonner";
-import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { Icon } from "@iconify/react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import { useRef, useState, useEffect } from "react";
 
 import { Icons } from "@/shared/lib/icons";
+
 import type { EmployeeWithUser } from "@/features/employee/types";
 
 type RowActionsProps = {
@@ -102,7 +103,7 @@ export function RowActions({ canManage, employee }: RowActionsProps) {
         aria-expanded={menuPos !== null}
         aria-haspopup="menu"
         onClick={() => (menuPos ? closeMenu() : openMenu())}
-        className="inline-flex cursor-pointer items-center rounded-lg border border-border p-2 text-muted-foreground transition hover:bg-muted focus:ring-2 focus:ring-ring/40 focus:outline-none"
+        className="border-border text-muted-foreground hover:bg-muted focus:ring-ring/40 inline-flex cursor-pointer items-center rounded-lg border p-2 transition focus:ring-2 focus:outline-none"
       >
         <Icon icon={Icons.moreHorizontal} aria-hidden className="h-4 w-4" />
       </button>
@@ -113,15 +114,18 @@ export function RowActions({ canManage, employee }: RowActionsProps) {
             ref={menuRef}
             role="menu"
             style={{ top: menuPos.top, right: menuPos.right }}
-            className="fixed z-50 min-w-44 overflow-hidden rounded-xl border border-border bg-card py-1 shadow-lg shadow-black/10"
+            className="border-border bg-card fixed z-50 min-w-44 overflow-hidden rounded-xl border py-1 shadow-lg shadow-black/10"
           >
             <Link
               href={`/employees/${id}`}
               role="menuitem"
               onClick={closeMenu}
-              className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground transition hover:bg-muted"
+              className="text-foreground hover:bg-muted flex items-center gap-2.5 px-3 py-2 text-sm transition"
             >
-              <Icon icon={Icons.eye} className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <Icon
+                icon={Icons.eye}
+                className="text-muted-foreground h-4 w-4 shrink-0"
+              />
               Ver
             </Link>
             {canManage ? (
@@ -130,12 +134,15 @@ export function RowActions({ canManage, employee }: RowActionsProps) {
                   href={`/employees/${id}/edit`}
                   role="menuitem"
                   onClick={closeMenu}
-                  className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground transition hover:bg-muted"
+                  className="text-foreground hover:bg-muted flex items-center gap-2.5 px-3 py-2 text-sm transition"
                 >
-                  <Icon icon={Icons.edit} className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <Icon
+                    icon={Icons.edit}
+                    className="text-muted-foreground h-4 w-4 shrink-0"
+                  />
                   Editar
                 </Link>
-                <div className="my-1 h-px bg-border" />
+                <div className="bg-border my-1 h-px" />
                 <button
                   type="button"
                   role="menuitem"

@@ -8,10 +8,11 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { Icons } from "@/shared/lib/icons";
 import {
-  formatCpfMasked,
   formatDate,
   formatPhone,
+  formatCpfMasked,
 } from "@/shared/lib/formatters";
+
 import { DataTable } from "@/shared/ui/data-table";
 import { EmptyState } from "@/shared/ui/empty-state";
 
@@ -39,7 +40,7 @@ function RoleBadge({ role }: { role: string }) {
     );
   }
   return (
-    <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+    <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
       {label}
     </span>
   );
@@ -93,7 +94,7 @@ export function EmployeesTable({
       {
         accessorFn: (row) => row.employee.name,
         cell: ({ getValue }) => (
-          <span className="font-medium text-foreground">
+          <span className="text-foreground font-medium">
             {getValue<string>()}
           </span>
         ),
@@ -104,7 +105,7 @@ export function EmployeesTable({
       {
         accessorFn: (row) => row.employee.cpf,
         cell: ({ getValue }) => (
-          <span className="font-mono text-muted-foreground">
+          <span className="text-muted-foreground font-mono">
             {formatCpfMasked(getValue<string>())}
           </span>
         ),

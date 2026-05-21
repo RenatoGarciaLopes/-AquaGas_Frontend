@@ -5,9 +5,10 @@ import { redirect } from "next/navigation";
 import { Icons } from "@/shared/lib/icons";
 
 import { ApiError } from "@/shared/api/errors";
+import { isGerente } from "@/shared/auth/roles";
 import { PageHeader } from "@/shared/ui/page-header";
 import { ErrorState } from "@/shared/ui/error-state";
-import { isGerente, getCurrentUserRole } from "@/shared/auth/roles";
+import { getCurrentUserRole } from "@/shared/auth/server";
 
 import { listProducts } from "@/features/product/api/product.api";
 import type { ProductType, ProductsQuery } from "@/features/product/types";
