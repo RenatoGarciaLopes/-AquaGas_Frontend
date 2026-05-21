@@ -17,18 +17,51 @@ function normalizeRole(value: unknown): UserRole | null {
   return null;
 }
 
+// .NET emite roles em claims com URIs longas; cobrir as duas formas usuais.
+const ROLE_CLAIM_URI =
+  "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+
+function normalizeRoleValue(value: unknown): UserRole | null {
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const role =
+        typeof item === "string"
+          ? normalizeRole(item.replace(/^ROLE_/, ""))
+          : null;
+      if (role) return role;
+    }
+    return null;
+  }
+  if (typeof value === "string") {
+    return normalizeRole(value.replace(/^ROLE_/, ""));
+  }
+  return null;
+}
+
 /**
  * Procura a role em um payload arbitrário (response do backend ou claims do JWT).
- * Suporta `role`, `perfil`, `authority`, `roles[]`, e `data.user.role` aninhado.
+ * Suporta `role`, `perfil`, `authority`, `roles[]`, claim URI do .NET, e
+ * qualquer chave que termine em `/role` ou `/roles`. Aceita também valor como
+ * array (múltiplas roles).
  */
 function extractRoleFromRecord(
   record: Record<string, unknown>,
 ): UserRole | null {
   const direct =
-    normalizeRole(record.role) ??
-    normalizeRole(record.perfil) ??
-    normalizeRole(record.authority);
+    normalizeRoleValue(record.role) ??
+    normalizeRoleValue(record.perfil) ??
+    normalizeRoleValue(record.authority) ??
+    normalizeRoleValue(record[ROLE_CLAIM_URI]);
   if (direct) return direct;
+
+  // Fallback: qualquer chave terminando em /role ou /roles (case-insensitive).
+  for (const [key, value] of Object.entries(record)) {
+    const lower = key.toLowerCase();
+    if (lower.endsWith("/role") || lower.endsWith("/roles")) {
+      const role = normalizeRoleValue(value);
+      if (role) return role;
+    }
+  }
 
   const nested =
     record.data ?? record.user ?? record.usuario ?? record.employee;
@@ -38,14 +71,15 @@ function extractRoleFromRecord(
   }
 
   const roles = record.roles ?? record.authorities;
-  if (Array.isArray(roles)) {
-    for (const item of roles) {
-      if (typeof item === "string") {
-        const role = normalizeRole(item.replace(/^ROLE_/, ""));
-        if (role) return role;
-      } else if (item && typeof item === "object") {
-        const role = extractRoleFromRecord(item as Record<string, unknown>);
-        if (role) return role;
+  if (roles) {
+    const fromArr = normalizeRoleValue(roles);
+    if (fromArr) return fromArr;
+    if (Array.isArray(roles)) {
+      for (const item of roles) {
+        if (item && typeof item === "object") {
+          const role = extractRoleFromRecord(item as Record<string, unknown>);
+          if (role) return role;
+        }
       }
     }
   }

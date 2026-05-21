@@ -1,11 +1,15 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { USER_NAME_COOKIE, ACCESS_COOKIE_NAME } from "@/shared/auth/cookies";
+import {
+  ACCESS_COOKIE_NAME,
+  ROLE_COOKIE_NAME,
+  USER_NAME_COOKIE,
+} from "@/shared/auth/cookies";
 import {
   type UserRole,
-  extractUserRole,
   decodeJwtPayload,
+  extractUserRole,
 } from "@/shared/auth/roles";
 
 export type SessionResponse = {
@@ -45,7 +49,11 @@ export async function GET() {
     return NextResponse.json({ message: "Token inválido." }, { status: 401 });
   }
 
-  const role = extractUserRole(claims);
+  // Tenta primeiro nos claims do JWT; cai para o cookie de role (set pelo
+  // login route a partir do envelope do backend) se o JWT não tiver o claim.
+  const role =
+    extractUserRole(claims) ??
+    extractUserRole({ role: cookieStore.get(ROLE_COOKIE_NAME)?.value });
   if (!role) {
     return NextResponse.json(
       { message: "Sem role na sessão." },
