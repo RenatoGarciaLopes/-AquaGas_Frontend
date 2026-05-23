@@ -61,7 +61,10 @@ function dispatchSessionExpired() {
 type BackendErrorPayload = {
   error?: {
     code?: string;
-    details?: Array<{ field: string; messages: string[] }> | null;
+    details?:
+      | Array<{ field: string; message?: string[]; messages?: string[] }>
+      | Record<string, string[]>
+      | null;
     message?: string;
   } | null;
   message?: string;
@@ -70,10 +73,16 @@ type BackendErrorPayload = {
 function extractFieldErrors(payload: unknown): ApiFieldErrors | undefined {
   if (!payload || typeof payload !== "object") return undefined;
   const details = (payload as BackendErrorPayload).error?.details;
-  if (!details?.length) return undefined;
-  return Object.fromEntries(
-    details.map(({ field, messages }) => [field, messages]),
-  );
+  if (!details) return undefined;
+  if (Array.isArray(details)) {
+    return Object.fromEntries(
+      details.map(({ field, message, messages }) => [
+        field,
+        messages ?? message ?? [],
+      ]),
+    );
+  }
+  return details;
 }
 
 function toApiError(error: AxiosError): ApiError {
@@ -110,6 +119,13 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const original = error.config as RetriableConfig | undefined;
     const status = error.response?.status ?? 0;
+    const refreshAlreadyFailed =
+      error.response?.headers?.["x-auth-refresh-failed"] === "1";
+
+    if (status === 401 && refreshAlreadyFailed) {
+      dispatchSessionExpired();
+      throw toApiError(error);
+    }
 
     // 401: tenta refresh uma vez e refaz a request.
     const isAuthEndpoint =

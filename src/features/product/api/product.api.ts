@@ -68,6 +68,26 @@ function paginate(
 // ─── API ─────────────────────────────────────────────────────────────────────
 
 /**
+ * GET /api/products/{id}
+ */
+export async function getProductById(id: string): Promise<ProductResponse> {
+  const envelope = await serverFetch<ApiResponse<ProductResponse>>(
+    `/api/products/${encodeURIComponent(id)}`,
+  );
+
+  if (!envelope.success || envelope.data === null) {
+    const code = envelope.error?.code;
+    throw new ApiError({
+      code,
+      message: envelope.error?.message ?? "Produto não encontrado.",
+      status: code === "NOT_FOUND" ? 404 : 500,
+    });
+  }
+
+  return envelope.data;
+}
+
+/**
  * GET /api/products
  * Backend retorna apenas produtos ativos e não suporta query params.
  * Busca, filtro por tipo, ordenação e paginação são aplicados no servidor (RSC).

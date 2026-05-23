@@ -15,7 +15,6 @@ import { EmptyState } from "@/shared/ui/empty-state";
 import { RowActions } from "@/features/product/components/row-actions";
 import { ProductStockCell } from "@/features/product/components/product-stock-cell";
 import { ProductTypeBadge } from "@/features/product/components/product-type-badge";
-import { ProductStatusBadge } from "@/features/product/components/product-status-badge";
 import type {
   ProductsQuery,
   ProductResponse,
@@ -86,12 +85,6 @@ export function ProductsTable({
         enableSorting: true,
         header: "Estoque",
         id: "quantity",
-      },
-      {
-        cell: () => <ProductStatusBadge />,
-        enableSorting: false,
-        header: "Status",
-        id: "status",
       },
       {
         cell: ({ row }) => (

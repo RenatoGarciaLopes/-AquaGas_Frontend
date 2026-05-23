@@ -9,6 +9,9 @@ import type { FieldPath } from "react-hook-form";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { apiPost } from "@/shared/api/client";
+import { ApiError } from "@/shared/api/errors";
+
 import { useWizard } from "@/shared/hooks/use-wizard";
 
 import { Icons } from "@/shared/lib/icons";
@@ -74,52 +77,31 @@ export function CreateProductForm() {
   const onSubmit = handleSubmit(async (data) => {
     setRequestError(null);
 
-    let response: Response;
     try {
-      response = await fetch("/api/products", {
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-      });
-    } catch {
-      setRequestError(
-        "Falha de conexão. Verifique sua internet e tente novamente.",
-      );
-      return;
-    }
-
-    if (response.ok) {
+      await apiPost("/api/products", data);
       toast.success("Produto criado com sucesso.");
       router.push("/products");
       router.refresh();
       return;
+    } catch (error) {
+      const status = error instanceof ApiError ? error.status : 0;
+      const { fieldErrors, message } = parseProductError(error, status);
+
+      applyBackendErrors(form, fieldErrors);
+
+      if (status === 409 && !fieldErrors.name) {
+        form.setError("name", { message });
+      }
+
+      wizard.jumpToFieldError(fieldErrors);
+
+      if (status === 403) {
+        toast.error(message);
+        return;
+      }
+
+      setRequestError(message);
     }
-
-    if (response.status === 401) {
-      router.push("/login?expired=1");
-      return;
-    }
-
-    const payload = await response.json().catch(() => null);
-    const { fieldErrors, message } = parseProductError(
-      payload,
-      response.status,
-    );
-
-    applyBackendErrors(form, fieldErrors);
-
-    if (response.status === 409 && !fieldErrors.name) {
-      form.setError("name", { message });
-    }
-
-    wizard.jumpToFieldError(fieldErrors);
-
-    if (response.status === 403) {
-      toast.error(message);
-      return;
-    }
-
-    setRequestError(message);
   });
 
   return (

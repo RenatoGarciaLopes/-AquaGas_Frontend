@@ -3,9 +3,16 @@ import { NextResponse } from "next/server";
 
 import {
   ACCESS_COOKIE_NAME,
+  REFRESH_COOKIE_NAME,
   ROLE_COOKIE_NAME,
   USER_NAME_COOKIE,
 } from "@/shared/auth/cookies";
+import { refreshSessionOnce } from "@/shared/auth/server-refresh";
+import type { RefreshSessionResult } from "@/shared/auth/server-refresh";
+import {
+  clearAuthCookies,
+  setAuthCookies,
+} from "@/shared/auth/session-cookies";
 import {
   type UserRole,
   decodeJwtPayload,
@@ -37,14 +44,61 @@ function pickClaim(
   return null;
 }
 
+function isExpired(claims: Record<string, unknown> | null): boolean {
+  const exp = claims?.exp;
+  if (typeof exp !== "number") return false;
+  return exp <= Math.floor(Date.now() / 1000);
+}
+
 export async function GET() {
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get(ACCESS_COOKIE_NAME)?.value;
+  let refreshedSession: Extract<RefreshSessionResult, { ok: true }> | null =
+    null;
+  let accessToken = cookieStore.get(ACCESS_COOKIE_NAME)?.value;
   if (!accessToken) {
-    return NextResponse.json({ message: "Sem sessão." }, { status: 401 });
+    const refreshToken = cookieStore.get(REFRESH_COOKIE_NAME)?.value;
+    if (!refreshToken) {
+      return NextResponse.json({ message: "Sem sessão." }, { status: 401 });
+    }
+
+    const refreshed = await refreshSessionOnce(refreshToken);
+    if (!refreshed.ok) {
+      const response = NextResponse.json(refreshed.payload, {
+        status: refreshed.status,
+      });
+      clearAuthCookies(response);
+      return response;
+    }
+    refreshedSession = refreshed;
+    accessToken = refreshed.accessToken;
   }
 
-  const claims = decodeJwtPayload(accessToken);
+  let claims = decodeJwtPayload(accessToken);
+  if (!claims || isExpired(claims)) {
+    const refreshToken = cookieStore.get(REFRESH_COOKIE_NAME)?.value;
+    if (!refreshToken) {
+      const response = NextResponse.json(
+        { message: "Token inválido." },
+        { status: 401 },
+      );
+      clearAuthCookies(response);
+      return response;
+    }
+
+    const refreshed = await refreshSessionOnce(refreshToken);
+    if (!refreshed.ok) {
+      const response = NextResponse.json(refreshed.payload, {
+        status: refreshed.status,
+      });
+      clearAuthCookies(response);
+      return response;
+    }
+
+    refreshedSession = refreshed;
+    accessToken = refreshed.accessToken;
+    claims = decodeJwtPayload(accessToken);
+  }
+
   if (!claims) {
     return NextResponse.json({ message: "Token inválido." }, { status: 401 });
   }
@@ -88,5 +142,15 @@ export async function GET() {
     user: { id, userName, role },
     expiresAt,
   };
-  return NextResponse.json(body);
+  const response = NextResponse.json(body);
+  if (refreshedSession) {
+    setAuthCookies(response, {
+      accessExpiresAt: refreshedSession.accessExpiresAt,
+      accessToken: refreshedSession.accessToken,
+      refreshExpiresAt: refreshedSession.refreshExpiresAt,
+      refreshToken: refreshedSession.refreshToken,
+      userName,
+    });
+  }
+  return response;
 }
