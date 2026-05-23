@@ -12,14 +12,6 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   return proxyBackendRequest(request, {
     body,
     method: "PATCH",
-    path: `/api/products/${encodeURIComponent(id)}`,
-  });
-}
-
-export async function DELETE(_request: NextRequest, context: RouteContext) {
-  const { id } = await context.params;
-  return proxyBackendRequest(_request, {
-    method: "DELETE",
-    path: `/api/products/${encodeURIComponent(id)}`,
+    path: `/api/products/${encodeURIComponent(id)}/stock`,
   });
 }
