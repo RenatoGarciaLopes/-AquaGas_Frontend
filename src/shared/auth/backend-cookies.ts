@@ -21,8 +21,10 @@ export function readRefreshCookie(
     getSetCookie?: () => string[];
   };
   const list = headers.getSetCookie?.() ?? [];
+  const fallback = headers.get("set-cookie");
+  const setCookies = list.length > 0 ? list : fallback ? [fallback] : [];
 
-  for (const raw of list) {
+  for (const raw of setCookies) {
     const [pair, ...attrs] = raw.split(";").map((part) => part.trim());
     if (!pair) continue;
     const eq = pair.indexOf("=");

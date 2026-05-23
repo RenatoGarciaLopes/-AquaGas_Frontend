@@ -20,7 +20,10 @@ export type ServerFetchOptions = Omit<RequestInit, "body"> & {
 type BackendErrorEnvelope = {
   error?: {
     code?: string;
-    details?: Array<{ field: string; messages: string[] }> | null;
+    details?:
+      | Array<{ field: string; message?: string[]; messages?: string[] }>
+      | Record<string, string[]>
+      | null;
     message?: string;
   } | null;
   message?: string; // fallback para respostas não-envelopadas
@@ -61,10 +64,16 @@ function getErrorMessage(payload: unknown, fallback: string): string {
 function extractFieldErrors(payload: unknown): ApiFieldErrors | undefined {
   if (!payload || typeof payload !== "object") return undefined;
   const details = (payload as BackendErrorEnvelope).error?.details;
-  if (!details?.length) return undefined;
-  return Object.fromEntries(
-    details.map(({ field, messages }) => [field, messages]),
-  );
+  if (!details) return undefined;
+  if (Array.isArray(details)) {
+    return Object.fromEntries(
+      details.map(({ field, message, messages }) => [
+        field,
+        messages ?? message ?? [],
+      ]),
+    );
+  }
+  return details;
 }
 
 // ─── serverFetch ─────────────────────────────────────────────────────────────
