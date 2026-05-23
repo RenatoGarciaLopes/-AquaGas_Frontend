@@ -20,6 +20,12 @@ export type EmployeeWithUser = {
   employee: EmployeeResponse;
 };
 
+export type EmployeeStatus = "ATIVO" | "INATIVO";
+
+export type EmployeeDetail = EmployeeResponse & {
+  status: EmployeeStatus;
+};
+
 // Mutation inputs
 export type RegisterEmployeeInput = {
   user: { userName: string; password: string; role: string };

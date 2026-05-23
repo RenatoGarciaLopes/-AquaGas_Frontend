@@ -2,7 +2,9 @@ import { ApiError } from "@/shared/api/errors";
 import { serverFetch } from "@/shared/api/server-fetch";
 
 import type {
+  EmployeeDetail,
   EmployeesQuery,
+  EmployeeResponse,
   EmployeeWithUser,
   PaginatedEmployees,
 } from "@/features/employee/types";
@@ -98,4 +100,34 @@ export async function listEmployees(
     totalCount,
     totalPages,
   };
+}
+
+function normalizeEmployeeDetail(data: EmployeeResponse | EmployeeWithUser) {
+  const employee = "employee" in data ? data.employee : data;
+
+  return {
+    ...employee,
+    status: employee.isActive === false ? "INATIVO" : "ATIVO",
+  } satisfies EmployeeDetail;
+}
+
+/**
+ * GET /api/employees/{id}
+ * Retorna os dados completos de um funcionário.
+ */
+export async function getEmployeeById(id: string): Promise<EmployeeDetail> {
+  const envelope = await serverFetch<
+    ApiResponse<EmployeeResponse | EmployeeWithUser>
+  >(`/api/employees/${encodeURIComponent(id)}`);
+
+  if (!envelope.success || envelope.data === null) {
+    throw new ApiError({
+      code: envelope.error?.code,
+      message:
+        envelope.error?.message ?? "Falha ao carregar dados do funcionário.",
+      status: 500,
+    });
+  }
+
+  return normalizeEmployeeDetail(envelope.data);
 }
