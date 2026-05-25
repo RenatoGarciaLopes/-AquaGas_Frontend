@@ -99,3 +99,19 @@ export async function listEmployees(
     totalPages,
   };
 }
+
+export async function getEmployeeById(id: string): Promise<EmployeeWithUser> {
+  const envelope = await serverFetch<ApiResponse<EmployeeWithUser>>(
+    `/api/employees/${encodeURIComponent(id)}`,
+  );
+
+  if (!envelope.success || envelope.data === null) {
+    throw new ApiError({
+      code: envelope.error?.code,
+      message: envelope.error?.message ?? "Falha ao carregar funcionário.",
+      status: 500,
+    });
+  }
+
+  return envelope.data;
+}
