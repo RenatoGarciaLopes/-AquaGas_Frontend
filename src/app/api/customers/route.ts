@@ -8,3 +8,12 @@ export async function GET(request: NextRequest) {
     path: "/api/customers",
   });
 }
+
+export async function POST(request: NextRequest) {
+  const body = await request.text();
+  return proxyBackendRequest(request, {
+    body,
+    method: "POST",
+    path: "/api/customers/register",
+  });
+}

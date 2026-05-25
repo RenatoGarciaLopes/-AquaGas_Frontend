@@ -100,6 +100,26 @@ function paginate(
 // ─── API ─────────────────────────────────────────────────────────────────────
 
 /**
+ * GET /api/customers/{id}
+ */
+export async function getCustomerById(id: string): Promise<CustomerResponse> {
+  const envelope = await serverFetch<ApiResponse<CustomerResponse>>(
+    `/api/customers/${encodeURIComponent(id)}`,
+  );
+
+  if (!envelope.success || envelope.data === null) {
+    const code = envelope.error?.code;
+    throw new ApiError({
+      code,
+      message: envelope.error?.message ?? "Cliente não encontrado.",
+      status: code === "NOT_FOUND" ? 404 : 500,
+    });
+  }
+
+  return envelope.data;
+}
+
+/**
  * GET /api/customers
  * Backend retorna apenas clientes ativos e não suporta query params.
  * Busca, filtro PF/PJ, ordenação e paginação são aplicados no servidor (RSC).

@@ -38,8 +38,11 @@ export function CurrencyField<T extends FieldValues>({
 }: CurrencyFieldProps<T>) {
   const {
     field: { onBlur, onChange, ref, value },
-    fieldState: { error },
+    fieldState: { error, isTouched },
+    formState: { isSubmitted },
   } = useController({ control, name });
+
+  const visibleError = isTouched || isSubmitted ? error?.message : undefined;
 
   const display = numberToBrl(value as number | null | undefined);
 
@@ -53,7 +56,7 @@ export function CurrencyField<T extends FieldValues>({
       autoComplete="off"
       placeholder={placeholder}
       hint={hint}
-      error={error?.message}
+      error={visibleError}
       value={display}
       onChange={(event) => {
         const result = maskBrlInput(event.target.value);

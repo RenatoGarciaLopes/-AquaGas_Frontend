@@ -16,6 +16,7 @@ type CustomerField =
 
 const FIELD_ALIASES: Record<string, CustomerField> = {
   address: "address.street",
+  addressid: "address.cep",
   cep: "address.cep",
   city: "address.city",
   cnpj: "document",
@@ -99,5 +100,5 @@ function defaultMessageForStatus(status: number) {
   if (status === 409) return "Já existe um cliente com esse documento.";
   if (status === 403) return "Você não tem permissão para esta operação.";
   if (status >= 500) return "Erro interno do servidor. Tente novamente.";
-  return "Não foi possível concluir o cadastro. Tente novamente.";
+  return "Não foi possível salvar o cliente. Tente novamente.";
 }

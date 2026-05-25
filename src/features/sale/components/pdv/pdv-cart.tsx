@@ -2,8 +2,10 @@
 
 import { Icon } from "@iconify/react";
 
+import { cn } from "@/shared/lib/cn";
 import { Icons } from "@/shared/lib/icons";
 import { formatCurrency } from "@/shared/lib/formatters";
+import { onlyIntegerKeys, onlyIntegerPaste } from "@/shared/lib/masks";
 
 import { EmptyState } from "@/shared/ui/empty-state";
 
@@ -37,10 +39,31 @@ export function PdvCart({ items, onQuantityChange, onRemove }: PdvCartProps) {
       <div className="divide-border divide-y">
         {items.map((item) => {
           const lineTotal = item.product.price * item.quantity;
+          const inputId = `cart-quantity-${item.product.id}`;
+          const max = item.product.quantity;
+          const canDecrement = item.quantity > 1;
+          const canIncrement = item.quantity < max;
+
+          function adjust(delta: number) {
+            const next = Math.min(
+              Math.max(1, Math.trunc(item.quantity + delta)),
+              max,
+            );
+            if (next !== item.quantity) {
+              onQuantityChange(item.product.id, next);
+            }
+          }
+
+          function handleInputChange(raw: string) {
+            const parsed = Number(raw || 1);
+            const safe = Math.min(Math.max(1, Math.trunc(parsed)), max);
+            onQuantityChange(item.product.id, safe);
+          }
+
           return (
             <div
               key={item.product.id}
-              className="grid gap-3 px-4 py-4 sm:grid-cols-[minmax(0,1fr)_9rem_7rem_2.5rem] sm:items-center"
+              className="grid gap-3 px-4 py-4 sm:grid-cols-[minmax(0,1fr)_13rem_7rem_2.5rem] sm:items-center"
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
@@ -52,29 +75,56 @@ export function PdvCart({ items, onQuantityChange, onRemove }: PdvCartProps) {
                   </span>
                 </div>
                 <p className="text-muted-foreground mt-1 text-xs">
-                  {formatCurrency(item.product.price)} un. · estoque{" "}
-                  {item.product.quantity}
+                  {formatCurrency(item.product.price)} un. · estoque {max}
                 </p>
               </div>
 
-              <label className="space-y-1">
-                <span className="text-muted-foreground text-xs font-medium">
-                  Quantidade
-                </span>
-                <input
-                  type="number"
-                  min={1}
-                  max={item.product.quantity}
-                  value={item.quantity}
-                  onChange={(event) =>
-                    onQuantityChange(
-                      item.product.id,
-                      Number(event.target.value || 1),
-                    )
-                  }
-                  className="border-input bg-background text-foreground focus:ring-ring/40 w-full rounded-lg border px-3 py-2 text-sm focus:ring-2"
-                />
-              </label>
+              <div
+                className={cn(
+                  "bg-muted/40 hover:bg-muted/60 focus-within:bg-muted/60",
+                  "flex h-[58px] items-center rounded-xl border border-transparent px-3 transition",
+                )}
+              >
+                <div className="min-w-0 flex-1">
+                  <label
+                    htmlFor={inputId}
+                    className="text-muted-foreground block text-xs font-medium"
+                  >
+                    Quantidade
+                  </label>
+                  <input
+                    id={inputId}
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    value={item.quantity}
+                    onChange={(event) => handleInputChange(event.target.value)}
+                    onKeyDown={onlyIntegerKeys}
+                    onPaste={onlyIntegerPaste}
+                    className="text-foreground placeholder:text-muted-foreground/60 mt-0.5 w-full border-0 bg-transparent p-0 text-sm leading-tight shadow-none outline-none focus:ring-0 focus:outline-none"
+                  />
+                </div>
+                <div className="ml-2 flex shrink-0 items-center gap-1">
+                  <button
+                    type="button"
+                    aria-label="Diminuir quantidade"
+                    onClick={() => adjust(-1)}
+                    disabled={!canDecrement}
+                    className="text-muted-foreground hover:bg-muted hover:text-foreground border-border inline-flex h-7 w-7 items-center justify-center rounded-md border text-base leading-none font-semibold transition focus:ring-2 focus:ring-cyan-400/40 focus:outline-none disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    −
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Aumentar quantidade"
+                    onClick={() => adjust(1)}
+                    disabled={!canIncrement}
+                    className="text-muted-foreground hover:bg-muted hover:text-foreground border-border inline-flex h-7 w-7 items-center justify-center rounded-md border text-base leading-none font-semibold transition focus:ring-2 focus:ring-cyan-400/40 focus:outline-none disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
 
               <div className="sm:text-right">
                 <span className="text-muted-foreground text-xs font-medium">

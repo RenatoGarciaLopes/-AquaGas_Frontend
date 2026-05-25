@@ -35,6 +35,24 @@ export type RegisterCustomerInput = {
   phone: string;
 };
 
+export type UpdateCustomerAddressInput = {
+  addressId: string;
+  cep?: string;
+  city?: string;
+  complement?: string | null;
+  neighborhood?: string;
+  number?: string;
+  street?: string;
+};
+
+export type UpdateCustomerInput = {
+  address?: UpdateCustomerAddressInput;
+  document?: string;
+  email?: string;
+  name?: string;
+  phone?: string;
+};
+
 export type CustomersQuery = {
   pageNumber: number;
   pageSize: number;

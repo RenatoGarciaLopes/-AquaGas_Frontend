@@ -16,6 +16,7 @@ import {
 import { DataTable } from "@/shared/ui/data-table";
 import { EmptyState } from "@/shared/ui/empty-state";
 
+import { RowActions } from "@/features/customer/components/row-actions";
 import { CustomerTypeBadge } from "@/features/customer/components/customer-type-badge";
 import type {
   CustomersQuery,
@@ -120,11 +121,26 @@ export function CustomersTable({ initialData, query }: CustomersTableProps) {
       {
         accessorFn: (row) => formatAddress(row),
         cell: ({ getValue }) => (
-          <span className="text-muted-foreground">{getValue<string>()}</span>
+          <span
+            className="text-muted-foreground block max-w-52 truncate xl:max-w-64"
+            title={getValue<string>()}
+          >
+            {getValue<string>()}
+          </span>
         ),
         enableSorting: false,
         header: "Endereço",
         id: "address",
+      },
+      {
+        cell: ({ row }) => (
+          <div className="text-right">
+            <RowActions customer={row.original} />
+          </div>
+        ),
+        enableSorting: false,
+        header: () => <span className="sr-only">Ações</span>,
+        id: "actions",
       },
     ],
     [],
