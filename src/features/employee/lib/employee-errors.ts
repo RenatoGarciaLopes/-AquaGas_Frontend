@@ -22,7 +22,7 @@ const FIELD_ALIASES: Record<string, keyof CreateEmployeeSchema> = {
 };
 
 const FALLBACK_MESSAGE =
-  "Não foi possível cadastrar o funcionário. Tente novamente.";
+  "Não foi possível salvar o funcionário. Tente novamente.";
 
 export function parseEmployeeError(
   envelope: unknown,
@@ -91,7 +91,7 @@ function translateFieldMessage(
 
 function defaultMessageForStatus(status: number, message?: string): string {
   if (status === 409) return message ?? "Funcionário já cadastrado.";
-  if (status === 403) return "Você não tem permissão para criar funcionários.";
-  if (status >= 500) return "Erro ao criar funcionário";
+  if (status === 403) return "Você não tem permissão para esta ação.";
+  if (status >= 500) return "Erro ao salvar funcionário";
   return message ?? FALLBACK_MESSAGE;
 }

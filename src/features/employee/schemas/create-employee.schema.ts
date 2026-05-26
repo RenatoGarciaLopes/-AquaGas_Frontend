@@ -2,10 +2,10 @@ import { z } from "zod";
 
 import { digitsOnly } from "@/shared/lib/masks";
 
-const PASSWORD_REGEX =
+export const PASSWORD_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-function isValidCpf(value: string): boolean {
+export function isValidCpf(value: string): boolean {
   const cpf = digitsOnly(value);
   if (!/^\d{11}$/.test(cpf)) return false;
   if (new Set(cpf).size === 1) return false;

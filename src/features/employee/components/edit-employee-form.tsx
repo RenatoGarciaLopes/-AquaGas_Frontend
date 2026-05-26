@@ -14,50 +14,45 @@ import { digitsOnly, maskCpfInput, maskPhoneInput } from "@/shared/lib/masks";
 
 import { FormField, TextField } from "@/shared/ui/form-field";
 
-import type { RegisterEmployeeInput } from "@/features/employee/types";
+import type { UpdateEmployeeInput } from "@/features/employee/types";
 import { parseEmployeeError } from "@/features/employee/lib/employee-errors";
 import { PasswordStrength } from "@/features/employee/components/password-strength";
 import {
-  createEmployeeSchema,
-  type CreateEmployeeSchema,
-} from "@/features/employee/schemas/create-employee.schema";
+  editEmployeeSchema,
+  type EditEmployeeSchema,
+} from "@/features/employee/schemas/edit-employee.schema";
 
 const ROLE_OPTIONS = [
   { label: "Gerente", value: "Manager" },
   { label: "Funcionário", value: "Employee" },
 ] as const;
 
-function toPayload(data: CreateEmployeeSchema): RegisterEmployeeInput {
+type EditEmployeeFormProps = {
+  defaultValues: EditEmployeeSchema;
+  employeeId: string;
+};
+
+function toPayload(data: EditEmployeeSchema): UpdateEmployeeInput {
   return {
-    user: {
-      userName: data.userName,
-      password: data.password,
-      role: data.role,
-    },
-    employee: {
-      name: data.name,
-      cpf: data.cpf,
-      email: data.email,
-      phone: data.phone,
-    },
+    name: data.name,
+    email: data.email.trim() || undefined,
+    phone: data.phone,
+    userName: data.userName,
+    newPassword: data.password || undefined,
+    role: data.role,
   };
 }
 
-export function CreateEmployeeForm() {
+export function EditEmployeeForm({
+  defaultValues,
+  employeeId,
+}: EditEmployeeFormProps) {
   const router = useRouter();
 
-  const form = useForm<CreateEmployeeSchema>({
-    resolver: zodResolver(createEmployeeSchema),
+  const form = useForm<EditEmployeeSchema>({
+    resolver: zodResolver(editEmployeeSchema),
     mode: "onTouched",
-    defaultValues: {
-      userName: "",
-      password: "",
-      role: "Employee",
-      name: "",
-      cpf: "",
-      phone: "",
-      email: "",
-    },
+    defaultValues,
   });
 
   const {
@@ -75,19 +70,19 @@ export function CreateEmployeeForm() {
     let response: Response;
 
     try {
-      response = await fetch("/api/employees", {
+      response = await fetch(`/api/employees/${employeeId}`, {
         body: JSON.stringify(toPayload(data)),
         headers: { "Content-Type": "application/json" },
-        method: "POST",
+        method: "PATCH",
       });
     } catch {
-      toast.error("Erro ao criar funcionário");
+      toast.error("Erro ao atualizar funcionário");
       return;
     }
 
     if (response.ok) {
-      toast.success("Funcionário criado com sucesso");
-      router.push("/employees");
+      toast.success("Dados atualizados com sucesso");
+      router.push(`/employees/${employeeId}`);
       router.refresh();
       return;
     }
@@ -106,7 +101,7 @@ export function CreateEmployeeForm() {
     applyBackendErrors(form, fieldErrors);
 
     if (response.status >= 500) {
-      toast.error("Erro ao criar funcionário");
+      toast.error("Erro ao atualizar funcionário");
       return;
     }
 
@@ -131,7 +126,7 @@ export function CreateEmployeeForm() {
               Acesso ao sistema
             </h2>
             <p className="text-muted-foreground text-sm">
-              Defina o usuário, senha e cargo do novo funcionário.
+              Atualize o usuário, cargo e senha quando necessário.
             </p>
           </div>
 
@@ -140,7 +135,6 @@ export function CreateEmployeeForm() {
               id="userName"
               type="text"
               label="Usuário"
-              required
               autoComplete="username"
               placeholder="Ex.: gustavo123"
               error={errors.userName?.message}
@@ -159,7 +153,7 @@ export function CreateEmployeeForm() {
                 onChange={(event) =>
                   setValue(
                     "role",
-                    event.target.value as CreateEmployeeSchema["role"],
+                    event.target.value as EditEmployeeSchema["role"],
                     {
                       shouldDirty: true,
                       shouldValidate: true,
@@ -181,14 +175,13 @@ export function CreateEmployeeForm() {
             <TextField
               id="password"
               type="password"
-              label="Senha"
-              required
+              label="Nova senha"
               autoComplete="new-password"
-              placeholder="Mínimo 8 caracteres"
+              placeholder="Deixe vazio para manter a senha atual"
               error={errors.password?.message}
               {...register("password")}
             />
-            <PasswordStrength value={password} />
+            {password ? <PasswordStrength value={password} /> : null}
           </div>
         </section>
 
@@ -198,8 +191,7 @@ export function CreateEmployeeForm() {
               Dados do funcionário
             </h2>
             <p className="text-muted-foreground text-sm">
-              CPF e email são validados novamente pelo backend para garantir
-              unicidade.
+              O CPF é exibido para conferência e não pode ser alterado.
             </p>
           </div>
 
@@ -208,7 +200,6 @@ export function CreateEmployeeForm() {
               id="name"
               type="text"
               label="Nome completo"
-              required
               autoComplete="name"
               placeholder="Ex.: Gustavo Sossai"
               error={errors.name?.message}
@@ -219,12 +210,13 @@ export function CreateEmployeeForm() {
               id="cpf"
               type="text"
               label="CPF"
-              required
+              readOnly
+              aria-disabled="true"
               inputMode="numeric"
               autoComplete="off"
               placeholder="000.000.000-00"
-              maxLength={14}
               error={errors.cpf?.message}
+              className="cursor-not-allowed opacity-70"
               {...register("cpf", {
                 onChange: (event) => {
                   const masked = maskCpfInput(event.target.value);
@@ -240,7 +232,6 @@ export function CreateEmployeeForm() {
               id="phone"
               type="text"
               label="Telefone"
-              required
               inputMode="tel"
               autoComplete="tel"
               placeholder="(44) 99999-9999"
@@ -261,7 +252,6 @@ export function CreateEmployeeForm() {
               id="email"
               type="email"
               label="Email"
-              required
               autoComplete="email"
               placeholder="gustavo@email.com"
               error={errors.email?.message}
@@ -273,7 +263,7 @@ export function CreateEmployeeForm() {
 
       <footer className="flex flex-col-reverse gap-3 border-t border-white/10 p-5 sm:flex-row sm:items-center sm:justify-end sm:p-6">
         <Link
-          href="/employees"
+          href={`/employees/${employeeId}`}
           className="text-muted-foreground hover:text-foreground inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition"
         >
           <Icon icon={Icons.chevronLeft} className="h-4 w-4" aria-hidden />

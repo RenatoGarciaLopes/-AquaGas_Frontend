@@ -7,8 +7,7 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function DELETE(_request: NextRequest, context: RouteContext) {
-  const { id } = await context.params;
+async function authHeaders() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("aquagas_access_token")?.value;
 
@@ -16,6 +15,28 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
+
+  return headers;
+}
+
+export async function PATCH(request: NextRequest, context: RouteContext) {
+  const { id } = await context.params;
+  const headers = await authHeaders();
+  const body = await request.text();
+
+  const backendRes = await fetch(
+    `${getApiBaseUrl()}/api/employees/${encodeURIComponent(id)}`,
+    { body, cache: "no-store", headers, method: "PATCH" },
+  );
+
+  const text = await backendRes.text();
+  const payload = text ? (JSON.parse(text) as unknown) : null;
+  return NextResponse.json(payload, { status: backendRes.status });
+}
+
+export async function DELETE(_request: NextRequest, context: RouteContext) {
+  const { id } = await context.params;
+  const headers = await authHeaders();
 
   const backendRes = await fetch(
     `${getApiBaseUrl()}/api/employees/${encodeURIComponent(id)}`,
