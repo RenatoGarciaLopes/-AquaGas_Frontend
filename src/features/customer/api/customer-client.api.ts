@@ -1,4 +1,4 @@
-import { apiPost, apiPatch } from "@/shared/api/client";
+import { apiPost, apiPatch, apiDelete } from "@/shared/api/client";
 
 import type {
   CustomerResponse,
@@ -20,4 +20,8 @@ export async function updateCustomer(id: string, input: UpdateCustomerInput) {
     `/api/customers/${encodeURIComponent(id)}`,
     input,
   );
+}
+
+export async function deactivateCustomer(id: string) {
+  return apiDelete(`/api/customers/${encodeURIComponent(id)}`);
 }

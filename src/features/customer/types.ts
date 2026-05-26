@@ -12,6 +12,7 @@ export type AddressResponse = {
 
 export type CustomerResponse = {
   address: AddressResponse | null;
+  createdAt: string;
   document: string;
   email: string | null;
   id: string;

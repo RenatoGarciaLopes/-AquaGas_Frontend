@@ -29,6 +29,7 @@ export const SidebarIcons = {
 
 export const Icons = {
   alertTriangle: get("danger-triangle-line-duotone"),
+  calendar: get("calendar-minimalistic-line-duotone"),
   check: get("check-circle-line-duotone"),
   arrowDown: get("alt-arrow-down-line-duotone"),
   arrowUp: get("alt-arrow-up-line-duotone"),

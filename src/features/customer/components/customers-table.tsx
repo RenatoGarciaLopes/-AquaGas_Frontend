@@ -25,6 +25,7 @@ import type {
 } from "@/features/customer/types";
 
 type CustomersTableProps = {
+  canManage: boolean;
   initialData: PaginatedCustomers;
   query: CustomersQuery;
 };
@@ -48,7 +49,7 @@ function formatAddress(customer: CustomerResponse) {
   return [streetLine, cityLine].filter(Boolean).join(" — ") || "-";
 }
 
-export function CustomersTable({ initialData, query }: CustomersTableProps) {
+export function CustomersTable({ canManage, initialData, query }: CustomersTableProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -135,7 +136,7 @@ export function CustomersTable({ initialData, query }: CustomersTableProps) {
       {
         cell: ({ row }) => (
           <div className="text-right">
-            <RowActions customer={row.original} />
+            <RowActions canManage={canManage} customer={row.original} />
           </div>
         ),
         enableSorting: false,
@@ -143,7 +144,7 @@ export function CustomersTable({ initialData, query }: CustomersTableProps) {
         id: "actions",
       },
     ],
-    [],
+    [canManage],
   );
 
   return (

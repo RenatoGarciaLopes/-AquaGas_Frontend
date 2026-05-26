@@ -5,8 +5,10 @@ import { redirect } from "next/navigation";
 import { Icons } from "@/shared/lib/icons";
 
 import { ApiError } from "@/shared/api/errors";
+import { isGerente } from "@/shared/auth/roles";
 import { PageHeader } from "@/shared/ui/page-header";
 import { ErrorState } from "@/shared/ui/error-state";
+import { getCurrentUserRole } from "@/shared/auth/server";
 
 import { listCustomers } from "@/features/customer/api/customer.api";
 import { CustomersTable } from "@/features/customer/components/customers-table";
@@ -55,6 +57,8 @@ export default async function CustomersPage({
   searchParams,
 }: CustomersPageProps) {
   const query = await resolveQuery(searchParams);
+  const role = await getCurrentUserRole();
+  const canManage = isGerente(role);
 
   let customers;
   try {
@@ -95,7 +99,7 @@ export default async function CustomersPage({
         key={`${query.search ?? ""}-${query.type ?? ""}`}
         initialSearch={query.search}
       />
-      <CustomersTable initialData={customers} query={query} />
+      <CustomersTable canManage={canManage} initialData={customers} query={query} />
     </main>
   );
 }
