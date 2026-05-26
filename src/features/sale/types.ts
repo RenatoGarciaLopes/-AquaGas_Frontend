@@ -1,4 +1,37 @@
 export type SaleStatus = "Finished" | "Canceled" | number;
+export type SaleStatusFilter = "Finished" | "Canceled";
+
+export type SalesQuery = {
+  pageNumber: number;
+  pageSize: number;
+  search?: string;
+  status?: SaleStatusFilter;
+  dateFrom?: string;
+  dateTo?: string;
+  minTotal?: number;
+  maxTotal?: number;
+  sort?: string;
+};
+
+export type PaginatedSales = {
+  data: SaleResponse[];
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+};
+
+export type CancelSaleInput = {
+  reason: string;
+};
+
+export type CancelSaleResponse = {
+  saleId: string;
+  status: SaleStatus;
+  reason: string;
+};
 export type SaleProductType = "Water" | "Gas";
 export type SaleCustomerDocumentType = "PF" | "PJ";
 

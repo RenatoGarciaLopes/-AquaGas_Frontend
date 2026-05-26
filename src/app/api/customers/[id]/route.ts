@@ -15,3 +15,11 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     path: `/api/customers/${encodeURIComponent(id)}`,
   });
 }
+
+export async function DELETE(_request: NextRequest, context: RouteContext) {
+  const { id } = await context.params;
+  return proxyBackendRequest(_request, {
+    method: "DELETE",
+    path: `/api/customers/${encodeURIComponent(id)}`,
+  });
+}

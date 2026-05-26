@@ -4,18 +4,20 @@ import { Icon } from "@iconify/react";
 import { Icons } from "@/shared/lib/icons";
 import { formatDate, formatCurrency } from "@/shared/lib/formatters";
 
+import { CancelSaleButton } from "@/features/sale/components/cancel-sale-button";
 import type { SaleResponse } from "@/features/sale/types";
 
 type SaleDetailProps = {
   sale: SaleResponse;
 };
 
-function statusLabel(status: SaleResponse["status"]) {
-  if (status === "Canceled" || status === 1) return "Cancelada";
-  return "Finalizada";
+function isCanceled(status: SaleResponse["status"]) {
+  return status === "Canceled" || status === 1;
 }
 
 export function SaleDetail({ sale }: SaleDetailProps) {
+  const canceled = isCanceled(sale.status);
+
   return (
     <main className="space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -27,20 +29,36 @@ export function SaleDetail({ sale }: SaleDetailProps) {
             <Icon icon={Icons.chevronLeft} aria-hidden className="h-4 w-4" />
             Voltar para vendas
           </Link>
-          <h1 className="text-foreground text-3xl font-semibold tracking-tight">
-            Venda
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-foreground text-3xl font-semibold tracking-tight">
+              Venda
+            </h1>
+            {canceled ? (
+              <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-400/15 dark:text-red-400">
+                Cancelada
+              </span>
+            ) : (
+              <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-400">
+                Finalizada
+              </span>
+            )}
+          </div>
           <p className="text-muted-foreground mt-1.5 text-sm">
-            {formatDate(sale.createdAt)} · {statusLabel(sale.status)}
+            {formatDate(sale.createdAt)}
           </p>
         </div>
-        <Link
-          href="/sales/new"
-          className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition"
-        >
-          <Icon icon={Icons.plus} aria-hidden className="h-4 w-4" />
-          Nova venda
-        </Link>
+        <div className="flex items-center gap-3">
+          {!canceled && (
+            <CancelSaleButton saleId={sale.id} createdAt={sale.createdAt} />
+          )}
+          <Link
+            href="/sales/new"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition"
+          >
+            <Icon icon={Icons.plus} aria-hidden className="h-4 w-4" />
+            Nova venda
+          </Link>
+        </div>
       </header>
 
       <section className="grid gap-4 md:grid-cols-3">
@@ -100,6 +118,17 @@ export function SaleDetail({ sale }: SaleDetailProps) {
           </table>
         </div>
       </section>
+
+      {canceled && sale.cancelReason ? (
+        <section className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-400/20 dark:bg-red-400/10">
+          <h2 className="mb-1 text-sm font-semibold text-red-700 dark:text-red-400">
+            Motivo do cancelamento
+          </h2>
+          <p className="text-sm text-red-600 dark:text-red-300">
+            {sale.cancelReason}
+          </p>
+        </section>
+      ) : null}
 
       <section className="border-border bg-card ml-auto w-full max-w-sm rounded-lg border p-4">
         <dl className="space-y-3 text-sm">

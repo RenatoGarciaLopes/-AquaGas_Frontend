@@ -49,6 +49,7 @@ const CUSTOMER: CustomerResponse = {
     number: "123",
     street: "Rua das Águas",
   },
+  createdAt: "2025-01-01T00:00:00Z",
   document: "52998224725",
   email: "cliente@example.com",
   id: "customer-id",

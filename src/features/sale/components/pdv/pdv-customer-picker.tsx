@@ -57,24 +57,28 @@ export function PdvCustomerPicker({
             Opcional para venda balcão.
           </p>
         </div>
-        {selected ? (
-          <button
-            type="button"
-            onClick={() => onSelect(null)}
-            className="text-primary hover:text-primary/80 text-xs font-semibold transition"
-          >
-            Usar balcão
-          </button>
-        ) : null}
       </div>
 
       {selected ? (
-        <div className="border-primary/30 bg-primary/10 mt-3 rounded-lg border p-3">
-          <p className="text-foreground text-sm font-medium">{selected.name}</p>
-          <p className="text-muted-foreground mt-1 text-xs">
-            {formatDocument(selected)}
-            {selected.phone ? ` · ${formatPhone(selected.phone)}` : ""}
-          </p>
+        <div className="border-primary/30 bg-primary/10 mt-3 flex items-start justify-between gap-3 rounded-lg border p-3">
+          <div className="min-w-0">
+            <p className="text-foreground truncate text-sm font-medium">
+              {selected.name}
+            </p>
+            <p className="text-muted-foreground mt-1 text-xs">
+              {formatDocument(selected)}
+              {selected.phone ? ` · ${formatPhone(selected.phone)}` : ""}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onSelect(null)}
+            aria-label="Remover cliente selecionado"
+            title="Remover cliente selecionado"
+            className="text-muted-foreground hover:bg-background/80 hover:text-foreground focus-visible:ring-ring/40 -m-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition focus-visible:ring-2 focus-visible:outline-none"
+          >
+            <Icon icon={Icons.x} aria-hidden className="h-4 w-4" />
+          </button>
         </div>
       ) : (
         <div className="border-border bg-muted/30 text-muted-foreground mt-3 rounded-lg border p-3 text-sm">
