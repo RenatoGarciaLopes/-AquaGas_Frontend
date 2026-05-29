@@ -163,7 +163,7 @@ export function StockAdjustmentSection({ onDirtyChange, product }: Props) {
         <p
           role="alert"
           aria-live="polite"
-          className="rounded-lg border border-red-300/40 bg-red-500/10 px-4 py-3 text-sm text-red-200"
+          className="rounded-lg border border-red-500/35 bg-red-50 px-4 py-3 text-sm font-medium text-red-800 dark:border-red-300/40 dark:bg-red-500/10 dark:text-red-100"
         >
           {requestError}
         </p>
