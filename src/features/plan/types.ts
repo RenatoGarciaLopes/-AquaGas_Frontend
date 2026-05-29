@@ -199,7 +199,7 @@ export type SuspendPlanResponse = {
   message: string;
   planId: string;
   reason: string | null;
-  status: string;
+  status: PlanStatus;
 };
 
 export type ReactivatePlanResponse = {
@@ -207,7 +207,7 @@ export type ReactivatePlanResponse = {
   planId: string;
   rescheduledBillings: number;
   rescheduledDeliveries: number;
-  status: string;
+  status: PlanStatus;
 };
 
 export type CancelPlanResponse = {
@@ -216,21 +216,21 @@ export type CancelPlanResponse = {
   message: string;
   penalty: PlanPenaltyResponse | null;
   planId: string;
-  status: string;
+  status: PlanStatus;
 };
 
 export type ConfirmDeliveryResponse = {
   deliveryDate: string | null;
   deliveryId: string;
   message: string;
-  status: string;
+  status: DeliveryStatus;
 };
 
 export type CancelDeliveryResponse = {
   deliveryId: string;
   message: string;
   reason: string | null;
-  status: string;
+  status: DeliveryStatus;
 };
 
 export type RescheduleDeliveryResponse = {
@@ -238,7 +238,7 @@ export type RescheduleDeliveryResponse = {
   message: string;
   newDate: string;
   previousDate: string;
-  status: string;
+  status: DeliveryStatus;
 };
 
 export type ConfirmBillingPaymentResponse = {
@@ -246,7 +246,7 @@ export type ConfirmBillingPaymentResponse = {
   message: string;
   paidAt: string | null;
   receivedBy: string | null;
-  status: string;
+  status: BillingStatus;
 };
 
 export type ConfirmPenaltyPaymentResponse = {
@@ -254,7 +254,7 @@ export type ConfirmPenaltyPaymentResponse = {
   message: string;
   paidAt: string | null;
   penaltyId: string;
-  status: string;
+  status: PenaltyStatus;
 };
 
 export type WaivePenaltyResponse = {
@@ -262,7 +262,7 @@ export type WaivePenaltyResponse = {
   message: string;
   penaltyId: string;
   reason: string;
-  status: string;
+  status: PenaltyStatus;
   waivedAt: string | null;
 };
 
@@ -272,7 +272,7 @@ export type CancelPenaltyResponse = {
   message: string;
   penaltyId: string;
   reason: string;
-  status: string;
+  status: PenaltyStatus;
 };
 
 // ─── Query & Pagination ─────────────────────────────────────────────────────
