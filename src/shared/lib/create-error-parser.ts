@@ -1,9 +1,11 @@
-import { ApiError } from "@/shared/api/errors";
-import type { ApiResponse } from "@/shared/types/api";
 import {
   translateFieldMessage,
   translateConflictMessage,
 } from "@/shared/lib/error-messages";
+
+import { ApiError } from "@/shared/api/errors";
+
+import type { ApiResponse } from "@/shared/types/api";
 
 export type FieldAliasMap<TField extends string> = Record<string, TField>;
 
@@ -57,9 +59,7 @@ export function createErrorParser<TField extends string>(
 
     // ── Branch A: ApiError (thrown by axios interceptor) ──────────────────
     if (envelope instanceof ApiError) {
-      for (const [field, value] of Object.entries(
-        envelope.fieldErrors ?? {},
-      )) {
+      for (const [field, value] of Object.entries(envelope.fieldErrors ?? {})) {
         const key = fieldAliases[field.toLowerCase()];
         const raw = Array.isArray(value) ? value[0] : value;
         if (key && raw && !fieldErrors[key]) {
@@ -67,7 +67,7 @@ export function createErrorParser<TField extends string>(
         }
       }
 
-      const code = envelope.code;
+      const { code } = envelope;
       if (code && codeHandlers[code]) {
         codeHandlers[code]!(code, envelope.message, fieldErrors);
       }
@@ -76,8 +76,7 @@ export function createErrorParser<TField extends string>(
         code,
         fieldErrors,
         message:
-          translateConflictMessage(envelope.message) ||
-          defaultMessage(status),
+          translateConflictMessage(envelope.message) || defaultMessage(status),
       };
     }
 
@@ -98,11 +97,7 @@ export function createErrorParser<TField extends string>(
     } else if (error?.details && typeof error.details === "object") {
       for (const [field, messages] of Object.entries(error.details)) {
         const key = fieldAliases[field.toLowerCase()];
-        if (
-          key &&
-          (messages as string[]).length > 0 &&
-          !fieldErrors[key]
-        ) {
+        if (key && (messages as string[]).length > 0 && !fieldErrors[key]) {
           fieldErrors[key] = translate((messages as string[])[0]);
         }
       }

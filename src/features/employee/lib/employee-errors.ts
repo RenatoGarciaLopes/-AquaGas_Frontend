@@ -1,8 +1,8 @@
-import {
-  createErrorParser,
-  type ParsedError,
-} from "@/shared/lib/create-error-parser";
 import { defaultMessageForStatus } from "@/shared/lib/error-messages";
+import {
+  type ParsedError,
+  createErrorParser,
+} from "@/shared/lib/create-error-parser";
 
 type AnyEmployeeField =
   | "userName"

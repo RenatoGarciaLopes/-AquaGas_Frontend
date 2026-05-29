@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { it, vi, expect, describe, beforeEach } from "vitest";
+import { screen, waitFor, fireEvent } from "@testing-library/react";
 
 const { pushMock, refreshMock } = vi.hoisted(() => ({
   pushMock: vi.fn(),
@@ -24,9 +24,10 @@ vi.mock("sonner", () => ({
   },
 }));
 
-import { ApiError } from "@/shared/api/errors";
 import { apiPost } from "@/shared/api/client";
+import { ApiError } from "@/shared/api/errors";
 import { renderWithProviders } from "@/__tests__/test-utils";
+
 import { CreateProductForm } from "@/features/product/components/create-product-form";
 
 const apiPostMock = vi.mocked(apiPost);

@@ -1,9 +1,9 @@
 import { http, HttpResponse } from "msw";
 
 import {
-  apiSuccess,
-  customer,
   product,
+  customer,
+  apiSuccess,
   sessionUser,
 } from "@/__tests__/mocks/builders";
 

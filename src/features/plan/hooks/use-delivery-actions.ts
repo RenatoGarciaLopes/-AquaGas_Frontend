@@ -4,18 +4,18 @@ import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { ApiError } from "@/shared/api/errors";
-import type {
-  ConfirmDeliveryInput,
-  CancelDeliveryInput,
-  RescheduleDeliveryInput,
-} from "@/features/plan/types";
 
+import { parsePlanSubActionError } from "@/features/plan/lib/plan-errors";
 import {
-  confirmDelivery,
   cancelDelivery,
+  confirmDelivery,
   rescheduleDelivery,
 } from "@/features/plan/api/plan-client.api";
-import { parsePlanSubActionError } from "@/features/plan/lib/plan-errors";
+import type {
+  CancelDeliveryInput,
+  ConfirmDeliveryInput,
+  RescheduleDeliveryInput,
+} from "@/features/plan/types";
 
 export function useConfirmDelivery(planId: string) {
   const queryClient = useQueryClient();
@@ -27,7 +27,10 @@ export function useConfirmDelivery(planId: string) {
       toast.success("Entrega confirmada.");
     },
     onError: (error: unknown) => {
-      const { message } = parsePlanSubActionError(error, error instanceof ApiError ? error.status : 0);
+      const { message } = parsePlanSubActionError(
+        error,
+        error instanceof ApiError ? error.status : 0,
+      );
       toast.error(message);
     },
   });
@@ -43,7 +46,10 @@ export function useCancelDelivery(planId: string) {
       toast.success("Entrega cancelada.");
     },
     onError: (error: unknown) => {
-      const { message } = parsePlanSubActionError(error, error instanceof ApiError ? error.status : 0);
+      const { message } = parsePlanSubActionError(
+        error,
+        error instanceof ApiError ? error.status : 0,
+      );
       toast.error(message);
     },
   });
@@ -59,7 +65,10 @@ export function useRescheduleDelivery(planId: string) {
       toast.success("Entrega reagendada.");
     },
     onError: (error: unknown) => {
-      const { message } = parsePlanSubActionError(error, error instanceof ApiError ? error.status : 0);
+      const { message } = parsePlanSubActionError(
+        error,
+        error instanceof ApiError ? error.status : 0,
+      );
       toast.error(message);
     },
   });

@@ -1,23 +1,23 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import {
-  ACCESS_COOKIE_NAME,
-  REFRESH_COOKIE_NAME,
-  ROLE_COOKIE_NAME,
-  USER_NAME_COOKIE,
-} from "@/shared/auth/cookies";
 import { refreshSessionOnce } from "@/shared/auth/server-refresh";
 import type { RefreshSessionResult } from "@/shared/auth/server-refresh";
 import {
-  clearAuthCookies,
   setAuthCookies,
+  clearAuthCookies,
 } from "@/shared/auth/session-cookies";
 import {
   type UserRole,
-  decodeJwtPayload,
   extractUserRole,
+  decodeJwtPayload,
 } from "@/shared/auth/roles";
+import {
+  ROLE_COOKIE_NAME,
+  USER_NAME_COOKIE,
+  ACCESS_COOKIE_NAME,
+  REFRESH_COOKIE_NAME,
+} from "@/shared/auth/cookies";
 
 export type SessionResponse = {
   user: {
@@ -70,7 +70,7 @@ export async function GET() {
       return response;
     }
     refreshedSession = refreshed;
-    accessToken = refreshed.accessToken;
+    ({ accessToken } = refreshed);
   }
 
   let claims = decodeJwtPayload(accessToken);
@@ -95,7 +95,7 @@ export async function GET() {
     }
 
     refreshedSession = refreshed;
-    accessToken = refreshed.accessToken;
+    ({ accessToken } = refreshed);
     claims = decodeJwtPayload(accessToken);
   }
 

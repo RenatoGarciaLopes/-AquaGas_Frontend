@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { it, vi, expect, describe, beforeEach } from "vitest";
+import { screen, waitFor, fireEvent } from "@testing-library/react";
 
 const { pushMock } = vi.hoisted(() => ({
   pushMock: vi.fn(),
@@ -17,9 +17,10 @@ vi.mock("@/features/auth/api/auth.api", () => ({
 
 import { ApiError } from "@/shared/api/errors";
 import { renderWithProviders } from "@/__tests__/test-utils";
+
 import { login } from "@/features/auth/api/auth.api";
-import { LoginForm } from "@/features/auth/components/login-form";
 import { useAuthStore } from "@/features/auth/stores/auth-store";
+import { LoginForm } from "@/features/auth/components/login-form";
 
 const loginMock = vi.mocked(login);
 

@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, screen } from "@testing-library/react";
+import { screen, fireEvent } from "@testing-library/react";
+import { it, vi, expect, describe, beforeEach } from "vitest";
 
-import { renderWithProviders } from "@/__tests__/test-utils";
 import { ConfirmDialog } from "@/shared/ui/confirm-dialog";
+import { renderWithProviders } from "@/__tests__/test-utils";
 
 describe("ConfirmDialog", () => {
   beforeEach(() => {

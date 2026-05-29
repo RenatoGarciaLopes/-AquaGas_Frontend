@@ -4,10 +4,10 @@ import { apiPost } from "@/shared/api/client";
 import { ApiError } from "@/shared/api/errors";
 
 import type {
-  CancelSaleInput,
-  CancelSaleResponse,
-  RegisterSaleInput,
   SaleResponse,
+  CancelSaleInput,
+  RegisterSaleInput,
+  CancelSaleResponse,
 } from "@/features/sale/types";
 
 import type { ApiResponse } from "@/shared/types/api";

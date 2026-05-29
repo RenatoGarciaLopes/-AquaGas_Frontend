@@ -1,8 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
-import { fireEvent, screen } from "@testing-library/react";
+import { it, vi, expect, describe } from "vitest";
+import { screen, fireEvent } from "@testing-library/react";
 
-import { renderWithProviders } from "@/__tests__/test-utils";
 import { VerticalTabs } from "@/shared/ui/vertical-tabs";
+import { renderWithProviders } from "@/__tests__/test-utils";
 
 describe("VerticalTabs", () => {
   it("marca aba ativa e chama onChange", () => {

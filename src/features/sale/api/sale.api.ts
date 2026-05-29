@@ -2,8 +2,8 @@ import { ApiError } from "@/shared/api/errors";
 import { serverFetch } from "@/shared/api/server-fetch";
 
 import type {
-  SaleResponse,
   SalesQuery,
+  SaleResponse,
   PaginatedSales,
   SaleStatusFilter,
 } from "@/features/sale/types";
@@ -73,8 +73,10 @@ function filterByValueRange(
   maxTotal: number | undefined,
 ): SaleResponse[] {
   let result = list;
-  if (minTotal !== undefined) result = result.filter((s) => s.total >= minTotal);
-  if (maxTotal !== undefined) result = result.filter((s) => s.total <= maxTotal);
+  if (minTotal !== undefined)
+    result = result.filter((s) => s.total >= minTotal);
+  if (maxTotal !== undefined)
+    result = result.filter((s) => s.total <= maxTotal);
   return result;
 }
 
@@ -147,5 +149,9 @@ export async function listSales(query: SalesQuery): Promise<PaginatedSales> {
     query.maxTotal,
   );
 
-  return paginate(sortSales(filtered, query.sort), query.pageNumber, query.pageSize);
+  return paginate(
+    sortSales(filtered, query.sort),
+    query.pageNumber,
+    query.pageSize,
+  );
 }

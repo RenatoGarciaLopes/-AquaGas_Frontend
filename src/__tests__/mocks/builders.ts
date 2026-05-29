@@ -1,11 +1,12 @@
 import type { UserRole } from "@/shared/auth/roles";
+
+import type { PlanResponse } from "@/features/plan/types";
 import type { ProductResponse } from "@/features/product/types";
 import type { CustomerResponse } from "@/features/customer/types";
 import type { EmployeeWithUser } from "@/features/employee/types";
-import type { PlanResponse } from "@/features/plan/types";
 import type {
-  SaleCustomer,
   SaleProduct,
+  SaleCustomer,
   SaleResponse,
 } from "@/features/sale/types";
 

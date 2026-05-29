@@ -1,11 +1,10 @@
 import { type NextResponse } from "next/server";
 
-import { decodeJwtPayload, extractUserRole } from "@/shared/auth/roles";
-
+import { extractUserRole, decodeJwtPayload } from "@/shared/auth/roles";
 import {
-  AUTH_COOKIE_NAMES,
   ROLE_COOKIE_NAME,
   USER_NAME_COOKIE,
+  AUTH_COOKIE_NAMES,
   ACCESS_COOKIE_NAME,
   REFRESH_COOKIE_NAME,
 } from "@/shared/auth/cookies";

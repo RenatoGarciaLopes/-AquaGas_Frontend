@@ -4,8 +4,8 @@ import { Icon } from "@iconify/react";
 import { Icons } from "@/shared/lib/icons";
 import { formatDate, formatCurrency } from "@/shared/lib/formatters";
 
-import { CancelSaleButton } from "@/features/sale/components/cancel-sale-button";
 import type { SaleResponse } from "@/features/sale/types";
+import { CancelSaleButton } from "@/features/sale/components/cancel-sale-button";
 
 type SaleDetailProps = {
   sale: SaleResponse;

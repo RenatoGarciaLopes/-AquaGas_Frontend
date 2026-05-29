@@ -7,10 +7,10 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 
-import { apiDelete } from "@/shared/api/client";
-import { ApiError } from "@/shared/api/errors";
-
 import { Icons } from "@/shared/lib/icons";
+
+import { ApiError } from "@/shared/api/errors";
+import { apiDelete } from "@/shared/api/client";
 
 import type { EmployeeWithUser } from "@/features/employee/types";
 

@@ -1,11 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { it, vi, expect, describe, beforeEach } from "vitest";
 
 vi.mock("@/shared/api/client", () => ({
   apiPost: vi.fn(),
 }));
 
-import { ApiError } from "@/shared/api/errors";
 import { apiPost } from "@/shared/api/client";
+import { ApiError } from "@/shared/api/errors";
+
 import { cancelSale, registerSale } from "@/features/sale/api/sale-client.api";
 
 const apiPostMock = vi.mocked(apiPost);

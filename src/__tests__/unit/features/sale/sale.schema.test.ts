@@ -1,7 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { it, expect, describe } from "vitest";
 
-import { cancelSaleSchema } from "@/features/sale/schemas/cancel-sale.schema";
 import { registerSaleSchema } from "@/features/sale/schemas/sale.schema";
+import { cancelSaleSchema } from "@/features/sale/schemas/cancel-sale.schema";
 
 describe("registerSaleSchema", () => {
   it("aceita venda balcão com item e desconto opcional", () => {

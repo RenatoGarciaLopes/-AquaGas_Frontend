@@ -2,9 +2,7 @@ import { z } from "zod";
 
 export const downgradePlanSchema = z
   .object({
-    cycle: z
-      .enum(["Monthly", "Quarterly", "Annual", "Custom"])
-      .optional(),
+    cycle: z.enum(["Monthly", "Quarterly", "Annual", "Custom"]).optional(),
     durationInMonths: z.number().int().min(2).max(60).optional(),
     reason: z
       .string()

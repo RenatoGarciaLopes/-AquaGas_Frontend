@@ -45,7 +45,7 @@ export function QuantityInput({
         aria-label="Diminuir quantidade"
         onClick={() => adjust(-1)}
         disabled={!canDecrement}
-        className="border-border text-muted-foreground hover:bg-muted hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md border text-base font-semibold leading-none transition focus:ring-2 focus:ring-cyan-400/40 focus:outline-none disabled:cursor-not-allowed disabled:opacity-40"
+        className="border-border text-muted-foreground hover:bg-muted hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md border text-base leading-none font-semibold transition focus:ring-2 focus:ring-cyan-400/40 focus:outline-none disabled:cursor-not-allowed disabled:opacity-40"
       >
         −
       </button>
@@ -66,7 +66,7 @@ export function QuantityInput({
         aria-label="Aumentar quantidade"
         onClick={() => adjust(1)}
         disabled={!canIncrement}
-        className="border-border text-muted-foreground hover:bg-muted hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md border text-base font-semibold leading-none transition focus:ring-2 focus:ring-cyan-400/40 focus:outline-none disabled:cursor-not-allowed disabled:opacity-40"
+        className="border-border text-muted-foreground hover:bg-muted hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md border text-base leading-none font-semibold transition focus:ring-2 focus:ring-cyan-400/40 focus:outline-none disabled:cursor-not-allowed disabled:opacity-40"
       >
         +
       </button>

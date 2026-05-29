@@ -1,25 +1,25 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { Icon } from "@iconify/react";
+import { ptBR } from "date-fns/locale";
 import { createPortal } from "react-dom";
+import { useRef, useState, useEffect } from "react";
 import {
-  addMonths,
-  eachDayOfInterval,
-  endOfMonth,
-  endOfWeek,
   format,
   isAfter,
-  isBefore,
-  isSameDay,
-  isSameMonth,
   isToday,
+  isBefore,
   parseISO,
-  startOfMonth,
-  startOfWeek,
+  addMonths,
+  endOfWeek,
+  isSameDay,
   subMonths,
+  endOfMonth,
+  isSameMonth,
+  startOfWeek,
+  startOfMonth,
+  eachDayOfInterval,
 } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Icon } from "@iconify/react";
 
 import { cn } from "@/shared/lib/cn";
 import { Icons } from "@/shared/lib/icons";
@@ -233,7 +233,7 @@ export function DatePicker({
                         "cursor-pointer bg-cyan-500 font-semibold text-white hover:bg-cyan-600",
                       !outside &&
                         isDisabled &&
-                        "cursor-not-allowed text-muted-foreground/30",
+                        "text-muted-foreground/30 cursor-not-allowed",
                     )}
                   >
                     {outside ? null : format(day, "d")}

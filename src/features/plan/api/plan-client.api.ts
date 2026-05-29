@@ -1,33 +1,33 @@
 import { apiPost, apiPatch } from "@/shared/api/client";
 
-import type { ApiResponse } from "@/shared/types/api";
-
 import type {
   PlanResponse,
-  RegisterPlanInput,
-  UpgradePlanInput,
-  UpgradePlanResponse,
-  DowngradePlanInput,
-  DowngradePlanResponse,
-  SuspendPlanInput,
-  SuspendPlanResponse,
-  ReactivatePlanResponse,
   CancelPlanInput,
+  UpgradePlanInput,
+  SuspendPlanInput,
+  RegisterPlanInput,
+  WaivePenaltyInput,
+  DowngradePlanInput,
   CancelPlanResponse,
-  ConfirmDeliveryInput,
-  ConfirmDeliveryResponse,
+  CancelPenaltyInput,
+  UpgradePlanResponse,
+  SuspendPlanResponse,
   CancelDeliveryInput,
+  ConfirmDeliveryInput,
+  WaivePenaltyResponse,
+  DowngradePlanResponse,
+  CancelPenaltyResponse,
+  ReactivatePlanResponse,
   CancelDeliveryResponse,
+  ConfirmDeliveryResponse,
   RescheduleDeliveryInput,
   RescheduleDeliveryResponse,
   ConfirmBillingPaymentInput,
   ConfirmBillingPaymentResponse,
   ConfirmPenaltyPaymentResponse,
-  WaivePenaltyInput,
-  WaivePenaltyResponse,
-  CancelPenaltyInput,
-  CancelPenaltyResponse,
 } from "@/features/plan/types";
+
+import type { ApiResponse } from "@/shared/types/api";
 
 // ─── Plan CRUD ──────────────────────────────────────────────────────────────
 
@@ -99,9 +99,7 @@ export async function rescheduleDelivery(input: RescheduleDeliveryInput) {
 
 // ─── Billing Actions ────────────────────────────────────────────────────────
 
-export async function confirmBillingPayment(
-  input: ConfirmBillingPaymentInput,
-) {
+export async function confirmBillingPayment(input: ConfirmBillingPaymentInput) {
   return apiPatch<
     ApiResponse<ConfirmBillingPaymentResponse>,
     ConfirmBillingPaymentInput
@@ -116,7 +114,10 @@ export async function confirmPenaltyPayment(penaltyId: string) {
   );
 }
 
-export async function waivePenalty(penaltyId: string, input: WaivePenaltyInput) {
+export async function waivePenalty(
+  penaltyId: string,
+  input: WaivePenaltyInput,
+) {
   return apiPatch<ApiResponse<WaivePenaltyResponse>, WaivePenaltyInput>(
     `/api/penalties/${encodeURIComponent(penaltyId)}/waive`,
     input,

@@ -1,9 +1,10 @@
 "use client";
 
+import type { z } from "zod";
+import { useId } from "react";
 import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { z } from "zod";
 
 import { cn } from "@/shared/lib/cn";
 
@@ -34,6 +35,8 @@ export function ReasonDialog({
   submitLabel,
   title,
 }: ReasonDialogProps) {
+  const dateId = useId();
+  const reasonId = useId();
   const {
     register,
     handleSubmit,
@@ -77,10 +80,14 @@ export function ReasonDialog({
         >
           {showDateField ? (
             <div className="space-y-1.5">
-              <label className="text-foreground block text-sm font-medium">
+              <label
+                htmlFor={dateId}
+                className="text-foreground block text-sm font-medium"
+              >
                 Nova data <span className="text-red-500">*</span>
               </label>
               <input
+                id={dateId}
                 type="date"
                 {...register("newDate")}
                 disabled={isPending}
@@ -94,7 +101,10 @@ export function ReasonDialog({
             </div>
           ) : null}
           <div className="space-y-1.5">
-            <label className="text-foreground block text-sm font-medium">
+            <label
+              htmlFor={reasonId}
+              className="text-foreground block text-sm font-medium"
+            >
               Motivo <span className="text-red-500">*</span>
             </label>
             <div
@@ -104,6 +114,7 @@ export function ReasonDialog({
               )}
             >
               <textarea
+                id={reasonId}
                 rows={3}
                 {...register("reason")}
                 disabled={isPending}

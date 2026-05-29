@@ -1,9 +1,9 @@
+import { it, vi, expect, describe } from "vitest";
 import type { ColumnDef } from "@tanstack/react-table";
-import { describe, expect, it, vi } from "vitest";
-import { fireEvent, screen } from "@testing-library/react";
+import { screen, fireEvent } from "@testing-library/react";
 
-import { renderWithProviders } from "@/__tests__/test-utils";
 import { DataTable } from "@/shared/ui/data-table";
+import { renderWithProviders } from "@/__tests__/test-utils";
 
 type Row = {
   id: string;

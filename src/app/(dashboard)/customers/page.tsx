@@ -99,7 +99,11 @@ export default async function CustomersPage({
           </Link>
         }
       />
-      <CustomersTable canManage={canManage} initialData={customers} query={query} />
+      <CustomersTable
+        canManage={canManage}
+        initialData={customers}
+        query={query}
+      />
     </div>
   );
 }

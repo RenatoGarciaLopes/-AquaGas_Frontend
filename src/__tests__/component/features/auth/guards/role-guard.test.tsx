@@ -1,7 +1,8 @@
-import { beforeEach, describe, expect, it } from "vitest";
 import { screen } from "@testing-library/react";
+import { it, expect, describe, beforeEach } from "vitest";
 
 import { renderWithProviders } from "@/__tests__/test-utils";
+
 import { RoleGuard } from "@/features/auth/guards/role-guard";
 import { useAuthStore } from "@/features/auth/stores/auth-store";
 

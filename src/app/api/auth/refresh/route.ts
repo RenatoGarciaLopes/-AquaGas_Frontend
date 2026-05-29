@@ -3,8 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { REFRESH_COOKIE_NAME } from "@/shared/auth/cookies";
 import { refreshSessionOnce } from "@/shared/auth/server-refresh";
 import {
-  clearAuthCookies,
   setAuthCookies,
+  clearAuthCookies,
 } from "@/shared/auth/session-cookies";
 
 /**

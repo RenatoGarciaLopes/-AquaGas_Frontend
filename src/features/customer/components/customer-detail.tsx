@@ -29,14 +29,6 @@ function formatDocument(customer: CustomerResponse) {
   return formatCpf(customer.document);
 }
 
-function formatAddressLine(customer: CustomerResponse) {
-  const { address } = customer;
-  if (!address) return null;
-  const street = [address.street, address.number].filter(Boolean).join(", ");
-  const city = [address.neighborhood, address.city].filter(Boolean).join(" · ");
-  return [street, city].filter(Boolean).join(" — ") || null;
-}
-
 export function CustomerDetail({ canManage, customer }: CustomerDetailProps) {
   const formattedDocument = formatDocument(customer);
   const typeLabel =

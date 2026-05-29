@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { it, expect, describe } from "vitest";
 
 import { cancelSaleSchema } from "@/features/sale/schemas/cancel-sale.schema";
 

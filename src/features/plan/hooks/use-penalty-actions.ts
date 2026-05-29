@@ -4,14 +4,17 @@ import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { ApiError } from "@/shared/api/errors";
-import type { WaivePenaltyInput, CancelPenaltyInput } from "@/features/plan/types";
 
+import { parsePlanSubActionError } from "@/features/plan/lib/plan-errors";
+import type {
+  WaivePenaltyInput,
+  CancelPenaltyInput,
+} from "@/features/plan/types";
 import {
-  confirmPenaltyPayment,
   waivePenalty,
   cancelPenalty,
+  confirmPenaltyPayment,
 } from "@/features/plan/api/plan-client.api";
-import { parsePlanSubActionError } from "@/features/plan/lib/plan-errors";
 
 export function useConfirmPenaltyPayment(planId: string) {
   const queryClient = useQueryClient();
@@ -23,7 +26,10 @@ export function useConfirmPenaltyPayment(planId: string) {
       toast.success("Pagamento da multa confirmado.");
     },
     onError: (error: unknown) => {
-      const { message } = parsePlanSubActionError(error, error instanceof ApiError ? error.status : 0);
+      const { message } = parsePlanSubActionError(
+        error,
+        error instanceof ApiError ? error.status : 0,
+      );
       toast.error(message);
     },
   });
@@ -45,7 +51,10 @@ export function useWaivePenalty(planId: string) {
       toast.success("Multa dispensada.");
     },
     onError: (error: unknown) => {
-      const { message } = parsePlanSubActionError(error, error instanceof ApiError ? error.status : 0);
+      const { message } = parsePlanSubActionError(
+        error,
+        error instanceof ApiError ? error.status : 0,
+      );
       toast.error(message);
     },
   });
@@ -67,7 +76,10 @@ export function useCancelPenalty(planId: string) {
       toast.success("Multa cancelada.");
     },
     onError: (error: unknown) => {
-      const { message } = parsePlanSubActionError(error, error instanceof ApiError ? error.status : 0);
+      const { message } = parsePlanSubActionError(
+        error,
+        error instanceof ApiError ? error.status : 0,
+      );
       toast.error(message);
     },
   });

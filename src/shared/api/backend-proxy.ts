@@ -2,11 +2,11 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getApiBaseUrl } from "@/shared/lib/env";
 
-import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from "@/shared/auth/cookies";
 import { refreshSessionOnce } from "@/shared/auth/server-refresh";
+import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from "@/shared/auth/cookies";
 import {
-  clearAuthCookies,
   setAuthCookies,
+  clearAuthCookies,
 } from "@/shared/auth/session-cookies";
 
 type ProxyOptions = {

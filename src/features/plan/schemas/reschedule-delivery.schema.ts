@@ -9,4 +9,6 @@ export const rescheduleDeliverySchema = z.object({
     .max(500, "Motivo deve ter no máximo 500 caracteres."),
 });
 
-export type RescheduleDeliveryFormData = z.infer<typeof rescheduleDeliverySchema>;
+export type RescheduleDeliveryFormData = z.infer<
+  typeof rescheduleDeliverySchema
+>;

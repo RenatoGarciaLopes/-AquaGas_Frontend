@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test.describe("ui regression smoke", () => {
   test("login é responsivo em desktop e mobile", async ({ page }) => {

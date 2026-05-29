@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 import { loginAs } from "@/__tests__/e2e/support/auth";
 

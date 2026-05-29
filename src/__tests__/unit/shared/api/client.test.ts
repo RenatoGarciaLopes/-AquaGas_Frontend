@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { it, vi, expect, describe, beforeEach } from "vitest";
 
 import { server } from "@/__tests__/mocks/server";
 import { apiGet, apiPost, resetSessionExpiredFlag } from "@/shared/api/client";

@@ -7,12 +7,11 @@ import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { apiPatch } from "@/shared/api/client";
-import { ApiError } from "@/shared/api/errors";
-
 import { Icons } from "@/shared/lib/icons";
 import { applyBackendErrors } from "@/shared/lib/errors";
 
+import { apiPatch } from "@/shared/api/client";
+import { ApiError } from "@/shared/api/errors";
 import { TextField } from "@/shared/ui/form-field";
 import { CurrencyField } from "@/shared/ui/currency-field";
 

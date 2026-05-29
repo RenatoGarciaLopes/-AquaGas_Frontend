@@ -2,22 +2,23 @@ import { notFound, redirect } from "next/navigation";
 
 import { ApiError } from "@/shared/api/errors";
 import { isGerente } from "@/shared/auth/roles";
-import { serverFetch } from "@/shared/api/server-fetch";
 import { ErrorState } from "@/shared/ui/error-state";
+import { serverFetch } from "@/shared/api/server-fetch";
 import { getCurrentUserRole } from "@/shared/auth/server";
 
-import type { ApiResponse } from "@/shared/types/api";
-import type { ProductResponse } from "@/features/product/types";
-
 import { getPlanById } from "@/features/plan/api/plan.api";
+import type { ProductResponse } from "@/features/product/types";
 import { PlanDetail } from "@/features/plan/components/plan-detail";
+
+import type { ApiResponse } from "@/shared/types/api";
 
 type PlanPageProps = {
   params: Promise<{ id: string }>;
 };
 
 async function getProducts() {
-  const envelope = await serverFetch<ApiResponse<ProductResponse[]>>("/api/products");
+  const envelope =
+    await serverFetch<ApiResponse<ProductResponse[]>>("/api/products");
   if (!envelope.success || !envelope.data) return [];
   return envelope.data;
 }
@@ -55,7 +56,11 @@ export default async function PlanPage({ params }: PlanPageProps) {
       <PlanDetail
         plan={plan}
         canManage={canManage}
-        products={products.map((p) => ({ id: p.id, name: p.name, price: p.price }))}
+        products={products.map((p) => ({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+        }))}
       />
     </div>
   );
