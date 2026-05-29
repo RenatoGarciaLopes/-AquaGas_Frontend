@@ -7,12 +7,13 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 
-import { ApiError } from "@/shared/api/errors";
 import { Icons } from "@/shared/lib/icons";
+
+import { ApiError } from "@/shared/api/errors";
 import { ConfirmDialog } from "@/shared/ui/confirm-dialog";
 
-import { deactivateCustomer } from "@/features/customer/api/customer-client.api";
 import type { CustomerResponse } from "@/features/customer/types";
+import { deactivateCustomer } from "@/features/customer/api/customer-client.api";
 
 type RowActionsProps = {
   canManage: boolean;

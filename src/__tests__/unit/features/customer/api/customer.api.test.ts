@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { it, vi, expect, describe, beforeEach } from "vitest";
 
 vi.mock("@/shared/api/server-fetch", () => ({
   serverFetch: vi.fn(),
@@ -6,9 +6,10 @@ vi.mock("@/shared/api/server-fetch", () => ({
 
 import { customer } from "@/__tests__/mocks/builders";
 import { serverFetch } from "@/shared/api/server-fetch";
+
 import {
-  getCustomerById,
   listCustomers,
+  getCustomerById,
 } from "@/features/customer/api/customer.api";
 
 const serverFetchMock = vi.mocked(serverFetch);

@@ -4,27 +4,27 @@ import Link from "next/link";
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
+import type { FieldPath } from "react-hook-form";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { FieldPath } from "react-hook-form";
 
 import { useWizard } from "@/shared/hooks/use-wizard";
 import { useCreatePlan } from "@/features/plan/hooks/use-create-plan";
 
 import { Icons } from "@/shared/lib/icons";
+
 import { ApiError } from "@/shared/api/errors";
 import { type StepperStep } from "@/shared/ui/stepper";
 import { WizardShell } from "@/shared/layouts/wizard-shell";
 
 import type { RegisterPlanInput } from "@/features/plan/types";
+import { CreatePlanItemsStep } from "@/features/plan/components/create-plan-items-step";
+import { CreatePlanConfigStep } from "@/features/plan/components/create-plan-config-step";
+import { CreatePlanCustomerStep } from "@/features/plan/components/create-plan-customer-step";
 import {
   createPlanSchema,
   type CreatePlanSchema,
 } from "@/features/plan/schemas/create-plan.schema";
-
-import { CreatePlanCustomerStep } from "@/features/plan/components/create-plan-customer-step";
-import { CreatePlanConfigStep } from "@/features/plan/components/create-plan-config-step";
-import { CreatePlanItemsStep } from "@/features/plan/components/create-plan-items-step";
 
 type Customer = {
   id: string;
@@ -308,22 +308,37 @@ export function CreatePlanForm({
               discount={watchedValues.discount}
               canDiscount={canDiscount}
               onCycleChange={(c) => {
-                setValue("cycle", c, { shouldDirty: true, shouldValidate: true });
+                setValue("cycle", c, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
                 if (c === "Custom" && !watchedValues.durationInMonths) {
                   setValue("durationInMonths", 2, { shouldDirty: true });
                 }
               }}
               onDeliveryDayChange={(v) =>
-                setValue("deliveryDay", v, { shouldDirty: true, shouldValidate: true })
+                setValue("deliveryDay", v, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
               }
               onBillingDayChange={(v) =>
-                setValue("billingDay", v, { shouldDirty: true, shouldValidate: true })
+                setValue("billingDay", v, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
               }
               onDurationInMonthsChange={(v) =>
-                setValue("durationInMonths", v, { shouldDirty: true, shouldValidate: true })
+                setValue("durationInMonths", v, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
               }
               onDiscountChange={(v) =>
-                setValue("discount", v, { shouldDirty: true, shouldValidate: true })
+                setValue("discount", v, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
               }
             />
           ) : null}
@@ -341,7 +356,6 @@ export function CreatePlanForm({
               error={errors.items?.message ?? errors.items?.root?.message}
             />
           ) : null}
-
         </WizardShell>
       </form>
     </div>

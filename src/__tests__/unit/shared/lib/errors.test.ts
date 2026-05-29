@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { it, vi, expect, describe } from "vitest";
 
 import { applyBackendErrors } from "@/shared/lib/errors";
 

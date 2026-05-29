@@ -1,7 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
-import { fireEvent, screen } from "@testing-library/react";
+import { it, vi, expect, describe } from "vitest";
+import { screen, fireEvent } from "@testing-library/react";
 
 import { renderWithProviders } from "@/__tests__/test-utils";
+
 import { PdvProductSearch } from "@/features/sale/components/pdv/pdv-product-search";
 
 const PRODUCTS = [

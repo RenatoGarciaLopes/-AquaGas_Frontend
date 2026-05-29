@@ -1,10 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { it, expect, describe } from "vitest";
 
 import {
-  decodeJwtPayload,
-  extractUserRole,
   isGerente,
   roleToLabel,
+  extractUserRole,
+  decodeJwtPayload,
 } from "@/shared/auth/roles";
 
 function makeJwt(payload: Record<string, unknown>) {

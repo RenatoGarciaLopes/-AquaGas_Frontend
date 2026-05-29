@@ -100,8 +100,7 @@ export async function getPlanById(id: string): Promise<PlanResponse> {
 }
 
 export async function listPlans(query: PlansQuery): Promise<PaginatedPlans> {
-  const envelope =
-    await serverFetch<ApiResponse<PlanResponse[]>>("/api/plans");
+  const envelope = await serverFetch<ApiResponse<PlanResponse[]>>("/api/plans");
 
   if (!envelope.success || envelope.data === null) {
     throw new ApiError({

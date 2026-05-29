@@ -128,7 +128,8 @@ export function translateFieldMessage(backendMessage: string): string {
 
 const CONFLICT_MESSAGE_MAP: Record<string, string> = {
   // Product
-  "product with this name already exists": "Já existe um produto com esse nome.",
+  "product with this name already exists":
+    "Já existe um produto com esse nome.",
   "product still in stock": "Produto ainda possui estoque.",
   "cannot change product type while stock exists":
     "Não é possível alterar o tipo enquanto houver estoque.",
@@ -164,8 +165,7 @@ const CONFLICT_MESSAGE_MAP: Record<string, string> = {
     "Multa paga não pode ser dispensada.",
   "penalty is already waived and cannot be canceled":
     "Multa dispensada não pode ser cancelada.",
-  "penalty is waived and cannot be paid":
-    "Multa dispensada não pode ser paga.",
+  "penalty is waived and cannot be paid": "Multa dispensada não pode ser paga.",
   "cancelled penalties cannot be paid":
     "Multas canceladas não podem ser pagas.",
   "cancelled penalties cannot be waived":
@@ -265,11 +265,7 @@ export function translateConflictMessage(backendMessage: string): string {
   }
 
   // Dynamic: "Cannot include new product {id} in downgrade endpoint"
-  if (
-    backendMessage
-      .toLowerCase()
-      .startsWith("cannot include new product")
-  ) {
+  if (backendMessage.toLowerCase().startsWith("cannot include new product")) {
     return "Não é possível incluir novos produtos em um downgrade.";
   }
 
@@ -291,7 +287,9 @@ export function translateConflictMessage(backendMessage: string): string {
   }
 
   // Dynamic: "Insufficient stock for product '{name}'..."
-  if (backendMessage.toLowerCase().startsWith("insufficient stock for product")) {
+  if (
+    backendMessage.toLowerCase().startsWith("insufficient stock for product")
+  ) {
     return backendMessage;
   }
 

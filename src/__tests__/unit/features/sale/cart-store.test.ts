@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { it, expect, describe, beforeEach } from "vitest";
 
 import { useCartStore } from "@/features/sale/store/cart-store";
 

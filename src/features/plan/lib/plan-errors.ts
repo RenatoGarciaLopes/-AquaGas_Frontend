@@ -1,8 +1,8 @@
-import {
-  createErrorParser,
-  type ParsedError,
-} from "@/shared/lib/create-error-parser";
 import { defaultMessageForStatus } from "@/shared/lib/error-messages";
+import {
+  type ParsedError,
+  createErrorParser,
+} from "@/shared/lib/create-error-parser";
 
 type AnyPlanField =
   | "customerId"
@@ -97,7 +97,10 @@ export function parseCreatePlanError(
   status: number,
 ): ParsedError<(typeof CREATE_FIELDS)[number]> {
   const result = parseAny(envelope, status);
-  return { ...result, fieldErrors: filterFields(result.fieldErrors, CREATE_FIELDS) };
+  return {
+    ...result,
+    fieldErrors: filterFields(result.fieldErrors, CREATE_FIELDS),
+  };
 }
 
 /** Used by the upgrade-plan dialog. */
@@ -106,7 +109,10 @@ export function parseUpgradePlanError(
   status: number,
 ): ParsedError<(typeof UPGRADE_FIELDS)[number]> {
   const result = parseAny(envelope, status);
-  return { ...result, fieldErrors: filterFields(result.fieldErrors, UPGRADE_FIELDS) };
+  return {
+    ...result,
+    fieldErrors: filterFields(result.fieldErrors, UPGRADE_FIELDS),
+  };
 }
 
 /** Used by the downgrade-plan dialog. */
@@ -115,7 +121,10 @@ export function parseDowngradePlanError(
   status: number,
 ): ParsedError<(typeof DOWNGRADE_FIELDS)[number]> {
   const result = parseAny(envelope, status);
-  return { ...result, fieldErrors: filterFields(result.fieldErrors, DOWNGRADE_FIELDS) };
+  return {
+    ...result,
+    fieldErrors: filterFields(result.fieldErrors, DOWNGRADE_FIELDS),
+  };
 }
 
 /**

@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { Icon } from "@iconify/react";
 import { createPortal } from "react-dom";
+import { useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Icon } from "@iconify/react";
 
 import { cn } from "@/shared/lib/cn";
 import { Icons } from "@/shared/lib/icons";
@@ -135,7 +135,9 @@ export function CancelSaleDialog({
                 disabled={isPending}
                 placeholder="Descreva o motivo do cancelamento…"
                 aria-invalid={errors.reason ? "true" : "false"}
-                aria-describedby={errors.reason ? "cancel-reason-error" : undefined}
+                aria-describedby={
+                  errors.reason ? "cancel-reason-error" : undefined
+                }
                 className="text-foreground placeholder:text-muted-foreground/60 w-full resize-none border-0 bg-transparent text-sm shadow-none outline-none focus:ring-0 focus:outline-none disabled:opacity-50"
                 {...register("reason")}
               />

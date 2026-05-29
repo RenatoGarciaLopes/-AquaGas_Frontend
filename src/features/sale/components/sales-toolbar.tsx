@@ -1,13 +1,14 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import { useState, useEffect, useTransition, type ReactNode } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useState, useEffect, useTransition, type ReactNode } from "react";
 
 import { cn } from "@/shared/lib/cn";
 import { Icons } from "@/shared/lib/icons";
 import { formatCurrency } from "@/shared/lib/formatters";
-import { maskBrlInput, numberToBrl } from "@/shared/lib/masks";
+import { numberToBrl, maskBrlInput } from "@/shared/lib/masks";
+
 import { TextField } from "@/shared/ui/form-field";
 import { DatePicker } from "@/shared/ui/date-picker";
 
@@ -156,7 +157,15 @@ export function SalesToolbar({ actionSlot }: SalesToolbarProps = {}) {
     }, 500);
 
     return () => window.clearTimeout(timeout);
-  }, [minDisplay, maxDisplay, currentMinTotal, currentMaxTotal, pathname, router, searchParams]);
+  }, [
+    minDisplay,
+    maxDisplay,
+    currentMinTotal,
+    currentMaxTotal,
+    pathname,
+    router,
+    searchParams,
+  ]);
 
   // ─── Immediate param update ───────────────────────────────────────────────
 

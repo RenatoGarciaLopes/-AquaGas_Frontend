@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { test, expect } from "@playwright/test";
 
 test.describe("auth", () => {
   test("login renderiza os campos principais", async ({ page }) => {

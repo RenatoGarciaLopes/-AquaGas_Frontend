@@ -24,10 +24,7 @@ export default function CustomerDetailLoading() {
       {/* Hero StatCards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 3 }, (_, i) => (
-          <div
-            key={i}
-            className="border-border bg-card rounded-xl border p-4"
-          >
+          <div key={i} className="border-border bg-card rounded-xl border p-4">
             <div className="bg-muted mb-2 h-3 w-24 animate-pulse rounded" />
             <div className="bg-muted h-7 w-36 animate-pulse rounded" />
             <div className="bg-muted mt-1.5 h-3 w-28 animate-pulse rounded" />

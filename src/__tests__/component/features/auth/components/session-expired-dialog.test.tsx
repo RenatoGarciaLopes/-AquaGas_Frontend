@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { act, fireEvent, screen } from "@testing-library/react";
+import { it, vi, expect, describe, beforeEach } from "vitest";
+import { act, screen, fireEvent } from "@testing-library/react";
 
 const { pushMock } = vi.hoisted(() => ({
   pushMock: vi.fn(),
@@ -11,6 +11,7 @@ vi.mock("next/navigation", () => ({
 
 import { SESSION_EXPIRED_EVENT } from "@/shared/api/client";
 import { renderWithProviders } from "@/__tests__/test-utils";
+
 import { useAuthStore } from "@/features/auth/stores/auth-store";
 import { SessionExpiredDialog } from "@/features/auth/components/session-expired-dialog";
 

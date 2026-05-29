@@ -4,8 +4,8 @@ import { formatDate } from "@/shared/lib/formatters";
 import { EntityHeader } from "@/shared/ui/entity-header";
 
 import type { PlanResponse } from "@/features/plan/types";
-import { PlanStatusBadge } from "@/features/plan/components/plan-status-badge";
 import { PlanCycleBadge } from "@/features/plan/components/plan-cycle-badge";
+import { PlanStatusBadge } from "@/features/plan/components/plan-status-badge";
 import { PlanDetailActions } from "@/features/plan/components/plan-detail-actions";
 
 type PlanDetailHeaderProps = {

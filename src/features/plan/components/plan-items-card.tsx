@@ -8,7 +8,10 @@ type PlanItemsCardProps = {
 
 export function PlanItemsCard({ items }: PlanItemsCardProps) {
   return (
-    <InfoCard title="Itens do plano" description="Produtos incluídos em cada entrega.">
+    <InfoCard
+      title="Itens do plano"
+      description="Produtos incluídos em cada entrega."
+    >
       {items.length === 0 ? (
         <p className="text-muted-foreground text-sm">Nenhum item cadastrado.</p>
       ) : (

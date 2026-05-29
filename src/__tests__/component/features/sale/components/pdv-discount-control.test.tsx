@@ -1,8 +1,9 @@
 /* eslint-disable jsx-a11y/aria-role */
-import { describe, expect, it, vi } from "vitest";
-import { fireEvent, screen } from "@testing-library/react";
+import { it, vi, expect, describe } from "vitest";
+import { screen, fireEvent } from "@testing-library/react";
 
 import { renderWithProviders } from "@/__tests__/test-utils";
+
 import { PdvDiscountControl } from "@/features/sale/components/pdv/pdv-discount-control";
 
 describe("PdvDiscountControl", () => {

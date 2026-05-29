@@ -2,7 +2,7 @@
 
 import { Icon } from "@iconify/react";
 import { createPortal } from "react-dom";
-import { useRef, useState, useEffect } from "react";
+import { useId, useRef, useState, useEffect } from "react";
 
 import { Icons } from "@/shared/lib/icons";
 
@@ -38,6 +38,9 @@ export function DowngradePlanDialog({
   onConfirm,
   onCancel,
 }: DowngradePlanDialogProps) {
+  const cycleId = useId();
+  const durationId = useId();
+  const reasonId = useId();
   const submitRef = useRef<HTMLButtonElement>(null);
   const [cycle, setCycle] = useState<PlanCycle | "">(currentCycle);
   const [items, setItems] = useState(
@@ -53,8 +56,12 @@ export function DowngradePlanDialog({
   >();
   const [error, setError] = useState<string | null>(null);
 
+  // Resincronização do estado interno quando o dialog fecha ou os props do
+  // plano mudam (padrão "reset on prop change"). O setState dentro do effect
+  // é intencional aqui.
   useEffect(() => {
     if (!open) {
+      /* eslint-disable react-hooks/set-state-in-effect */
       setCycle(currentCycle);
       setItems(
         currentItems.map((i) => ({
@@ -66,6 +73,7 @@ export function DowngradePlanDialog({
       setReason("");
       setDurationInMonths(undefined);
       setError(null);
+      /* eslint-enable react-hooks/set-state-in-effect */
       return;
     }
     submitRef.current?.focus();
@@ -160,10 +168,14 @@ export function DowngradePlanDialog({
 
         <div className="mt-5 space-y-4">
           <div className="space-y-1.5">
-            <label className="text-foreground block text-sm font-medium">
+            <label
+              htmlFor={cycleId}
+              className="text-foreground block text-sm font-medium"
+            >
               Ciclo
             </label>
             <select
+              id={cycleId}
               value={cycle}
               onChange={(e) => setCycle(e.target.value as PlanCycle)}
               className="border-border bg-background text-foreground w-full rounded-lg border px-3 py-2.5 text-sm"
@@ -178,10 +190,14 @@ export function DowngradePlanDialog({
 
           {cycle === "Custom" ? (
             <div className="space-y-1.5">
-              <label className="text-foreground block text-sm font-medium">
+              <label
+                htmlFor={durationId}
+                className="text-foreground block text-sm font-medium"
+              >
                 Duração (meses)
               </label>
               <input
+                id={durationId}
                 type="number"
                 min={2}
                 max={60}
@@ -195,9 +211,7 @@ export function DowngradePlanDialog({
           ) : null}
 
           <div className="space-y-1.5">
-            <label className="text-foreground block text-sm font-medium">
-              Itens
-            </label>
+            <p className="text-foreground block text-sm font-medium">Itens</p>
             <div className="divide-border border-border max-h-[40vh] divide-y overflow-y-auto rounded-lg border">
               {items.map((item, idx) => {
                 const originalQty = currentItems.find(
@@ -242,13 +256,17 @@ export function DowngradePlanDialog({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-foreground block text-sm font-medium">
+            <label
+              htmlFor={reasonId}
+              className="text-foreground block text-sm font-medium"
+            >
               Motivo{" "}
               <span className="text-red-500" aria-hidden>
                 *
               </span>
             </label>
             <textarea
+              id={reasonId}
               rows={3}
               value={reason}
               onChange={(e) => {

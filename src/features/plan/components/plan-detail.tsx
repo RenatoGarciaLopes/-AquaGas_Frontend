@@ -2,16 +2,16 @@ import Link from "next/link";
 import { Icon } from "@iconify/react";
 
 import { Icons } from "@/shared/lib/icons";
-import { formatCurrency, formatDate } from "@/shared/lib/formatters";
+import { formatDate, formatCurrency } from "@/shared/lib/formatters";
 
 import { StatCard } from "@/shared/ui/stat-card";
 import { DetailShell } from "@/shared/layouts/detail-shell";
 
 import type { PlanResponse } from "@/features/plan/types";
-import { PlanDetailHeader } from "@/features/plan/components/plan-detail-header";
-import { PlanSummaryCard } from "@/features/plan/components/plan-summary-card";
 import { PlanItemsCard } from "@/features/plan/components/plan-items-card";
 import { PlanTablesCard } from "@/features/plan/components/plan-tables-card";
+import { PlanSummaryCard } from "@/features/plan/components/plan-summary-card";
+import { PlanDetailHeader } from "@/features/plan/components/plan-detail-header";
 import { PlanPenaltiesCard } from "@/features/plan/components/plan-penalties-card";
 
 type PlanDetailProps = {
@@ -70,7 +70,7 @@ export function PlanDetail({ canManage, plan, products }: PlanDetailProps) {
       }
     >
       {plan.warning ? (
-        <div className="bg-amber-50 border border-amber-200 text-amber-800 dark:bg-amber-400/10 dark:border-amber-400/30 dark:text-amber-200 rounded-lg px-4 py-3 text-sm lg:col-span-2">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 lg:col-span-2 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200">
           <strong>Aviso:</strong> {plan.warning}
         </div>
       ) : null}
@@ -82,7 +82,11 @@ export function PlanDetail({ canManage, plan, products }: PlanDetailProps) {
         deliveries={plan.deliveries}
         billings={plan.billings}
       />
-      <PlanPenaltiesCard planId={plan.id} penalties={plan.penalties} canManage={canManage} />
+      <PlanPenaltiesCard
+        planId={plan.id}
+        penalties={plan.penalties}
+        canManage={canManage}
+      />
     </DetailShell>
   );
 }

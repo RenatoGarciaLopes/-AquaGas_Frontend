@@ -10,6 +10,9 @@ export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  // Hidratação: precisamos marcar montado APÓS o primeiro paint para evitar
+  // mismatch entre HTML server-side e o tema resolvido no cliente.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   // Avoid hydration mismatch — render a size-matching placeholder until mounted

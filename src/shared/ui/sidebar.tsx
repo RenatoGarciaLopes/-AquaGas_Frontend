@@ -130,9 +130,7 @@ export function Sidebar() {
         onClick={() => setMobileSidebarOpen(false)}
         className={cn(
           "fixed inset-0 z-40 bg-black/50 transition-opacity duration-200 ease-out md:hidden",
-          mobileSidebarOpen
-            ? "opacity-100"
-            : "pointer-events-none opacity-0",
+          mobileSidebarOpen ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       />
 

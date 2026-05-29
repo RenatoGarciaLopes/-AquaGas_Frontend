@@ -2,15 +2,15 @@ import { redirect } from "next/navigation";
 
 import { ApiError } from "@/shared/api/errors";
 import { isGerente } from "@/shared/auth/roles";
-import { serverFetch } from "@/shared/api/server-fetch";
 import { PageHeader } from "@/shared/ui/page-header";
+import { serverFetch } from "@/shared/api/server-fetch";
 import { getCurrentUserRole } from "@/shared/auth/server";
 
-import type { ApiResponse } from "@/shared/types/api";
-import type { CustomerResponse } from "@/features/customer/types";
 import type { ProductResponse } from "@/features/product/types";
-
+import type { CustomerResponse } from "@/features/customer/types";
 import { CreatePlanForm } from "@/features/plan/components/create-plan-form";
+
+import type { ApiResponse } from "@/shared/types/api";
 
 async function getCustomers() {
   const envelope =

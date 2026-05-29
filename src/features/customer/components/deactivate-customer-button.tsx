@@ -1,11 +1,12 @@
 "use client";
 
 import { toast } from "sonner";
-import { Icon } from "@iconify/react";
 import { useState } from "react";
+import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
 
 import { Icons } from "@/shared/lib/icons";
+
 import { ApiError } from "@/shared/api/errors";
 import { ConfirmDialog } from "@/shared/ui/confirm-dialog";
 

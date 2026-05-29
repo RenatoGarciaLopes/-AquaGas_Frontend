@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { it, expect, describe, beforeEach } from "vitest";
 
 import { useAuthStore } from "@/features/auth/stores/auth-store";
 

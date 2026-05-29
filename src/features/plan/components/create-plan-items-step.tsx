@@ -36,7 +36,10 @@ export function CreatePlanItemsStep({
   const [search, setSearch] = useState("");
   const term = search.trim().toLowerCase();
 
-  const addedIds = new Set(items.map((i) => i.productId));
+  const addedIds = useMemo(
+    () => new Set(items.map((i) => i.productId)),
+    [items],
+  );
 
   const available = useMemo(() => {
     const list = products.filter((p) => !addedIds.has(p.id));

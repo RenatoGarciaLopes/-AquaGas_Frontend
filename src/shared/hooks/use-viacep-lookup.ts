@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 
 import { onlyDigits } from "@/shared/lib/formatters";
 import {
-  fetchViaCepAddress,
   ViaCepError,
+  fetchViaCepAddress,
   type ViaCepAddress,
   type ViaCepErrorKind,
 } from "@/shared/lib/viacep";

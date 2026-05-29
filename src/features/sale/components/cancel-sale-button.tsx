@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { Icons } from "@/shared/lib/icons";
+
 import { ApiError } from "@/shared/api/errors";
 
 import { cancelSale } from "@/features/sale/api/sale-client.api";
@@ -22,8 +23,14 @@ export function CancelSaleButton({ saleId, createdAt }: CancelSaleButtonProps) {
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
 
-  const expired =
-    Date.now() - new Date(createdAt).getTime() > 24 * 60 * 60 * 1000;
+  // Janela de cancelamento é relativa ao "agora" da renderização. Não há como
+  // saber se passou de 24h sem ler o relógio do cliente.
+  const expired = useMemo(
+    () =>
+      // eslint-disable-next-line react-hooks/purity
+      Date.now() - new Date(createdAt).getTime() > 24 * 60 * 60 * 1000,
+    [createdAt],
+  );
 
   async function handleConfirm(data: CancelSaleFormData) {
     setIsPending(true);

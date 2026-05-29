@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join, relative } from "node:path";
+import { it, expect, describe } from "vitest";
 import { execFileSync } from "node:child_process";
 
 const ROOT = process.cwd();
