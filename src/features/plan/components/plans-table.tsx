@@ -7,14 +7,22 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { Icons } from "@/shared/lib/icons";
-import { formatCurrency, formatDate } from "@/shared/lib/formatters";
+import { formatDate, formatCurrency } from "@/shared/lib/formatters";
 
-import { DataTable } from "@/shared/ui/data-table";
 import { EmptyState } from "@/shared/ui/empty-state";
+import {
+  DataTable,
+  STICKY_RIGHT_CELL,
+  STICKY_RIGHT_HEADER,
+} from "@/shared/ui/data-table";
 
-import { PlanStatusBadge } from "@/features/plan/components/plan-status-badge";
 import { PlanCycleBadge } from "@/features/plan/components/plan-cycle-badge";
-import type { PlansQuery, PlanResponse, PaginatedPlans } from "@/features/plan/types";
+import { PlanStatusBadge } from "@/features/plan/components/plan-status-badge";
+import type {
+  PlansQuery,
+  PlanResponse,
+  PaginatedPlans,
+} from "@/features/plan/types";
 
 type PlansTableProps = {
   initialData: PaginatedPlans;
@@ -69,7 +77,7 @@ export function PlansTable({ initialData, query }: PlansTableProps) {
       {
         accessorKey: "total",
         cell: ({ getValue }) => (
-          <span className="text-foreground font-mono">
+          <span className="text-foreground font-mono whitespace-nowrap">
             {formatCurrency(getValue<number>())}
           </span>
         ),
@@ -80,7 +88,7 @@ export function PlansTable({ initialData, query }: PlansTableProps) {
       {
         accessorKey: "startDate",
         cell: ({ getValue }) => (
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground whitespace-nowrap">
             {formatDate(getValue<string>())}
           </span>
         ),
@@ -91,7 +99,7 @@ export function PlansTable({ initialData, query }: PlansTableProps) {
       {
         accessorKey: "endDate",
         cell: ({ getValue }) => (
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground whitespace-nowrap">
             {formatDate(getValue<string>())}
           </span>
         ),
@@ -114,6 +122,10 @@ export function PlansTable({ initialData, query }: PlansTableProps) {
         enableSorting: false,
         header: () => <span className="sr-only">Ações</span>,
         id: "actions",
+        meta: {
+          cellClassName: STICKY_RIGHT_CELL,
+          headerClassName: STICKY_RIGHT_HEADER,
+        },
       },
     ],
     [],

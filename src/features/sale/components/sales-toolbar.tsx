@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, type ReactNode } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { cn } from "@/shared/lib/cn";
@@ -65,7 +65,12 @@ function FilterChip({
 
 // ─── SalesToolbar ─────────────────────────────────────────────────────────────
 
-export function SalesToolbar() {
+type SalesToolbarProps = {
+  /** Slot opcional renderizado à direita da linha de filtros (ex.: "Nova venda"). */
+  actionSlot?: ReactNode;
+};
+
+export function SalesToolbar({ actionSlot }: SalesToolbarProps = {}) {
   const [, startTransition] = useTransition();
   const pathname = usePathname();
   const router = useRouter();
@@ -179,8 +184,29 @@ export function SalesToolbar() {
 
   return (
     <div className="space-y-3">
-      {/* Row 1 — search + status + advanced toggle */}
+      {/* Row 1 — advanced toggle (left) + search + status + action slot (right) */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <button
+          type="button"
+          onClick={() => setAdvancedOpen((v) => !v)}
+          className={cn(
+            "border-border bg-background text-foreground hover:bg-muted inline-flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition focus:ring-2 focus:outline-none sm:shrink-0",
+            advancedOpen && "bg-muted",
+          )}
+        >
+          <Icon
+            icon={advancedOpen ? Icons.arrowUp : Icons.arrowDown}
+            aria-hidden
+            className="h-4 w-4"
+          />
+          Filtros avançados
+          {advancedActiveCount > 0 && (
+            <span className="bg-primary text-primary-foreground inline-flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold">
+              {advancedActiveCount}
+            </span>
+          )}
+        </button>
+
         <div className="relative w-full sm:max-w-sm">
           <Icon
             icon={Icons.search}
@@ -210,26 +236,11 @@ export function SalesToolbar() {
           ))}
         </select>
 
-        <button
-          type="button"
-          onClick={() => setAdvancedOpen((v) => !v)}
-          className={cn(
-            "border-border bg-background text-foreground hover:bg-muted inline-flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition focus:ring-2 focus:outline-none sm:ml-auto sm:shrink-0",
-            advancedOpen && "bg-muted",
-          )}
-        >
-          <Icon
-            icon={advancedOpen ? Icons.arrowUp : Icons.arrowDown}
-            aria-hidden
-            className="h-4 w-4"
-          />
-          Filtros avançados
-          {advancedActiveCount > 0 && (
-            <span className="bg-primary text-primary-foreground inline-flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold">
-              {advancedActiveCount}
-            </span>
-          )}
-        </button>
+        {actionSlot ? (
+          <div className="flex justify-end sm:ml-auto sm:shrink-0">
+            {actionSlot}
+          </div>
+        ) : null}
       </div>
 
       {/* Row 2 — advanced filter panel (CSS grid height animation) */}

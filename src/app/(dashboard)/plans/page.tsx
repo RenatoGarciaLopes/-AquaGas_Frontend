@@ -90,7 +90,9 @@ export default async function PlansPage({ searchParams }: PlansPageProps) {
       <PageHeader
         title="Planos"
         description="Gerencie planos de assinatura de água e gás dos clientes."
-        actions={
+      />
+      <PlansToolbar
+        actionSlot={
           <Link
             href="/plans/new"
             className="inline-flex items-center gap-2 rounded-lg bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-600 focus:ring-2 focus:ring-cyan-300/50 focus:outline-none"
@@ -99,8 +101,6 @@ export default async function PlansPage({ searchParams }: PlansPageProps) {
             Novo plano
           </Link>
         }
-      />
-      <PlansToolbar
         key={`${query.search ?? ""}-${query.status ?? ""}-${query.cycle ?? ""}`}
         initialSearch={query.search}
       />

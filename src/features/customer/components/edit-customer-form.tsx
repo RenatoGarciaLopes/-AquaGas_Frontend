@@ -50,11 +50,14 @@ import {
 } from "@/features/customer/schemas/edit-customer.schema";
 
 type TabId = "identity" | "contact";
-type PendingAction = { type: "back" } | { type: "tab"; tab: TabId };
+type PendingAction =
+  | { type: "back" }
+  | { type: "tab"; tab: TabId }
+  | { type: "to-index" };
 
 const TABS = [
-  { id: "identity", label: "Identificação" },
-  { id: "contact", label: "Contato e endereço" },
+  { id: "identity", label: "Identificação", icon: Icons.userCog },
+  { id: "contact", label: "Contato e endereço", icon: Icons.mapPoint },
 ] as const;
 
 type Props = {
@@ -129,8 +132,15 @@ function toContactPayload(
 export function EditCustomerForm({ customer }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const initialTabParam = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState<TabId>(() =>
-    resolveInitialTab(searchParams.get("tab")),
+    resolveInitialTab(initialTabParam),
+  );
+  // Em mobile: o índice de seções é o estado inicial (a menos que a URL traga
+  // ?tab=... — por exemplo, vindo de um deeplink). Em lg+ esse estado é
+  // ignorado (CSS controla a renderização).
+  const [mobileIndexOpen, setMobileIndexOpen] = useState<boolean>(
+    () => initialTabParam === null,
   );
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(
     null,
@@ -167,6 +177,9 @@ export function EditCustomerForm({ customer }: Props) {
 
   function handleTabChange(next: string) {
     const nextTab = next as TabId;
+    // Em mobile, clicar em uma seção fecha o índice e abre o conteúdo.
+    if (mobileIndexOpen) setMobileIndexOpen(false);
+
     if (nextTab === activeTab) return;
 
     if (dirtyRef.current[activeTab]) {
@@ -175,6 +188,14 @@ export function EditCustomerForm({ customer }: Props) {
     }
 
     setActiveTab(nextTab);
+  }
+
+  function handleBackToIndex() {
+    if (dirtyRef.current[activeTab]) {
+      setPendingAction({ type: "to-index" });
+      return;
+    }
+    setMobileIndexOpen(true);
   }
 
   function handleBackClick(event: MouseEvent<HTMLAnchorElement>) {
@@ -187,6 +208,13 @@ export function EditCustomerForm({ customer }: Props) {
     if (pendingAction?.type === "tab") {
       dirtyRef.current[activeTab] = false;
       setActiveTab(pendingAction.tab);
+      setPendingAction(null);
+      return;
+    }
+
+    if (pendingAction?.type === "to-index") {
+      dirtyRef.current[activeTab] = false;
+      setMobileIndexOpen(true);
       setPendingAction(null);
       return;
     }
@@ -204,6 +232,14 @@ export function EditCustomerForm({ customer }: Props) {
         tabs={[...TABS]}
         activeTab={activeTab}
         onTabChange={handleTabChange}
+        mobileIndex={{
+          showIndex: mobileIndexOpen,
+          onBackToIndex: handleBackToIndex,
+          heading: "O que deseja editar?",
+          description: `${customer.name}${
+            customer.typeDocument === "PJ" ? " · CNPJ" : " · CPF"
+          }`,
+        }}
         back={
           <Link
             href="/customers"

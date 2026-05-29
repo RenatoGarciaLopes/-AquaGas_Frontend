@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, type ReactNode } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { Icons } from "@/shared/lib/icons";
@@ -10,6 +10,8 @@ import type { CustomerDocumentType } from "@/features/customer/types";
 
 type CustomersToolbarProps = {
   initialSearch?: string;
+  /** Slot opcional renderizado à direita da linha (ex.: "Novo cliente"). */
+  actionSlot?: ReactNode;
 };
 
 const TYPE_OPTIONS: Array<{ label: string; value: "" | CustomerDocumentType }> =
@@ -20,6 +22,7 @@ const TYPE_OPTIONS: Array<{ label: string; value: "" | CustomerDocumentType }> =
   ];
 
 export function CustomersToolbar({
+  actionSlot,
   initialSearch = "",
 }: CustomersToolbarProps) {
   const [search, setSearch] = useState(initialSearch);
@@ -100,6 +103,12 @@ export function CustomersToolbar({
           </option>
         ))}
       </select>
+
+      {actionSlot ? (
+        <div className="flex justify-end sm:ml-auto sm:shrink-0">
+          {actionSlot}
+        </div>
+      ) : null}
     </div>
   );
 }

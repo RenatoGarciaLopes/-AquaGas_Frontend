@@ -4,10 +4,22 @@ import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
 
+import { useConfirmBillingPayment } from "@/features/plan/hooks/use-billing-actions";
+import {
+  useCancelDelivery,
+  useConfirmDelivery,
+  useRescheduleDelivery,
+} from "@/features/plan/hooks/use-delivery-actions";
+
 import { cn } from "@/shared/lib/cn";
 import { Icons } from "@/shared/lib/icons";
-import { formatCurrency, formatDate } from "@/shared/lib/formatters";
+import { formatDate, formatCurrency } from "@/shared/lib/formatters";
 
+import { ResponsiveTable } from "@/shared/ui/responsive-table";
+import { ResponsiveTabsList } from "@/shared/ui/responsive-tabs-list";
+import { STICKY_RIGHT_CELL, STICKY_RIGHT_HEADER } from "@/shared/ui/data-table";
+
+import { ReasonDialog } from "@/features/plan/components/plan-reason-dialog";
 import { cancelDeliverySchema } from "@/features/plan/schemas/cancel-delivery.schema";
 import { rescheduleDeliverySchema } from "@/features/plan/schemas/reschedule-delivery.schema";
 import type {
@@ -16,57 +28,70 @@ import type {
   PlanBillingResponse,
   PlanDeliveryResponse,
 } from "@/features/plan/types";
-import {
-  useCancelDelivery,
-  useConfirmDelivery,
-  useRescheduleDelivery,
-} from "@/features/plan/hooks/use-delivery-actions";
-import { useConfirmBillingPayment } from "@/features/plan/hooks/use-billing-actions";
-import { ReasonDialog } from "@/features/plan/components/plan-reason-dialog";
 
 // ─── Status config ────────────────────────────────────────────────────────────
 
-const DELIVERY_STATUS: Record<DeliveryStatus, { className: string; label: string }> = {
+const DELIVERY_STATUS: Record<
+  DeliveryStatus,
+  { className: string; label: string }
+> = {
   Pending: {
-    className: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-200",
+    className:
+      "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-200",
     label: "Pendente",
   },
   Delivered: {
-    className: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200",
+    className:
+      "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200",
     label: "Entregue",
   },
   Late: {
-    className: "border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-400/10 dark:text-red-200",
+    className:
+      "border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-400/10 dark:text-red-200",
     label: "Atrasada",
   },
   Cancelled: {
-    className: "border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-400/30 dark:bg-slate-400/10 dark:text-slate-200",
+    className:
+      "border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-400/30 dark:bg-slate-400/10 dark:text-slate-200",
     label: "Cancelada",
   },
 };
 
-const BILLING_STATUS: Record<BillingStatus, { className: string; label: string }> = {
+const BILLING_STATUS: Record<
+  BillingStatus,
+  { className: string; label: string }
+> = {
   Pending: {
-    className: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-200",
+    className:
+      "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-200",
     label: "Pendente",
   },
   Paid: {
-    className: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200",
+    className:
+      "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200",
     label: "Pago",
   },
   Late: {
-    className: "border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-400/10 dark:text-red-200",
+    className:
+      "border-red-200 bg-red-50 text-red-700 dark:border-red-400/30 dark:bg-red-400/10 dark:text-red-200",
     label: "Atrasado",
   },
   Cancelled: {
-    className: "border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-400/30 dark:bg-slate-400/10 dark:text-slate-200",
+    className:
+      "border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-400/30 dark:bg-slate-400/10 dark:text-slate-200",
     label: "Cancelado",
   },
 };
 
 // ─── Shared primitives ────────────────────────────────────────────────────────
 
-function StatusBadge({ className, label }: { className: string; label: string }) {
+function StatusBadge({
+  className,
+  label,
+}: {
+  className: string;
+  label: string;
+}) {
   return (
     <span
       className={cn(
@@ -79,17 +104,39 @@ function StatusBadge({ className, label }: { className: string; label: string })
   );
 }
 
-function TableHead({ children }: { children: React.ReactNode }) {
+function TableHead({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <th className="text-muted-foreground px-3 pb-3 text-left text-xs font-medium uppercase tracking-wide first:pl-0">
+    <th
+      className={cn(
+        "text-muted-foreground px-3 pb-3 text-left text-xs font-medium tracking-wide whitespace-nowrap uppercase first:pl-0",
+        className,
+      )}
+    >
       {children}
     </th>
   );
 }
 
-function TableHeadRight({ children }: { children: React.ReactNode }) {
+function TableHeadRight({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <th className="text-muted-foreground px-3 pb-3 text-right text-xs font-medium uppercase tracking-wide last:pr-0">
+    <th
+      className={cn(
+        "text-muted-foreground px-3 pb-3 text-right text-xs font-medium tracking-wide whitespace-nowrap uppercase last:pr-0",
+        className,
+      )}
+    >
       {children}
     </th>
   );
@@ -122,7 +169,7 @@ function DeliveriesPanel({
 
   return (
     <>
-      <div className="overflow-x-auto">
+      <ResponsiveTable>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-border border-b">
@@ -130,7 +177,9 @@ function DeliveriesPanel({
               <TableHead>Vencimento</TableHead>
               <TableHead>Data entrega</TableHead>
               <TableHead>Status</TableHead>
-              <TableHeadRight>Ações</TableHeadRight>
+              <TableHeadRight className={STICKY_RIGHT_HEADER}>
+                Ações
+              </TableHeadRight>
             </tr>
           </thead>
           <tbody className="divide-border divide-y">
@@ -143,17 +192,14 @@ function DeliveriesPanel({
               const canReschedule = delivery.status === "Cancelled";
 
               return (
-                <tr
-                  key={delivery.id}
-                  className="hover:bg-muted/20 transition"
-                >
-                  <td className="text-foreground py-3 pl-0 pr-3 font-mono">
+                <tr key={delivery.id} className="hover:bg-muted/20 transition">
+                  <td className="text-foreground py-3 pr-3 pl-0 font-mono whitespace-nowrap">
                     {delivery.period}
                   </td>
-                  <td className="text-muted-foreground px-3 py-3">
+                  <td className="text-muted-foreground px-3 py-3 whitespace-nowrap">
                     {formatDate(delivery.dueDate)}
                   </td>
-                  <td className="text-muted-foreground px-3 py-3">
+                  <td className="text-muted-foreground px-3 py-3 whitespace-nowrap">
                     {delivery.deliveryDate
                       ? formatDate(delivery.deliveryDate)
                       : "—"}
@@ -164,7 +210,12 @@ function DeliveriesPanel({
                       label={config.label}
                     />
                   </td>
-                  <td className="py-3 pl-3 pr-0 text-right">
+                  <td
+                    className={cn(
+                      "py-3 pr-0 pl-3 text-right",
+                      STICKY_RIGHT_CELL,
+                    )}
+                  >
                     <div className="inline-flex items-center gap-1">
                       {canConfirm ? (
                         <button
@@ -179,7 +230,11 @@ function DeliveriesPanel({
                           className="p-1 text-emerald-500 transition hover:text-emerald-600 disabled:opacity-50"
                           title="Confirmar entrega"
                         >
-                          <Icon icon={Icons.check} className="h-4 w-4" aria-hidden />
+                          <Icon
+                            icon={Icons.check}
+                            className="h-4 w-4"
+                            aria-hidden
+                          />
                         </button>
                       ) : null}
                       {canCancel ? (
@@ -190,7 +245,11 @@ function DeliveriesPanel({
                           className="p-1 text-red-500 transition hover:text-red-600 disabled:opacity-50"
                           title="Cancelar entrega"
                         >
-                          <Icon icon={Icons.x} className="h-4 w-4" aria-hidden />
+                          <Icon
+                            icon={Icons.x}
+                            className="h-4 w-4"
+                            aria-hidden
+                          />
                         </button>
                       ) : null}
                       {canReschedule ? (
@@ -201,7 +260,11 @@ function DeliveriesPanel({
                           className="p-1 text-cyan-500 transition hover:text-cyan-600 disabled:opacity-50"
                           title="Reagendar entrega"
                         >
-                          <Icon icon={Icons.calendar} className="h-4 w-4" aria-hidden />
+                          <Icon
+                            icon={Icons.calendar}
+                            className="h-4 w-4"
+                            aria-hidden
+                          />
                         </button>
                       ) : null}
                     </div>
@@ -211,7 +274,7 @@ function DeliveriesPanel({
             })}
           </tbody>
         </table>
-      </div>
+      </ResponsiveTable>
 
       <ReasonDialog
         title="Cancelar entrega"
@@ -287,7 +350,7 @@ function BillingsPanel({
   }
 
   return (
-    <div className="overflow-x-auto">
+    <ResponsiveTable>
       <table className="w-full text-sm">
         <thead>
           <tr className="border-border border-b">
@@ -295,7 +358,9 @@ function BillingsPanel({
             <TableHead>Valor</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Pago em</TableHead>
-            <TableHeadRight>Ações</TableHeadRight>
+            <TableHeadRight className={STICKY_RIGHT_HEADER}>
+              Ações
+            </TableHeadRight>
           </tr>
         </thead>
         <tbody className="divide-border divide-y">
@@ -306,10 +371,10 @@ function BillingsPanel({
 
             return (
               <tr key={billing.id} className="hover:bg-muted/20 transition">
-                <td className="text-muted-foreground py-3 pl-0 pr-3">
+                <td className="text-muted-foreground py-3 pr-3 pl-0 whitespace-nowrap">
                   {formatDate(billing.dueDate)}
                 </td>
-                <td className="text-foreground px-3 py-3 font-mono">
+                <td className="text-foreground px-3 py-3 font-mono whitespace-nowrap">
                   {formatCurrency(billing.amount)}
                 </td>
                 <td className="px-3 py-3">
@@ -318,10 +383,12 @@ function BillingsPanel({
                     label={config.label}
                   />
                 </td>
-                <td className="text-muted-foreground px-3 py-3">
+                <td className="text-muted-foreground px-3 py-3 whitespace-nowrap">
                   {billing.paidAt ? formatDate(billing.paidAt) : "—"}
                 </td>
-                <td className="py-3 pl-3 pr-0 text-right">
+                <td
+                  className={cn("py-3 pr-0 pl-3 text-right", STICKY_RIGHT_CELL)}
+                >
                   {canPay ? (
                     <button
                       type="button"
@@ -335,7 +402,11 @@ function BillingsPanel({
                       className="p-1 text-emerald-500 transition hover:text-emerald-600 disabled:opacity-50"
                       title="Confirmar pagamento"
                     >
-                      <Icon icon={Icons.check} className="h-4 w-4" aria-hidden />
+                      <Icon
+                        icon={Icons.check}
+                        className="h-4 w-4"
+                        aria-hidden
+                      />
                     </button>
                   ) : null}
                 </td>
@@ -344,7 +415,7 @@ function BillingsPanel({
           })}
         </tbody>
       </table>
-    </div>
+    </ResponsiveTable>
   );
 }
 
@@ -372,15 +443,14 @@ export function PlanTablesCard({
 
   return (
     <section className="border-border bg-card rounded-xl border shadow-sm shadow-black/5 lg:col-span-2">
-      <div className="px-6 pt-5">
+      <div className="px-4 pt-5 sm:px-6">
         <h2 className="text-foreground text-base font-semibold tracking-tight">
           Entregas & Cobranças
         </h2>
 
-        <div
-          role="tablist"
-          aria-label="Seções do plano"
-          className="mt-4 flex gap-1 border-b border-border"
+        <ResponsiveTabsList
+          ariaLabel="Seções do plano"
+          className="mt-4 border-b-0"
         >
           {tabs.map((tab) => {
             const isActive = tab.id === activeTab;
@@ -394,10 +464,10 @@ export function PlanTablesCard({
                 id={`tab-${tab.id}`}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "inline-flex items-center gap-2 border-b-2 pb-3 pr-3 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/40",
+                  "inline-flex shrink-0 snap-start items-center gap-2 border-b-2 pr-3 pb-3 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/40",
                   isActive
                     ? "border-cyan-500 text-cyan-500"
-                    : "border-transparent text-muted-foreground hover:text-foreground",
+                    : "text-muted-foreground hover:text-foreground border-transparent",
                 )}
               >
                 {tab.label}
@@ -414,14 +484,14 @@ export function PlanTablesCard({
               </button>
             );
           })}
-        </div>
+        </ResponsiveTabsList>
       </div>
 
       <div
         role="tabpanel"
         id={`tabpanel-${activeTab}`}
         aria-labelledby={`tab-${activeTab}`}
-        className="p-6"
+        className="p-4 sm:p-6"
       >
         {activeTab === "deliveries" ? (
           <DeliveriesPanel planId={planId} deliveries={deliveries} />

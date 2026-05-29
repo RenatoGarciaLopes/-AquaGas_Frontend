@@ -85,7 +85,11 @@ export default async function CustomersPage({
       <PageHeader
         title="Clientes"
         description="Consulte clientes pessoa física e pessoa jurídica cadastrados no sistema."
-        actions={
+      />
+      <CustomersToolbar
+        key={`${query.search ?? ""}-${query.type ?? ""}`}
+        initialSearch={query.search}
+        actionSlot={
           <Link
             href="/customers/new"
             className="inline-flex items-center gap-2 rounded-lg bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-600 focus:ring-2 focus:ring-cyan-300/50 focus:outline-none"
@@ -94,10 +98,6 @@ export default async function CustomersPage({
             Novo cliente
           </Link>
         }
-      />
-      <CustomersToolbar
-        key={`${query.search ?? ""}-${query.type ?? ""}`}
-        initialSearch={query.search}
       />
       <CustomersTable canManage={canManage} initialData={customers} query={query} />
     </div>

@@ -74,7 +74,11 @@ export default async function EmployeesPage({
       <PageHeader
         title="Funcionários"
         description="Consulte e gerencie os funcionários cadastrados no sistema."
-        actions={
+      />
+      <EmployeesToolbar
+        key={query.search ?? "no-search"}
+        initialSearch={query.search}
+        actionSlot={
           canManage ? (
             <Link
               href="/employees/new"
@@ -85,10 +89,6 @@ export default async function EmployeesPage({
             </Link>
           ) : null
         }
-      />
-      <EmployeesToolbar
-        key={query.search ?? "no-search"}
-        initialSearch={query.search}
       />
       <EmployeesTable
         canManage={canManage}

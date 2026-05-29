@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { Icon } from "@iconify/react";
 import { createPortal } from "react-dom";
+import { useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Icon } from "@iconify/react";
 
 import { cn } from "@/shared/lib/cn";
 import { Icons } from "@/shared/lib/icons";
@@ -78,7 +78,7 @@ export function CancelPlanDialog({
         onClick={onCancel}
         className="absolute inset-0 cursor-default bg-black/30 backdrop-blur-[2px]"
       />
-      <div className="border-border bg-card relative z-10 w-full max-w-md rounded-2xl border p-6 shadow-2xl shadow-black/40">
+      <div className="border-border bg-card relative z-10 max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border p-4 shadow-2xl shadow-black/40 sm:p-6">
         <div className="flex items-start gap-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-500/15 text-red-400">
             <Icon icon={Icons.alertTriangle} className="h-5 w-5" aria-hidden />
@@ -91,9 +91,9 @@ export function CancelPlanDialog({
               Cancelar plano?
             </h3>
             <p className="text-muted-foreground mt-1.5 text-sm">
-              Todas as entregas e cobranças pendentes serão canceladas. Uma multa
-              por cancelamento antecipado poderá ser gerada. Esta ação não pode
-              ser revertida.
+              Todas as entregas e cobranças pendentes serão canceladas. Uma
+              multa por cancelamento antecipado poderá ser gerada. Esta ação não
+              pode ser revertida.
             </p>
           </div>
         </div>
@@ -114,7 +114,9 @@ export function CancelPlanDialog({
             <div
               className={cn(
                 "bg-muted/40 hover:bg-muted/60 focus-within:bg-muted/60 rounded-lg px-4 py-2.5 transition",
-                errors.reason ? "ring-1 ring-red-500/70 dark:ring-red-400/70" : "",
+                errors.reason
+                  ? "ring-1 ring-red-500/70 dark:ring-red-400/70"
+                  : "",
               )}
             >
               <textarea
@@ -133,7 +135,7 @@ export function CancelPlanDialog({
               type="button"
               disabled={isPending}
               onClick={onCancel}
-              className="border-border text-foreground hover:bg-muted inline-flex items-center justify-center rounded-lg border px-4 py-2.5 text-sm font-semibold transition focus:ring-2 focus:ring-cyan-300/40 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-border text-foreground hover:bg-muted inline-flex w-full items-center justify-center rounded-lg border px-4 py-2.5 text-sm font-semibold transition focus:ring-2 focus:ring-cyan-300/40 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               Voltar
             </button>
@@ -141,7 +143,7 @@ export function CancelPlanDialog({
               ref={submitRef}
               type="submit"
               disabled={isPending}
-              className="inline-flex items-center justify-center rounded-lg bg-red-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-600 focus:ring-2 focus:ring-red-300/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex w-full items-center justify-center rounded-lg bg-red-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-600 focus:ring-2 focus:ring-red-300/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               {isPending ? "Cancelando…" : "Cancelar plano"}
             </button>

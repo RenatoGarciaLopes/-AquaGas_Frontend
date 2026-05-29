@@ -76,19 +76,19 @@ export default async function SalesPage({ searchParams }: SalesPageProps) {
       <PageHeader
         title="Vendas"
         description="Histórico de vendas avulsas registradas no sistema."
-        actions={
+      />
+
+      <SalesToolbar
+        key={`${query.search ?? ""}-${query.status ?? ""}-${query.dateFrom ?? ""}-${query.dateTo ?? ""}-${query.minTotal ?? ""}-${query.maxTotal ?? ""}`}
+        actionSlot={
           <Link
             href="/sales/new"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition"
+            className="inline-flex items-center gap-2 rounded-lg bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-600 focus:ring-2 focus:ring-cyan-300/50 focus:outline-none"
           >
             <Icon icon={Icons.plus} aria-hidden className="h-4 w-4" />
             Nova venda
           </Link>
         }
-      />
-
-      <SalesToolbar
-        key={`${query.search ?? ""}-${query.status ?? ""}-${query.dateFrom ?? ""}-${query.dateTo ?? ""}-${query.minTotal ?? ""}-${query.maxTotal ?? ""}`}
       />
 
       <SalesTable initialData={sales} query={query} />

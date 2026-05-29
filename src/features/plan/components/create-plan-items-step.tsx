@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import { Icon } from "@iconify/react";
+import { useMemo, useState } from "react";
 
 import { Icons } from "@/shared/lib/icons";
 import { formatCurrency } from "@/shared/lib/formatters";
+
 import { QuantityInput } from "@/shared/ui/quantity-input";
 
 type Product = {
@@ -55,7 +56,9 @@ export function CreatePlanItemsStep({
   function updateQuantity(productId: string, quantity: number) {
     onItemsChange(
       items.map((i) =>
-        i.productId === productId ? { ...i, quantity: Math.max(1, quantity) } : i,
+        i.productId === productId
+          ? { ...i, quantity: Math.max(1, quantity) }
+          : i,
       ),
     );
   }
@@ -74,7 +77,7 @@ export function CreatePlanItemsStep({
             return (
               <div
                 key={item.productId}
-                className="flex items-center gap-4 px-4 py-3"
+                className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:gap-4"
               >
                 <div className="min-w-0 flex-1">
                   <p className="text-foreground text-sm font-medium">
@@ -84,19 +87,21 @@ export function CreatePlanItemsStep({
                     {formatCurrency(product.price)} / un
                   </p>
                 </div>
-                <QuantityInput
-                  value={item.quantity}
-                  min={1}
-                  onChange={(qty) => updateQuantity(item.productId, qty)}
-                />
-                <button
-                  type="button"
-                  onClick={() => removeProduct(item.productId)}
-                  className="text-muted-foreground hover:text-red-500 transition"
-                  aria-label={`Remover ${product.name}`}
-                >
-                  <Icon icon={Icons.trash} className="h-4 w-4" aria-hidden />
-                </button>
+                <div className="flex items-center justify-between gap-3 sm:justify-end">
+                  <QuantityInput
+                    value={item.quantity}
+                    min={1}
+                    onChange={(qty) => updateQuantity(item.productId, qty)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeProduct(item.productId)}
+                    className="text-muted-foreground transition hover:text-red-500"
+                    aria-label={`Remover ${product.name}`}
+                  >
+                    <Icon icon={Icons.trash} className="h-4 w-4" aria-hidden />
+                  </button>
+                </div>
               </div>
             );
           })}
@@ -136,11 +141,7 @@ export function CreatePlanItemsStep({
                 className="hover:bg-muted/50 flex w-full items-center gap-3 px-4 py-3 text-left transition"
               >
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cyan-500/10 text-cyan-500">
-                  <Icon
-                    icon={Icons.package}
-                    className="h-4 w-4"
-                    aria-hidden
-                  />
+                  <Icon icon={Icons.package} className="h-4 w-4" aria-hidden />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-foreground truncate text-sm font-medium">

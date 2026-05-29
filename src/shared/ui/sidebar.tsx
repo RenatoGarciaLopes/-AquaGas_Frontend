@@ -123,18 +123,29 @@ export function Sidebar() {
         <SidebarContent />
       </aside>
 
-      {mobileSidebarOpen && (
-        <>
-          <div
-            aria-hidden
-            className="fixed inset-0 z-40 bg-black/50 md:hidden"
-            onClick={() => setMobileSidebarOpen(false)}
-          />
-          <aside className="fixed inset-y-0 left-0 z-50 w-64 shadow-xl md:hidden">
-            <SidebarContent onClose={() => setMobileSidebarOpen(false)} />
-          </aside>
-        </>
-      )}
+      {/* Overlay: fade in/out. `pointer-events-none` quando fechado para não
+          bloquear cliques sob a área. */}
+      <div
+        aria-hidden
+        onClick={() => setMobileSidebarOpen(false)}
+        className={cn(
+          "fixed inset-0 z-40 bg-black/50 transition-opacity duration-200 ease-out md:hidden",
+          mobileSidebarOpen
+            ? "opacity-100"
+            : "pointer-events-none opacity-0",
+        )}
+      />
+
+      {/* Drawer: slide-in/out a partir da esquerda. */}
+      <aside
+        aria-hidden={!mobileSidebarOpen}
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 w-64 transform shadow-xl transition-transform duration-300 ease-out md:hidden",
+          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
+        <SidebarContent onClose={() => setMobileSidebarOpen(false)} />
+      </aside>
     </>
   );
 }

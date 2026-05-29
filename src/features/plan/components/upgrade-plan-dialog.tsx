@@ -1,11 +1,12 @@
 "use client";
 
-import { createPortal } from "react-dom";
-import { useRef, useState, useEffect, useMemo } from "react";
 import { Icon } from "@iconify/react";
+import { createPortal } from "react-dom";
+import { useRef, useMemo, useState, useEffect } from "react";
 
 import { Icons } from "@/shared/lib/icons";
 import { formatCurrency } from "@/shared/lib/formatters";
+
 import { QuantityInput } from "@/shared/ui/quantity-input";
 
 import type {
@@ -160,7 +161,7 @@ export function UpgradePlanDialog({
         className="absolute inset-0 cursor-default bg-black/30 backdrop-blur-[2px]"
         aria-label="Fechar"
       />
-      <div className="border-border bg-card relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border p-6 shadow-2xl shadow-black/40">
+      <div className="border-border bg-card relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border p-4 shadow-2xl shadow-black/40 sm:p-6">
         <h3 className="text-foreground text-lg font-semibold tracking-tight">
           Upgrade do plano
         </h3>
@@ -208,7 +209,7 @@ export function UpgradePlanDialog({
             <label className="text-foreground block text-sm font-medium">
               Itens
             </label>
-            <div className="divide-border border-border divide-y rounded-lg border">
+            <div className="divide-border border-border max-h-[40vh] divide-y overflow-y-auto rounded-lg border">
               {items.map((item, idx) => {
                 const isNew = !currentItemIds.has(item.productId);
                 return (
@@ -233,7 +234,7 @@ export function UpgradePlanDialog({
                         <button
                           type="button"
                           onClick={() => removeNewItem(item.productId)}
-                          className="text-muted-foreground hover:text-red-500 transition"
+                          className="text-muted-foreground transition hover:text-red-500"
                           aria-label={`Remover ${item.productName}`}
                         >
                           <Icon
@@ -301,7 +302,7 @@ export function UpgradePlanDialog({
                   ))}
                 </div>
               ) : search.trim() ? (
-                <p className="text-muted-foreground text-center text-sm py-2">
+                <p className="text-muted-foreground py-2 text-center text-sm">
                   Nenhum produto encontrado.
                 </p>
               ) : null}
@@ -329,7 +330,7 @@ export function UpgradePlanDialog({
             type="button"
             disabled={isPending}
             onClick={onCancel}
-            className="border-border text-foreground hover:bg-muted inline-flex items-center justify-center rounded-lg border px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50"
+            className="border-border text-foreground hover:bg-muted inline-flex w-full items-center justify-center rounded-lg border px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50 sm:w-auto"
           >
             Voltar
           </button>
@@ -338,7 +339,7 @@ export function UpgradePlanDialog({
             type="button"
             disabled={isPending}
             onClick={handleSubmit}
-            className="inline-flex items-center justify-center rounded-lg bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-600 disabled:opacity-50"
+            className="inline-flex w-full items-center justify-center rounded-lg bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-600 disabled:opacity-50 sm:w-auto"
           >
             {isPending ? "Aplicando…" : "Aplicar upgrade"}
           </button>

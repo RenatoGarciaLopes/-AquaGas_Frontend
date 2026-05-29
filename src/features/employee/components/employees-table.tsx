@@ -9,8 +9,12 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Icons } from "@/shared/lib/icons";
 import { formatPhone, formatCpfMasked } from "@/shared/lib/formatters";
 
-import { DataTable } from "@/shared/ui/data-table";
 import { EmptyState } from "@/shared/ui/empty-state";
+import {
+  DataTable,
+  STICKY_RIGHT_CELL,
+  STICKY_RIGHT_HEADER,
+} from "@/shared/ui/data-table";
 
 import { RowActions } from "@/features/employee/components/row-actions";
 import type {
@@ -85,7 +89,7 @@ export function EmployeesTable({
       {
         accessorFn: (row) => row.employee.cpf,
         cell: ({ getValue }) => (
-          <span className="text-muted-foreground font-mono">
+          <span className="text-muted-foreground font-mono whitespace-nowrap">
             {formatCpfMasked(getValue<string>())}
           </span>
         ),
@@ -96,7 +100,7 @@ export function EmployeesTable({
       {
         accessorFn: (row) => row.employee.phone,
         cell: ({ getValue }) => (
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground whitespace-nowrap">
             {formatPhone(getValue<string | null>())}
           </span>
         ),
@@ -107,7 +111,7 @@ export function EmployeesTable({
       {
         accessorFn: (row) => row.employee.email,
         cell: ({ getValue }) => (
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground whitespace-nowrap">
             {getValue<string | null>() ?? "—"}
           </span>
         ),
@@ -131,6 +135,10 @@ export function EmployeesTable({
         enableSorting: false,
         header: () => <span className="sr-only">Ações</span>,
         id: "actions",
+        meta: {
+          cellClassName: STICKY_RIGHT_CELL,
+          headerClassName: STICKY_RIGHT_HEADER,
+        },
       },
     ],
     [canManage],

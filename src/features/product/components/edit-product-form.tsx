@@ -15,10 +15,11 @@ import { StockAdjustmentSection } from "@/features/product/components/stock-adju
 import { EditProductDetailsSection } from "@/features/product/components/edit-product-details-section";
 
 type TabId = "details" | "stock";
+type PendingAction = { type: "tab"; tab: TabId } | { type: "to-index" };
 
 const TABS = [
-  { id: "details", label: "Dados do produto" },
-  { id: "stock", label: "Estoque" },
+  { id: "details", label: "Dados do produto", icon: Icons.package },
+  { id: "stock", label: "Estoque", icon: Icons.shoppingCart },
 ] as const;
 
 type Props = {
@@ -31,10 +32,16 @@ function resolveInitialTab(value: string | null): TabId {
 
 export function EditProductForm({ product }: Props) {
   const searchParams = useSearchParams();
+  const initialTabParam = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState<TabId>(() =>
-    resolveInitialTab(searchParams.get("tab")),
+    resolveInitialTab(initialTabParam),
   );
-  const [pendingTab, setPendingTab] = useState<TabId | null>(null);
+  const [mobileIndexOpen, setMobileIndexOpen] = useState<boolean>(
+    () => initialTabParam === null,
+  );
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(
+    null,
+  );
 
   // Rastreia isDirty de cada aba independentemente — usado para alertar
   // antes de trocar de aba quando há alterações não salvas.
@@ -53,25 +60,41 @@ export function EditProductForm({ product }: Props) {
 
   function handleTabChange(next: string) {
     const nextTab = next as TabId;
+    if (mobileIndexOpen) setMobileIndexOpen(false);
     if (nextTab === activeTab) return;
 
     if (dirtyRef.current[activeTab]) {
-      setPendingTab(nextTab);
+      setPendingAction({ tab: nextTab, type: "tab" });
       return;
     }
 
     setActiveTab(nextTab);
   }
 
+  function handleBackToIndex() {
+    if (dirtyRef.current[activeTab]) {
+      setPendingAction({ type: "to-index" });
+      return;
+    }
+    setMobileIndexOpen(true);
+  }
+
   function confirmDiscard() {
-    if (pendingTab === null) return;
-    dirtyRef.current[activeTab] = false;
-    setActiveTab(pendingTab);
-    setPendingTab(null);
+    if (pendingAction?.type === "tab") {
+      dirtyRef.current[activeTab] = false;
+      setActiveTab(pendingAction.tab);
+      setPendingAction(null);
+      return;
+    }
+    if (pendingAction?.type === "to-index") {
+      dirtyRef.current[activeTab] = false;
+      setMobileIndexOpen(true);
+      setPendingAction(null);
+    }
   }
 
   function cancelDiscard() {
-    setPendingTab(null);
+    setPendingAction(null);
   }
 
   return (
@@ -81,6 +104,12 @@ export function EditProductForm({ product }: Props) {
         tabs={[...TABS]}
         activeTab={activeTab}
         onTabChange={handleTabChange}
+        mobileIndex={{
+          showIndex: mobileIndexOpen,
+          onBackToIndex: handleBackToIndex,
+          heading: "O que deseja editar?",
+          description: product.name,
+        }}
         back={
           <Link
             href="/products"
@@ -108,7 +137,7 @@ export function EditProductForm({ product }: Props) {
       </SettingsShell>
 
       <ConfirmDialog
-        open={pendingTab !== null}
+        open={pendingAction !== null}
         variant="danger"
         title="Descartar alterações?"
         description="Você tem alterações não salvas nesta seção. Se continuar, elas serão perdidas."

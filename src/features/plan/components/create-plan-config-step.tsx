@@ -6,9 +6,9 @@ import { cn } from "@/shared/lib/cn";
 import { Icons } from "@/shared/lib/icons";
 import { onlyDecimalKeys, onlyDecimalPaste } from "@/shared/lib/masks";
 
+import { FormField } from "@/shared/ui/form-field";
 import { FormSection } from "@/shared/ui/form-section";
 import { QuantityInput } from "@/shared/ui/quantity-input";
-import { FormField } from "@/shared/ui/form-field";
 
 import type { CreatePlanSchema } from "@/features/plan/schemas/create-plan.schema";
 import { RecurringDatesSection } from "@/features/plan/components/recurring-dates-section";
@@ -79,7 +79,7 @@ export function CreatePlanConfigStep({
         description="Selecione a periodicidade do contrato."
         icon={Icons.calendar}
       >
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4">
           {CYCLE_OPTIONS.map((opt) => (
             <button
               key={opt.value}
@@ -134,7 +134,7 @@ export function CreatePlanConfigStep({
         <div
           className={cn(
             "bg-muted/40 hover:bg-muted/60 focus-within:bg-muted/60",
-            "flex h-[58px] items-center rounded-xl border border-transparent px-3 transition",
+            "flex min-h-14 flex-wrap items-center gap-2 rounded-xl border border-transparent px-3 py-2 transition",
             !canDiscount && "cursor-not-allowed opacity-60",
           )}
         >
@@ -158,7 +158,7 @@ export function CreatePlanConfigStep({
               className="text-foreground placeholder:text-muted-foreground/60 mt-0.5 w-full border-0 bg-transparent p-0 text-sm leading-tight shadow-none outline-none focus:ring-0 focus:outline-none disabled:cursor-not-allowed"
             />
           </div>
-          <div className="ml-2 flex shrink-0 items-center gap-1">
+          <div className="flex shrink-0 items-center gap-1">
             <button
               type="button"
               aria-label="Diminuir desconto"

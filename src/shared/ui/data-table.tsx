@@ -4,13 +4,38 @@ import { Icon } from "@iconify/react";
 import type { ReactNode } from "react";
 import {
   flexRender,
+  type RowData,
   useReactTable,
   type ColumnDef,
   getCoreRowModel,
   type SortingState,
 } from "@tanstack/react-table";
 
+import { cn } from "@/shared/lib/cn";
 import { Icons } from "@/shared/lib/icons";
+
+import { ResponsiveTable } from "@/shared/ui/responsive-table";
+
+// ─── Column meta extension ───────────────────────────────────────────────────
+// Permite que consumidores passem classes Tailwind por coluna no header e cells
+// (ex: `hidden md:table-cell` para ocultar colunas secundárias em mobile).
+
+declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
+    headerClassName?: string;
+    cellClassName?: string;
+  }
+}
+
+/**
+ * Classes utilitárias para "congelar" uma coluna à direita durante o scroll
+ * horizontal. Aplicar em `meta.cellClassName` e `meta.headerClassName` da
+ * coluna de ações. O `bg-card` opaco impede que o conteúdo das demais colunas
+ * "vaze" por trás da coluna fixa.
+ */
+export const STICKY_RIGHT_CELL = "sticky right-0 z-10 bg-card";
+export const STICKY_RIGHT_HEADER = "sticky right-0 z-10 bg-card";
 
 // ─── Pagination ───────────────────────────────────────────────────────────────
 
@@ -94,7 +119,7 @@ export function DataTable<TData>({
   return (
     <section className="space-y-3">
       <div className="border-border bg-card overflow-hidden rounded-xl border shadow-sm">
-        <div className="overflow-x-auto">
+        <ResponsiveTable>
           <table className="w-full text-left text-sm">
             <thead className="border-border bg-muted/40 text-muted-foreground border-b text-xs uppercase">
               {table.getHeaderGroups().map((hg) => (
@@ -102,12 +127,17 @@ export function DataTable<TData>({
                   {hg.headers.map((header) => {
                     const canSort = header.column.getCanSort();
                     const sorted = header.column.getIsSorted();
+                    const headerClass =
+                      header.column.columnDef.meta?.headerClassName;
 
                     return (
                       <th
                         key={header.id}
                         scope="col"
-                        className="px-4 py-3 font-medium"
+                        className={cn(
+                          "px-4 py-3 font-medium whitespace-nowrap",
+                          headerClass,
+                        )}
                       >
                         {header.isPlaceholder ? null : canSort ? (
                           <button
@@ -146,20 +176,27 @@ export function DataTable<TData>({
                     key={row.id}
                     className="text-foreground hover:bg-muted/30 transition"
                   >
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-4 py-3.5">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </td>
-                    ))}
+                    {row.getVisibleCells().map((cell) => {
+                      const cellClass =
+                        cell.column.columnDef.meta?.cellClassName;
+                      return (
+                        <td
+                          key={cell.id}
+                          className={cn("px-4 py-3.5", cellClass)}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))
               )}
             </tbody>
           </table>
-        </div>
+        </ResponsiveTable>
       </div>
 
       {pagination && (

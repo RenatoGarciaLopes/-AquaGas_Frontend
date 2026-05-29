@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import { Icon } from "@iconify/react";
+import { useMemo, useState } from "react";
 
 import { Icons } from "@/shared/lib/icons";
 import {
@@ -96,7 +96,7 @@ export function CreatePlanCustomerStep({
             </p>
           ) : null}
 
-          <div className="divide-border border-border max-h-80 divide-y overflow-y-auto rounded-lg border">
+          <div className="divide-border border-border max-h-60 divide-y overflow-y-auto rounded-lg border sm:max-h-72 md:max-h-80">
             {filtered.length === 0 ? (
               <p className="text-muted-foreground p-4 text-center text-sm">
                 Nenhum cliente encontrado.
@@ -110,11 +110,7 @@ export function CreatePlanCustomerStep({
                   className="hover:bg-muted/50 flex w-full items-center gap-3 px-4 py-3 text-left transition"
                 >
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-500/10 text-cyan-500">
-                    <Icon
-                      icon={Icons.users}
-                      className="h-4 w-4"
-                      aria-hidden
-                    />
+                    <Icon icon={Icons.users} className="h-4 w-4" aria-hidden />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-foreground truncate text-sm font-medium">

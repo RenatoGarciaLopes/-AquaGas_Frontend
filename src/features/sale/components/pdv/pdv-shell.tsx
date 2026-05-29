@@ -101,6 +101,13 @@ export function PdvShell({
   if (initialProducts.length === 0) {
     return (
       <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+        <Link
+          href="/sales"
+          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm font-medium transition"
+        >
+          <Icon icon={Icons.chevronLeft} className="h-4 w-4" aria-hidden />
+          Voltar para vendas
+        </Link>
         <PageHeader
           title="Nova venda"
           description="Registre vendas avulsas com baixa imediata de estoque."
@@ -115,18 +122,16 @@ export function PdvShell({
 
   return (
     <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+      <Link
+        href="/sales"
+        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm font-medium transition"
+      >
+        <Icon icon={Icons.chevronLeft} className="h-4 w-4" aria-hidden />
+        Voltar para vendas
+      </Link>
       <PageHeader
         title="Nova venda"
         description="Registre uma venda avulsa de balcão com baixa imediata de estoque."
-        actions={
-          <Link
-            href="/sales"
-            className="border-border text-foreground hover:bg-muted inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold transition"
-          >
-            <Icon icon={Icons.chevronLeft} aria-hidden className="h-4 w-4" />
-            Vendas
-          </Link>
-        }
       />
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">

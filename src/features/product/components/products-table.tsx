@@ -9,8 +9,12 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Icons } from "@/shared/lib/icons";
 import { formatCurrency } from "@/shared/lib/formatters";
 
-import { DataTable } from "@/shared/ui/data-table";
 import { EmptyState } from "@/shared/ui/empty-state";
+import {
+  DataTable,
+  STICKY_RIGHT_CELL,
+  STICKY_RIGHT_HEADER,
+} from "@/shared/ui/data-table";
 
 import { RowActions } from "@/features/product/components/row-actions";
 import { ProductStockCell } from "@/features/product/components/product-stock-cell";
@@ -95,6 +99,10 @@ export function ProductsTable({
         enableSorting: false,
         header: () => <span className="sr-only">Ações</span>,
         id: "actions",
+        meta: {
+          cellClassName: STICKY_RIGHT_CELL,
+          headerClassName: STICKY_RIGHT_HEADER,
+        },
       },
     ],
     [canManage],

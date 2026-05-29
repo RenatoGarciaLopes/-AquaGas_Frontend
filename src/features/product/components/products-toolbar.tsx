@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, type ReactNode } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { Icons } from "@/shared/lib/icons";
@@ -10,6 +10,8 @@ import type { ProductType } from "@/features/product/types";
 
 type ProductsToolbarProps = {
   initialSearch?: string;
+  /** Slot opcional renderizado à direita da linha (ex.: "Novo produto"). */
+  actionSlot?: ReactNode;
 };
 
 const TYPE_OPTIONS: Array<{ label: string; value: "" | ProductType }> = [
@@ -18,7 +20,10 @@ const TYPE_OPTIONS: Array<{ label: string; value: "" | ProductType }> = [
   { label: "Gás", value: "Gas" },
 ];
 
-export function ProductsToolbar({ initialSearch = "" }: ProductsToolbarProps) {
+export function ProductsToolbar({
+  actionSlot,
+  initialSearch = "",
+}: ProductsToolbarProps) {
   const [search, setSearch] = useState(initialSearch);
   const [, startTransition] = useTransition();
   const pathname = usePathname();
@@ -97,6 +102,12 @@ export function ProductsToolbar({ initialSearch = "" }: ProductsToolbarProps) {
           </option>
         ))}
       </select>
+
+      {actionSlot ? (
+        <div className="flex justify-end sm:ml-auto sm:shrink-0">
+          {actionSlot}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -80,7 +80,11 @@ export default async function ProductsPage({
       <PageHeader
         title="Produtos"
         description="Catálogo de produtos disponíveis"
-        actions={
+      />
+      <ProductsToolbar
+        key={`${query.search ?? ""}-${query.type ?? ""}`}
+        initialSearch={query.search}
+        actionSlot={
           canManage ? (
             <Link
               href="/products/new"
@@ -91,10 +95,6 @@ export default async function ProductsPage({
             </Link>
           ) : null
         }
-      />
-      <ProductsToolbar
-        key={`${query.search ?? ""}-${query.type ?? ""}`}
-        initialSearch={query.search}
       />
       <ProductsTable
         canManage={canManage}

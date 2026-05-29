@@ -1,10 +1,14 @@
 "use client";
 
+import { Icon } from "@iconify/react";
+import type { IconifyIcon } from "@iconify/react";
+
 import { cn } from "@/shared/lib/cn";
 
 export type VerticalTab = {
   id: string;
   label: string;
+  icon?: IconifyIcon;
 };
 
 type VerticalTabsProps = {
@@ -48,6 +52,9 @@ export function VerticalTabs({
                 : "text-muted-foreground hover:text-foreground border-transparent",
             )}
           >
+            {tab.icon ? (
+              <Icon icon={tab.icon} className="h-4 w-4 shrink-0" aria-hidden />
+            ) : null}
             {tab.label}
           </button>
         );

@@ -13,8 +13,12 @@ import {
   formatCpfMasked,
 } from "@/shared/lib/formatters";
 
-import { DataTable } from "@/shared/ui/data-table";
 import { EmptyState } from "@/shared/ui/empty-state";
+import {
+  DataTable,
+  STICKY_RIGHT_CELL,
+  STICKY_RIGHT_HEADER,
+} from "@/shared/ui/data-table";
 
 import { RowActions } from "@/features/customer/components/row-actions";
 import { CustomerTypeBadge } from "@/features/customer/components/customer-type-badge";
@@ -49,7 +53,11 @@ function formatAddress(customer: CustomerResponse) {
   return [streetLine, cityLine].filter(Boolean).join(" — ") || "-";
 }
 
-export function CustomersTable({ canManage, initialData, query }: CustomersTableProps) {
+export function CustomersTable({
+  canManage,
+  initialData,
+  query,
+}: CustomersTableProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -80,7 +88,7 @@ export function CustomersTable({ canManage, initialData, query }: CustomersTable
       {
         accessorKey: "document",
         cell: ({ row }) => (
-          <span className="text-muted-foreground font-mono">
+          <span className="text-muted-foreground font-mono whitespace-nowrap">
             {formatCustomerDocument(row.original)}
           </span>
         ),
@@ -100,7 +108,7 @@ export function CustomersTable({ canManage, initialData, query }: CustomersTable
       {
         accessorKey: "phone",
         cell: ({ getValue }) => (
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground whitespace-nowrap">
             {formatPhone(getValue<string | null>())}
           </span>
         ),
@@ -111,7 +119,7 @@ export function CustomersTable({ canManage, initialData, query }: CustomersTable
       {
         accessorKey: "email",
         cell: ({ getValue }) => (
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground whitespace-nowrap">
             {getValue<string | null>() ?? "-"}
           </span>
         ),
@@ -123,7 +131,7 @@ export function CustomersTable({ canManage, initialData, query }: CustomersTable
         accessorFn: (row) => formatAddress(row),
         cell: ({ getValue }) => (
           <span
-            className="text-muted-foreground block max-w-52 truncate xl:max-w-64"
+            className="text-muted-foreground block max-w-64 truncate"
             title={getValue<string>()}
           >
             {getValue<string>()}
@@ -142,6 +150,10 @@ export function CustomersTable({ canManage, initialData, query }: CustomersTable
         enableSorting: false,
         header: () => <span className="sr-only">Ações</span>,
         id: "actions",
+        meta: {
+          cellClassName: STICKY_RIGHT_CELL,
+          headerClassName: STICKY_RIGHT_HEADER,
+        },
       },
     ],
     [canManage],

@@ -9,10 +9,19 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Icons } from "@/shared/lib/icons";
 import { formatDate, formatCurrency } from "@/shared/lib/formatters";
 
-import { DataTable } from "@/shared/ui/data-table";
 import { EmptyState } from "@/shared/ui/empty-state";
+import {
+  DataTable,
+  STICKY_RIGHT_CELL,
+  STICKY_RIGHT_HEADER,
+} from "@/shared/ui/data-table";
 
-import type { PaginatedSales, SalesQuery, SaleResponse, SaleStatus } from "@/features/sale/types";
+import type {
+  SalesQuery,
+  SaleStatus,
+  SaleResponse,
+  PaginatedSales,
+} from "@/features/sale/types";
 
 type SalesTableProps = {
   initialData: PaginatedSales;
@@ -55,7 +64,7 @@ export function SalesTable({ initialData, query }: SalesTableProps) {
       {
         accessorKey: "createdAt",
         cell: ({ getValue }) => (
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground whitespace-nowrap">
             {formatDate(getValue<string>())}
           </span>
         ),
@@ -77,7 +86,9 @@ export function SalesTable({ initialData, query }: SalesTableProps) {
       {
         accessorFn: (row) => row.employee.name,
         cell: ({ getValue }) => (
-          <span className="text-muted-foreground">{getValue<string>()}</span>
+          <span className="text-muted-foreground whitespace-nowrap">
+            {getValue<string>()}
+          </span>
         ),
         enableSorting: false,
         header: "Vendedor",
@@ -85,9 +96,7 @@ export function SalesTable({ initialData, query }: SalesTableProps) {
       },
       {
         accessorKey: "status",
-        cell: ({ getValue }) => (
-          <StatusBadge status={getValue<SaleStatus>()} />
-        ),
+        cell: ({ getValue }) => <StatusBadge status={getValue<SaleStatus>()} />,
         enableSorting: false,
         header: "Status",
         id: "status",
@@ -118,6 +127,10 @@ export function SalesTable({ initialData, query }: SalesTableProps) {
         enableSorting: false,
         header: () => <span className="sr-only">Ações</span>,
         id: "actions",
+        meta: {
+          cellClassName: STICKY_RIGHT_CELL,
+          headerClassName: STICKY_RIGHT_HEADER,
+        },
       },
     ],
     [],

@@ -1,29 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
+import { useRouter } from "next/navigation";
+
+import {
+  useCancelPlan,
+  useSuspendPlan,
+  useUpgradePlan,
+  useDowngradePlan,
+  useReactivatePlan,
+} from "@/features/plan/hooks/use-plan-actions";
 
 import { Icons } from "@/shared/lib/icons";
 
-import type { PlanResponse, UpgradePlanInput, DowngradePlanInput } from "@/features/plan/types";
 import {
-  useSuspendPlan,
-  useReactivatePlan,
-  useCancelPlan,
-  useUpgradePlan,
-  useDowngradePlan,
-} from "@/features/plan/hooks/use-plan-actions";
-import { SuspendPlanDialog } from "@/features/plan/components/suspend-plan-dialog";
+  ActionOverflowMenu,
+  type OverflowMenuItem,
+} from "@/shared/ui/action-overflow-menu";
+
+import type { PlanResponse } from "@/features/plan/types";
 import { CancelPlanDialog } from "@/features/plan/components/cancel-plan-dialog";
-import { ReactivatePlanButton } from "@/features/plan/components/reactivate-plan-button";
+import { SuspendPlanDialog } from "@/features/plan/components/suspend-plan-dialog";
 import { UpgradePlanDialog } from "@/features/plan/components/upgrade-plan-dialog";
 import { DowngradePlanDialog } from "@/features/plan/components/downgrade-plan-dialog";
+import { ReactivatePlanButton } from "@/features/plan/components/reactivate-plan-button";
 
 type PlanDetailActionsProps = {
   plan: PlanResponse;
   products: { id: string; name: string; price: number }[];
 };
+
+const BUTTON_BASE =
+  "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-70";
 
 export function PlanDetailActions({ plan, products }: PlanDetailActionsProps) {
   const router = useRouter();
@@ -55,70 +64,83 @@ export function PlanDetailActions({ plan, products }: PlanDetailActionsProps) {
     upgradeMutation.isPending ||
     downgradeMutation.isPending;
 
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      {isActive ? (
-        <>
-          <button
-            type="button"
-            disabled={anyPending}
-            onClick={() => setUpgradeOpen(true)}
-            className="inline-flex items-center gap-2 rounded-lg bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-600 focus:ring-2 focus:ring-cyan-300/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            <Icon icon={Icons.arrowUp} className="h-4 w-4" aria-hidden />
-            Upgrade
-          </button>
-          <button
-            type="button"
-            disabled={anyPending}
-            onClick={() => setDowngradeOpen(true)}
-            className="inline-flex items-center gap-2 rounded-lg border border-orange-500/40 px-4 py-2.5 text-sm font-semibold text-orange-500 transition hover:bg-orange-500/10 focus:ring-2 focus:ring-orange-300/40 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            <Icon icon={Icons.arrowDown} className="h-4 w-4" aria-hidden />
-            Downgrade
-          </button>
-          <button
-            type="button"
-            disabled={anyPending}
-            onClick={() => setSuspendOpen(true)}
-            className="inline-flex items-center gap-2 rounded-lg border border-amber-500/40 px-4 py-2.5 text-sm font-semibold text-amber-500 transition hover:bg-amber-500/10 focus:ring-2 focus:ring-amber-300/40 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            <Icon icon={Icons.alertTriangle} className="h-4 w-4" aria-hidden />
-            Suspender
-          </button>
-          <button
-            type="button"
-            disabled={anyPending}
-            onClick={() => setCancelOpen(true)}
-            className="inline-flex items-center gap-2 rounded-lg border border-red-500/40 px-4 py-2.5 text-sm font-semibold text-red-500 transition hover:bg-red-500/10 focus:ring-2 focus:ring-red-300/40 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            <Icon icon={Icons.x} className="h-4 w-4" aria-hidden />
-            Cancelar
-          </button>
-        </>
-      ) : null}
+  const items: OverflowMenuItem[] = isActive
+    ? [
+        {
+          id: "downgrade",
+          label: "Downgrade",
+          icon: Icons.arrowDown,
+          disabled: anyPending,
+          onSelect: () => setDowngradeOpen(true),
+        },
+        {
+          id: "suspend",
+          label: "Suspender",
+          icon: Icons.alertTriangle,
+          disabled: anyPending,
+          onSelect: () => setSuspendOpen(true),
+        },
+        {
+          id: "cancel",
+          label: "Cancelar",
+          icon: Icons.x,
+          intent: "danger",
+          disabled: anyPending,
+          onSelect: () => setCancelOpen(true),
+        },
+      ]
+    : [
+        {
+          id: "cancel",
+          label: "Cancelar",
+          icon: Icons.x,
+          intent: "danger",
+          disabled: anyPending,
+          onSelect: () => setCancelOpen(true),
+        },
+      ];
 
-      {isSuspended ? (
-        <>
-          <ReactivatePlanButton
-            isPending={reactivateMutation.isPending}
-            onConfirm={() => {
-              reactivateMutation.mutate(undefined, {
-                onSuccess: refreshPage,
-              });
-            }}
-          />
+  const primary = isActive ? (
+    <button
+      type="button"
+      disabled={anyPending}
+      onClick={() => setUpgradeOpen(true)}
+      className={`${BUTTON_BASE} bg-cyan-500 text-white hover:bg-cyan-600 focus:ring-cyan-300/50`}
+    >
+      <Icon icon={Icons.arrowUp} className="h-4 w-4" aria-hidden />
+      Upgrade
+    </button>
+  ) : (
+    <ReactivatePlanButton
+      isPending={reactivateMutation.isPending}
+      onConfirm={() => {
+        reactivateMutation.mutate(undefined, { onSuccess: refreshPage });
+      }}
+    />
+  );
+
+  return (
+    <>
+      <ActionOverflowMenu
+        ariaLabel="Mais ações do plano"
+        disabled={anyPending}
+        primary={primary}
+        items={items}
+        renderItem={(item) => (
           <button
+            key={item.id}
             type="button"
-            disabled={anyPending}
-            onClick={() => setCancelOpen(true)}
-            className="inline-flex items-center gap-2 rounded-lg border border-red-500/40 px-4 py-2.5 text-sm font-semibold text-red-500 transition hover:bg-red-500/10 focus:ring-2 focus:ring-red-300/40 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70"
+            disabled={item.disabled}
+            onClick={item.onSelect}
+            className={`${BUTTON_BASE} ${itemButtonClasses(item)}`}
           >
-            <Icon icon={Icons.x} className="h-4 w-4" aria-hidden />
-            Cancelar
+            {item.icon ? (
+              <Icon icon={item.icon} className="h-4 w-4" aria-hidden />
+            ) : null}
+            {item.label}
           </button>
-        </>
-      ) : null}
+        )}
+      />
 
       <SuspendPlanDialog
         open={suspendOpen}
@@ -186,6 +208,20 @@ export function PlanDetailActions({ plan, products }: PlanDetailActionsProps) {
         }}
         onCancel={() => setDowngradeOpen(false)}
       />
-    </div>
+    </>
   );
+}
+
+function itemButtonClasses(item: OverflowMenuItem) {
+  if (item.intent === "danger") {
+    return "border border-red-500/40 text-red-500 hover:bg-red-500/10 focus:ring-red-300/40";
+  }
+  switch (item.id) {
+    case "downgrade":
+      return "border border-orange-500/40 text-orange-500 hover:bg-orange-500/10 focus:ring-orange-300/40";
+    case "suspend":
+      return "border border-amber-500/40 text-amber-500 hover:bg-amber-500/10 focus:ring-amber-300/40";
+    default:
+      return "border-border text-foreground hover:bg-muted focus:ring-cyan-300/40 border";
+  }
 }

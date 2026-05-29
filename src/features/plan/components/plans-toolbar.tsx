@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, type ReactNode } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { Icons } from "@/shared/lib/icons";
@@ -10,6 +10,8 @@ import type { PlanStatus, PlanCycle } from "@/features/plan/types";
 
 type PlansToolbarProps = {
   initialSearch?: string;
+  /** Slot opcional renderizado à direita da linha (ex.: "Novo plano"). */
+  actionSlot?: ReactNode;
 };
 
 const STATUS_OPTIONS: Array<{ label: string; value: "" | PlanStatus }> = [
@@ -29,7 +31,10 @@ const CYCLE_OPTIONS: Array<{ label: string; value: "" | PlanCycle }> = [
   { label: "Personalizado", value: "Custom" },
 ];
 
-export function PlansToolbar({ initialSearch = "" }: PlansToolbarProps) {
+export function PlansToolbar({
+  actionSlot,
+  initialSearch = "",
+}: PlansToolbarProps) {
   const [search, setSearch] = useState(initialSearch);
   const [, startTransition] = useTransition();
   const pathname = usePathname();
@@ -123,6 +128,12 @@ export function PlansToolbar({ initialSearch = "" }: PlansToolbarProps) {
           </option>
         ))}
       </select>
+
+      {actionSlot ? (
+        <div className="flex justify-end sm:ml-auto sm:shrink-0">
+          {actionSlot}
+        </div>
+      ) : null}
     </div>
   );
 }

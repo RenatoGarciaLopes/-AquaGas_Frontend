@@ -50,7 +50,7 @@ export function EntityHeader({
         ) : null}
 
         <div className="min-w-0 space-y-1.5">
-          <h1 className="text-foreground text-2xl font-semibold tracking-tight sm:text-3xl">
+          <h1 className="text-foreground text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl">
             {title}
           </h1>
 
@@ -71,7 +71,7 @@ export function EntityHeader({
       </div>
 
       {actions ? (
-        <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
+        <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto sm:shrink-0">
           {actions}
         </div>
       ) : null}
