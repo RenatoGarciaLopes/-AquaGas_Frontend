@@ -72,6 +72,10 @@ export function DowngradePlanDialog({
     };
   }, [open, isPending, onCancel, currentCycle, currentItems]);
 
+  function removeItem(productId: string) {
+    setItems((prev) => prev.filter((i) => i.productId !== productId));
+  }
+
   function handleSubmit() {
     const trimmed = reason.trim();
     if (trimmed.length < 5) {
@@ -87,13 +91,23 @@ export function DowngradePlanDialog({
         input.durationInMonths = durationInMonths;
       }
     }
-    const changedItems = items.filter((item) => {
-      const original = currentItems.find((o) => o.productId === item.productId);
-      return original && item.quantity < original.quantity;
-    });
-    if (changedItems.length > 0) {
-      input.items = changedItems.map((i) => ({ productId: i.productId, quantity: i.quantity }));
+
+    const changedItems = items
+      .filter((item) => {
+        const original = currentItems.find((o) => o.productId === item.productId);
+        return original && item.quantity < original.quantity;
+      })
+      .map((i) => ({ productId: i.productId, quantity: i.quantity }));
+
+    const removedItems = currentItems
+      .filter((ci) => !items.find((i) => i.productId === ci.productId))
+      .map((ci) => ({ productId: ci.productId, quantity: 0 }));
+
+    const allChangedItems = [...changedItems, ...removedItems];
+    if (allChangedItems.length > 0) {
+      input.items = allChangedItems;
     }
+
     onConfirm(input);
   }
 
@@ -135,23 +149,33 @@ export function DowngradePlanDialog({
           ) : null}
 
           <div className="space-y-1.5">
-            <label className="text-foreground block text-sm font-medium">Itens (reduza as quantidades ou defina 0 para remover)</label>
+            <label className="text-foreground block text-sm font-medium">Itens</label>
             <div className="divide-border border-border divide-y rounded-lg border">
               {items.map((item, idx) => {
                 const originalQty = currentItems.find((o) => o.productId === item.productId)?.quantity;
                 return (
                   <div key={item.productId} className="flex items-center justify-between px-4 py-2.5">
                     <span className="text-foreground text-sm">{item.productName}</span>
-                    <QuantityInput
-                      value={item.quantity}
-                      min={0}
-                      max={originalQty}
-                      onChange={(qty) => {
-                        const updated = [...items];
-                        updated[idx] = { ...item, quantity: qty };
-                        setItems(updated);
-                      }}
-                    />
+                    <div className="flex items-center gap-2">
+                      <QuantityInput
+                        value={item.quantity}
+                        min={1}
+                        max={originalQty}
+                        onChange={(qty) => {
+                          const updated = [...items];
+                          updated[idx] = { ...item, quantity: qty };
+                          setItems(updated);
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeItem(item.productId)}
+                        className="text-muted-foreground hover:text-red-500 transition"
+                        aria-label={`Remover ${item.productName}`}
+                      >
+                        <Icon icon={Icons.trash} className="h-4 w-4" aria-hidden />
+                      </button>
+                    </div>
                   </div>
                 );
               })}

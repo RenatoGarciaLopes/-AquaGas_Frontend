@@ -10,9 +10,10 @@ import { PlanDetailActions } from "@/features/plan/components/plan-detail-action
 
 type PlanDetailHeaderProps = {
   plan: PlanResponse;
+  products: { id: string; name: string; price: number }[];
 };
 
-export function PlanDetailHeader({ plan }: PlanDetailHeaderProps) {
+export function PlanDetailHeader({ plan, products }: PlanDetailHeaderProps) {
   return (
     <EntityHeader
       icon={Icons.fileText}
@@ -30,7 +31,7 @@ export function PlanDetailHeader({ plan }: PlanDetailHeaderProps) {
           {formatDate(plan.startDate)}
         </span>
       }
-      actions={<PlanDetailActions plan={plan} />}
+      actions={<PlanDetailActions plan={plan} products={products} />}
     />
   );
 }

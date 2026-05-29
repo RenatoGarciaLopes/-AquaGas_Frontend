@@ -17,6 +17,7 @@ import { PlanPenaltiesCard } from "@/features/plan/components/plan-penalties-car
 type PlanDetailProps = {
   canManage: boolean;
   plan: PlanResponse;
+  products: { id: string; name: string; price: number }[];
 };
 
 function getNextPendingDelivery(plan: PlanResponse): string | null {
@@ -26,7 +27,7 @@ function getNextPendingDelivery(plan: PlanResponse): string | null {
   return pending[0]?.dueDate ?? null;
 }
 
-export function PlanDetail({ canManage, plan }: PlanDetailProps) {
+export function PlanDetail({ canManage, plan, products }: PlanDetailProps) {
   const nextDelivery = getNextPendingDelivery(plan);
 
   return (
@@ -40,7 +41,7 @@ export function PlanDetail({ canManage, plan }: PlanDetailProps) {
           Voltar para planos
         </Link>
       }
-      header={<PlanDetailHeader plan={plan} />}
+      header={<PlanDetailHeader plan={plan} products={products} />}
       hero={
         <>
           <StatCard

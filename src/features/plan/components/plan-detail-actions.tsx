@@ -22,9 +22,10 @@ import { DowngradePlanDialog } from "@/features/plan/components/downgrade-plan-d
 
 type PlanDetailActionsProps = {
   plan: PlanResponse;
+  products: { id: string; name: string; price: number }[];
 };
 
-export function PlanDetailActions({ plan }: PlanDetailActionsProps) {
+export function PlanDetailActions({ plan, products }: PlanDetailActionsProps) {
   const router = useRouter();
   const [suspendOpen, setSuspendOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
@@ -158,6 +159,7 @@ export function PlanDetailActions({ plan }: PlanDetailActionsProps) {
         isPending={upgradeMutation.isPending}
         currentCycle={plan.cycle}
         currentItems={plan.items}
+        availableProducts={products}
         onConfirm={(input) => {
           upgradeMutation.mutate(input, {
             onSuccess: () => {

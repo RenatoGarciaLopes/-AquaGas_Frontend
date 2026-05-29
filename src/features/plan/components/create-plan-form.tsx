@@ -25,7 +25,6 @@ import {
 import { CreatePlanCustomerStep } from "@/features/plan/components/create-plan-customer-step";
 import { CreatePlanConfigStep } from "@/features/plan/components/create-plan-config-step";
 import { CreatePlanItemsStep } from "@/features/plan/components/create-plan-items-step";
-import { CreatePlanReviewStep } from "@/features/plan/components/create-plan-review-step";
 
 type Customer = {
   id: string;
@@ -51,21 +50,18 @@ const STEPS: StepperStep[] = [
   { label: "Cliente" },
   { label: "Configuração" },
   { label: "Itens" },
-  { label: "Revisão" },
 ];
 
 const STEP_FIELDS: Array<Array<FieldPath<CreatePlanSchema>>> = [
   ["customerId"],
   ["cycle", "deliveryDay", "billingDay", "discount", "durationInMonths"],
   ["items"],
-  [],
 ];
 
 const STEP_TITLES = [
   "Selecione o cliente",
   "Configure o plano",
   "Adicione os itens",
-  "Revisão final",
 ];
 
 function toRegisterPlanInput(data: CreatePlanSchema): RegisterPlanInput {
@@ -129,10 +125,6 @@ export function CreatePlanForm({
   const watchedValues = useWatch({ control });
   const cycle = useWatch({ control, name: "cycle" });
   const items = useWatch({ control, name: "items" }) ?? [];
-
-  const selectedCustomer = customers.find(
-    (c) => c.id === watchedValues.customerId,
-  );
 
   const onSubmit = handleSubmit(async (data) => {
     setRequestError(null);
@@ -350,20 +342,6 @@ export function CreatePlanForm({
             />
           ) : null}
 
-          {wizard.step === 3 && selectedCustomer ? (
-            <CreatePlanReviewStep
-              data={{
-                customerName: selectedCustomer.name,
-                cycle,
-                deliveryDay: watchedValues.deliveryDay ?? 0,
-                billingDay: watchedValues.billingDay ?? 0,
-                discount: watchedValues.discount,
-                durationInMonths: watchedValues.durationInMonths,
-                items,
-              }}
-              products={products}
-            />
-          ) : null}
         </WizardShell>
       </form>
     </div>
