@@ -21,12 +21,12 @@ export default async function EditProductPage({
   const role = await getCurrentUserRole();
   if (!isGerente(role)) {
     return (
-      <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+      <div className="space-y-6 p-4 sm:p-6 lg:p-8">
         <ErrorState
           title="Sem permissão"
           description="Apenas gerentes podem editar produtos."
         />
-      </main>
+      </div>
     );
   }
 
@@ -39,12 +39,12 @@ export default async function EditProductPage({
       if (error.status === 404) notFound();
       if (error.status === 403) {
         return (
-          <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+          <div className="space-y-6 p-4 sm:p-6 lg:p-8">
             <ErrorState
               title="Sem permissão"
               description="Você não tem acesso a este produto."
             />
-          </main>
+          </div>
         );
       }
     }
@@ -52,9 +52,9 @@ export default async function EditProductPage({
   }
 
   return (
-    <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <PageHeader title="Editar produto" description={product.name} />
       <EditProductForm product={product} />
-    </main>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
-import { fireEvent, screen } from "@testing-library/react";
+import { it, vi, expect, describe } from "vitest";
+import { screen, fireEvent } from "@testing-library/react";
 
 const { pushMock } = vi.hoisted(() => ({
   pushMock: vi.fn(),
@@ -11,8 +11,9 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
-import { customer, paginated } from "@/__tests__/mocks/builders";
 import { renderWithProviders } from "@/__tests__/test-utils";
+import { customer, paginated } from "@/__tests__/mocks/builders";
+
 import { CustomersTable } from "@/features/customer/components/customers-table";
 
 describe("CustomersTable", () => {

@@ -2,7 +2,7 @@ const ROWS = Array.from({ length: 7 }, (_, i) => i);
 
 export default function EditCustomerLoading() {
   return (
-    <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <div className="space-y-2">
         <div className="bg-muted h-9 w-48 animate-pulse rounded-lg" />
         <div className="bg-muted h-4 w-64 animate-pulse rounded" />
@@ -32,6 +32,6 @@ export default function EditCustomerLoading() {
           </div>
         </section>
       </div>
-    </main>
+    </div>
   );
 }

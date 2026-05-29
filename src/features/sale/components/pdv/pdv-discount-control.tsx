@@ -2,6 +2,7 @@
 
 import { cn } from "@/shared/lib/cn";
 import { onlyDecimalKeys, onlyDecimalPaste } from "@/shared/lib/masks";
+
 import type { UserRole } from "@/shared/auth/roles";
 
 type PdvDiscountControlProps = {

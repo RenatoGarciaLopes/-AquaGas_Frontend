@@ -4,12 +4,12 @@ import { CreateCustomerForm } from "@/features/customer/components/create-custom
 
 export default function NewCustomerPage() {
   return (
-    <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <PageHeader
         title="Cadastrar cliente"
         description="Adicione um novo cliente ao sistema."
       />
       <CreateCustomerForm />
-    </main>
+    </div>
   );
 }

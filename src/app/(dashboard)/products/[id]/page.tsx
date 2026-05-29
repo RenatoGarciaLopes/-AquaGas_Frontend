@@ -27,12 +27,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
       if (error.status === 404) notFound();
       if (error.status === 403) {
         return (
-          <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+          <div className="space-y-6 p-4 sm:p-6 lg:p-8">
             <ErrorState
               title="Sem permissão"
               description="Você não tem acesso a este produto."
             />
-          </main>
+          </div>
         );
       }
     }
@@ -40,8 +40,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <ProductDetail product={product} canManage={canManage} />
-    </main>
+    </div>
   );
 }

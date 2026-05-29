@@ -3,7 +3,7 @@ const COLS = ["Cliente", "Ciclo", "Status", "Total", "Início", "Fim"];
 
 export default function PlansLoading() {
   return (
-    <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-2">
           <div className="bg-muted h-9 w-32 animate-pulse rounded-lg" />
@@ -43,6 +43,6 @@ export default function PlansLoading() {
           </table>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

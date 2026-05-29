@@ -72,7 +72,7 @@ export default async function SalesPage({ searchParams }: SalesPageProps) {
   }
 
   return (
-    <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <PageHeader
         title="Vendas"
         description="Histórico de vendas avulsas registradas no sistema."
@@ -92,6 +92,6 @@ export default async function SalesPage({ searchParams }: SalesPageProps) {
       />
 
       <SalesTable initialData={sales} query={query} />
-    </main>
+    </div>
   );
 }

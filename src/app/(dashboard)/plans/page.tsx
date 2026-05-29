@@ -11,7 +11,7 @@ import { ErrorState } from "@/shared/ui/error-state";
 import { listPlans } from "@/features/plan/api/plan.api";
 import { PlansTable } from "@/features/plan/components/plans-table";
 import { PlansToolbar } from "@/features/plan/components/plans-toolbar";
-import type { PlansQuery, PlanStatus, PlanCycle } from "@/features/plan/types";
+import type { PlanCycle, PlansQuery, PlanStatus } from "@/features/plan/types";
 
 type PlansPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -74,19 +74,19 @@ export default async function PlansPage({ searchParams }: PlansPageProps) {
     }
     if (error instanceof ApiError && error.status === 403) {
       return (
-        <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+        <div className="space-y-6 p-4 sm:p-6 lg:p-8">
           <ErrorState
             title="Sem permissão"
             description="Seu usuário não possui acesso à lista de planos."
           />
-        </main>
+        </div>
       );
     }
     throw error;
   }
 
   return (
-    <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="flex min-h-full flex-col gap-6 p-4 pb-8 sm:p-6 sm:pb-10 lg:p-8 lg:pb-12">
       <PageHeader
         title="Planos"
         description="Gerencie planos de assinatura de água e gás dos clientes."
@@ -105,6 +105,6 @@ export default async function PlansPage({ searchParams }: PlansPageProps) {
         initialSearch={query.search}
       />
       <PlansTable initialData={plans} query={query} />
-    </main>
+    </div>
   );
 }

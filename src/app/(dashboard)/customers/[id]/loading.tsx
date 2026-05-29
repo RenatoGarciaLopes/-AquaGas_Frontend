@@ -1,6 +1,6 @@
 export default function CustomerDetailLoading() {
   return (
-    <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       {/* back link */}
       <div className="bg-muted h-5 w-40 animate-pulse rounded" />
 
@@ -76,6 +76,6 @@ export default function CustomerDetailLoading() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

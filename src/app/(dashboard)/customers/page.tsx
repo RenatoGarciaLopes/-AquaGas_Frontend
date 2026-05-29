@@ -69,19 +69,19 @@ export default async function CustomersPage({
     }
     if (error instanceof ApiError && error.status === 403) {
       return (
-        <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+        <div className="space-y-6 p-4 sm:p-6 lg:p-8">
           <ErrorState
             title="Sem permissão"
             description="Seu usuário não possui acesso à lista de clientes."
           />
-        </main>
+        </div>
       );
     }
     throw error;
   }
 
   return (
-    <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <PageHeader
         title="Clientes"
         description="Consulte clientes pessoa física e pessoa jurídica cadastrados no sistema."
@@ -100,6 +100,6 @@ export default async function CustomersPage({
         initialSearch={query.search}
       />
       <CustomersTable canManage={canManage} initialData={customers} query={query} />
-    </main>
+    </div>
   );
 }

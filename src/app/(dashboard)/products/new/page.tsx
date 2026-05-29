@@ -10,22 +10,22 @@ export default async function NewProductPage() {
 
   if (!isGerente(role)) {
     return (
-      <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+      <div className="space-y-6 p-4 sm:p-6 lg:p-8">
         <ErrorState
           title="Sem permissão"
           description="Apenas gerentes podem cadastrar produtos."
         />
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <PageHeader
         title="Cadastrar produto"
         description="Adicione um novo produto ao catálogo."
       />
       <CreateProductForm />
-    </main>
+    </div>
   );
 }
