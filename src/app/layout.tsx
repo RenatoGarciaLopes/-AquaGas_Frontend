@@ -1,5 +1,12 @@
+import { Toaster } from "sonner";
 import type { Metadata } from "next";
 import { Geist, Inter, Geist_Mono } from "next/font/google";
+
+import { AuthProvider } from "@/shared/providers/auth-provider";
+import { ThemeProvider } from "@/shared/providers/theme-provider";
+import { QueryProvider } from "@/shared/providers/query-provider";
+
+import { SessionExpiredDialog } from "@/features/auth/components/session-expired-dialog";
 
 import "./globals.css";
 
@@ -30,10 +37,26 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <QueryProvider>
+            <AuthProvider>
+              {children}
+              <SessionExpiredDialog />
+            </AuthProvider>
+          </QueryProvider>
+          <Toaster richColors position="top-right" />
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

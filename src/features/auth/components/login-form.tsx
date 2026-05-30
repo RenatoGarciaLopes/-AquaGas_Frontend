@@ -1,19 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import { Icon } from "@iconify/react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { Eye, LogIn, EyeOff } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { cn } from "@/shared/lib/cn";
+import { Icons } from "@/shared/lib/icons";
 
-import { postLogin } from "@/features/auth/api/post-login";
+import { ApiError } from "@/shared/api/errors";
+
+import { login } from "@/features/auth/api/auth.api";
 import { useAuthStore } from "@/features/auth/stores/auth-store";
 import {
   loginSchema,
   type LoginSchema,
 } from "@/features/auth/schemas/login-schema";
+
+// Login page is intentionally always dark — colors are hardcoded, not theme-dependent.
 
 type LoginFormProps = {
   sessionExpired?: boolean;
@@ -23,7 +28,7 @@ export function LoginForm({ sessionExpired = false }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
   const router = useRouter();
-  const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const setSession = useAuthStore((state) => state.setSession);
 
   const {
     register,
@@ -41,23 +46,26 @@ export function LoginForm({ sessionExpired = false }: LoginFormProps) {
     setRequestError(null);
 
     try {
-      const response = await postLogin(data);
-      setAccessToken(response.accessToken);
-      router.push("/");
-      router.refresh();
+      const user = await login(data);
+      setSession(user);
+      router.push("/employees");
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Não foi possível autenticar.";
+        error instanceof ApiError
+          ? error.message
+          : error instanceof Error
+            ? error.message
+            : "Não foi possível autenticar.";
       setRequestError(message);
     }
   });
 
   return (
-    <section className="flex min-h-screen items-center justify-center bg-[var(--aquagas-panel)] px-6 py-10">
-      <div className="w-full max-w-md rounded-2xl border border-[var(--aquagas-panel-border)] bg-[#0b2442]/70 p-8 shadow-[0_24px_48px_rgba(0,0,0,0.35)] backdrop-blur">
+    <section className="flex min-h-screen items-center justify-center bg-[#071830] px-6 py-10">
+      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0b2442]/70 p-8 shadow-[0_24px_48px_rgba(0,0,0,0.35)] backdrop-blur">
         <header className="mb-7">
           <h2 className="text-4xl font-semibold text-white">Entrar</h2>
-          <p className="mt-2 text-sm text-[var(--aquagas-muted)]">
+          <p className="mt-2 text-sm text-[#8caad1]">
             Acesse o painel de gestão
           </p>
         </header>
@@ -88,7 +96,7 @@ export function LoginForm({ sessionExpired = false }: LoginFormProps) {
           }}
         >
           <label htmlFor="userName" className="block space-y-2">
-            <span className="text-xs font-semibold tracking-[0.2em] text-[var(--aquagas-muted)] uppercase">
+            <span className="text-xs font-semibold tracking-[0.2em] text-[#8caad1] uppercase">
               Nome de usuário
             </span>
             <input
@@ -96,11 +104,9 @@ export function LoginForm({ sessionExpired = false }: LoginFormProps) {
               type="text"
               placeholder="usuario.gerente"
               className={cn(
-                "w-full rounded-xl border bg-[var(--aquagas-input)] px-4 py-3 text-base text-white transition outline-none",
-                "placeholder:text-slate-300/50 focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-400/30",
-                errors.userName
-                  ? "border-red-300/70"
-                  : "border-[var(--aquagas-input-border)]",
+                "w-full rounded-xl border bg-[#0d2040] px-4 py-3 text-base text-white transition outline-none",
+                "placeholder:text-slate-400/60 focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-400/30",
+                errors.userName ? "border-red-300/70" : "border-white/[0.14]",
               )}
               {...register("userName")}
             />
@@ -112,7 +118,7 @@ export function LoginForm({ sessionExpired = false }: LoginFormProps) {
           </label>
 
           <label htmlFor="password" className="block space-y-2">
-            <span className="text-xs font-semibold tracking-[0.2em] text-[var(--aquagas-muted)] uppercase">
+            <span className="text-xs font-semibold tracking-[0.2em] text-[#8caad1] uppercase">
               Senha
             </span>
             <div className="relative">
@@ -121,17 +127,15 @@ export function LoginForm({ sessionExpired = false }: LoginFormProps) {
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 className={cn(
-                  "w-full rounded-xl border bg-[var(--aquagas-input)] px-4 py-3 pr-12 text-base text-white transition outline-none",
-                  "placeholder:text-slate-300/50 focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-400/30",
-                  errors.password
-                    ? "border-red-300/70"
-                    : "border-[var(--aquagas-input-border)]",
+                  "w-full rounded-xl border bg-[#0d2040] px-4 py-3 pr-12 text-base text-white transition outline-none",
+                  "placeholder:text-slate-400/60 focus:border-cyan-300/60 focus:ring-2 focus:ring-cyan-400/30",
+                  errors.password ? "border-red-300/70" : "border-white/[0.14]",
                 )}
                 {...register("password")}
               />
               <button
                 type="button"
-                className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-300 transition hover:text-white"
+                className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 transition hover:text-white"
                 onClick={() => setShowPassword((current) => !current)}
                 aria-label={
                   showPassword
@@ -139,11 +143,10 @@ export function LoginForm({ sessionExpired = false }: LoginFormProps) {
                     : "Mostrar senha digitada"
                 }
               >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                <Icon
+                  icon={showPassword ? Icons.eyeOff : Icons.eye}
+                  className="h-4 w-4"
+                />
               </button>
             </div>
             {errors.password ? (
@@ -156,16 +159,12 @@ export function LoginForm({ sessionExpired = false }: LoginFormProps) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--aquagas-primary)] px-4 py-3 text-base font-semibold text-white transition hover:bg-[var(--aquagas-primary-hover)] focus:ring-2 focus:ring-cyan-300/50 focus:ring-offset-2 focus:ring-offset-transparent disabled:cursor-not-allowed disabled:opacity-70"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#00abea] px-4 py-3 text-base font-semibold text-white transition hover:bg-[#0099d1] focus:ring-2 focus:ring-cyan-300/50 focus:ring-offset-2 focus:ring-offset-transparent disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isSubmitting ? "Entrando..." : "Entrar"}
-            <LogIn className="h-4 w-4" />
+            <Icon icon={Icons.logIn} className="h-4 w-4" />
           </button>
         </form>
-
-        <p className="mt-6 text-center text-xs text-[var(--aquagas-muted)]">
-          Dica: inclua “gerente” no usuário para entrar como GERENTE
-        </p>
       </div>
     </section>
   );

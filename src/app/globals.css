@@ -1,41 +1,263 @@
 @import "tailwindcss";
 
+/* Dark mode via .dark class (next-themes) */
+@custom-variant dark (&:is(.dark *));
+
+/* ─────────────────────────────────────────────
+   Light mode tokens
+   ───────────────────────────────────────────── */
 :root {
-  --background: #081a34;
-  --foreground: #f0f7ff;
-  --aquagas-panel: #0e2848;
-  --aquagas-panel-border: rgba(255, 255, 255, 0.1);
-  --aquagas-input: rgba(255, 255, 255, 0.08);
-  --aquagas-input-border: rgba(255, 255, 255, 0.14);
-  --aquagas-primary: #00abea;
-  --aquagas-primary-hover: #0099d1;
-  --aquagas-muted: rgba(210, 229, 255, 0.64);
+  /* Surface */
+  --background: 210 40% 98%;
+  --foreground: 218 76% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 218 76% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 218 76% 10%;
+
+  /* Brand — primary é a cor de ação principal */
+  --primary: 198 100% 30%;          /* #009abf — acessível em fundo branco */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 218 30% 92%;
+  --secondary-foreground: 218 60% 25%;
+  --muted: 218 20% 94%;
+  --muted-foreground: 218 25% 45%;
+  --accent: 198 60% 88%;
+  --accent-foreground: 198 100% 20%;
+
+  /* Semântico */
+  --destructive: 0 84% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 38 92% 15%;
+  --success: 142 71% 37%;
+  --success-foreground: 0 0% 100%;
+
+  /* Borda / Input */
+  --border: 218 20% 88%;
+  --input: 218 20% 90%;
+  --ring: 198 100% 30%;
+
+  /* Raio padrão */
+  --radius: 0.5rem;
+
+  /* Sidebar */
+  --sidebar: 218 30% 96%;
+  --sidebar-foreground: 218 60% 20%;
+  --sidebar-border: 218 20% 88%;
+  --sidebar-primary: 198 100% 30%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 218 30% 92%;
+  --sidebar-accent-foreground: 218 60% 25%;
+  --sidebar-ring: 198 100% 30%;
 }
 
+/* ─────────────────────────────────────────────
+   Dark mode tokens — identidade visual AquaGás
+   ───────────────────────────────────────────── */
+.dark {
+  /* Surface — paleta navy da marca */
+  --background: 218 76% 11%;        /* #081a34 */
+  --foreground: 210 100% 97%;       /* #f0f7ff */
+  --card: 218 67% 17%;              /* #0e2848 */
+  --card-foreground: 210 100% 97%;
+  --popover: 218 67% 14%;
+  --popover-foreground: 210 100% 97%;
+
+  /* Brand */
+  --primary: 198 100% 46%;          /* #00abea */
+  --primary-foreground: 218 76% 8%;
+  --secondary: 218 50% 22%;
+  --secondary-foreground: 210 80% 90%;
+  --muted: 218 40% 20%;
+  --muted-foreground: 210 40% 65%;  /* ~rgba(210,229,255,.64) */
+  --accent: 198 70% 56%;
+  --accent-foreground: 218 76% 8%;
+
+  /* Semântico */
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --warning: 38 90% 55%;
+  --warning-foreground: 38 90% 10%;
+  --success: 142 65% 45%;
+  --success-foreground: 0 0% 98%;
+
+  /* Borda / Input */
+  --border: 218 50% 22%;            /* ~rgba(255,255,255,.10) */
+  --input: 218 50% 18%;             /* ~rgba(255,255,255,.08) */
+  --ring: 198 100% 46%;
+
+  /* Sidebar — levemente mais escuro que o fundo */
+  --sidebar: 218 76% 9%;
+  --sidebar-foreground: 210 100% 97%;
+  --sidebar-border: 218 50% 20%;
+  --sidebar-primary: 198 100% 46%;
+  --sidebar-primary-foreground: 218 76% 8%;
+  --sidebar-accent: 218 50% 22%;
+  --sidebar-accent-foreground: 210 80% 90%;
+  --sidebar-ring: 198 100% 46%;
+}
+
+/* ─────────────────────────────────────────────
+   Mapeamento Tailwind v4 — @theme inline
+   ───────────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-aquagas-panel: var(--aquagas-panel);
-  --color-aquagas-panel-border: var(--aquagas-panel-border);
-  --color-aquagas-input: var(--aquagas-input);
-  --color-aquagas-input-border: var(--aquagas-input-border);
-  --color-aquagas-primary: var(--aquagas-primary);
-  --color-aquagas-primary-hover: var(--aquagas-primary-hover);
-  --color-aquagas-muted: var(--aquagas-muted);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-inter: var(--font-inter);
+  /* Superfície */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  /* Marca */
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  /* Semântico */
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+
+  /* Borda / Input */
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  /* Sidebar */
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  /* Escala de raio */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  /* Tipografia */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #081a34;
-    --foreground: #f0f7ff;
-  }
+/* ─────────────────────────────────────────────
+   Login page — always dark, theme-independent
+   ───────────────────────────────────────────── */
+:root {
+  --aquagas-panel:         218 76% 8%;
+  --aquagas-panel-border:  218 50% 22%;
+  --aquagas-input:         218 60% 16%;
+  --aquagas-input-border:  218 50% 26%;
+  --aquagas-muted:         210 30% 62%;
+  --aquagas-primary:       198 100% 46%;
+  --aquagas-primary-hover: 198 100% 40%;
+}
+
+/* Autofill — suppresses browser yellow injection on login inputs */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #0d2040 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ─────────────────────────────────────────────
+   Base
+   ───────────────────────────────────────────── */
+*,
+::before,
+::after {
+  border-color: hsl(var(--border));
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-sans);
+}
+
+/* Focus ring acessível em interativos.
+   Form fields (input/textarea/select) controlam o foco no nível do componente
+   — o anel global causava borda azul duplicada em campos com estilo próprio. */
+:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible {
+  outline: none;
+}
+
+/* ─────────────────────────────────────────────
+   Animações utilitárias (transform/opacity apenas)
+   Definidas apenas quando o usuário não pede movimento reduzido — assim,
+   sob `prefers-reduced-motion: reduce` as classes ficam sem regra e o
+   conteúdo aparece imediatamente, sem ficar preso em opacity:0.
+   ───────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes aq-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes aq-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes aq-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .aq-animate-fade-up {
+    animation: aq-fade-up 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .aq-animate-fade {
+    animation: aq-fade 0.2s ease-out both;
+  }
+
+  .aq-animate-pop {
+    animation: aq-pop 0.18s ease-out both;
+  }
 }
