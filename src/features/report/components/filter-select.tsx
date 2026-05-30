@@ -35,7 +35,12 @@ export function FilterSelect({
   }
 
   return (
-    <label className={cn("relative block min-w-40", className)}>
+    <label
+      className={cn(
+        "relative block min-w-0 flex-1 sm:min-w-40 sm:flex-none",
+        className,
+      )}
+    >
       <span className="text-muted-foreground absolute top-1.5 left-4 text-xs font-medium">
         {placeholder}
       </span>

@@ -54,12 +54,12 @@ export function DateRangePicker<TKey extends string = string>({
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 sm:flex-row sm:items-stretch",
+        "flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-stretch",
         className,
       )}
     >
       {presets.length > 0 ? (
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}

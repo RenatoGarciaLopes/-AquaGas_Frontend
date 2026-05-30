@@ -9,9 +9,12 @@ import { cn } from "@/shared/lib/cn";
 import { SidebarIcons } from "@/shared/lib/icons";
 
 import { useUiStore } from "@/shared/store/ui-store";
+import { useHasRole } from "@/shared/hooks/use-has-role";
 
 type NavItem = {
   exact?: boolean;
+  /** Quando true, o item só aparece para usuários com perfil GERENTE. */
+  gerenteOnly?: boolean;
   highlight?: boolean;
   href: string;
   icon: IconifyIcon;
@@ -37,7 +40,12 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/plans", icon: SidebarIcons.fileText, label: "Planos" },
   { href: "/products", icon: SidebarIcons.package, label: "Produtos" },
   { href: "/employees", icon: SidebarIcons.userCog, label: "Funcionários" },
-  { href: "/reports", icon: SidebarIcons.barChart, label: "Relatórios" },
+  {
+    gerenteOnly: true,
+    href: "/reports",
+    icon: SidebarIcons.barChart,
+    label: "Relatórios",
+  },
 ];
 
 function isActive(item: NavItem, pathname: string): boolean {
@@ -47,6 +55,9 @@ function isActive(item: NavItem, pathname: string): boolean {
 
 function SidebarContent({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
+  const isGerente = useHasRole("GERENTE");
+
+  const items = NAV_ITEMS.filter((item) => !item.gerenteOnly || isGerente);
 
   return (
     <div className="flex h-full flex-col bg-[#0b1e38]">
@@ -79,7 +90,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       </div>
 
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-1">
-        {NAV_ITEMS.map((item) => {
+        {items.map((item) => {
           const active = isActive(item, pathname);
 
           return (
