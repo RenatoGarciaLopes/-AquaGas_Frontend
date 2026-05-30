@@ -138,7 +138,7 @@ async function tryRefresh(refreshToken: string): Promise<{
   }
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const refreshCookie = request.cookies.get(REFRESH_COOKIE_NAME);
   const accessCookie = request.cookies.get(ACCESS_COOKIE_NAME);
   const isLoginRoute = request.nextUrl.pathname.startsWith(LOGIN_PATH);
