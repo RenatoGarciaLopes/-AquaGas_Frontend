@@ -22,25 +22,48 @@ export function digitsOnly(value: string): string {
   return value.replace(/\D/g, "");
 }
 
-export function maskCpfInput(value: string): string {
-  const digits = digitsOnly(value).slice(0, 11);
-  return digits
-    .replace(/^(\d{3})(\d)/, "$1.$2")
-    .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
-    .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4");
-}
+function applyPattern(digits: string, pattern: string) {
+  let result = "";
+  let index = 0;
 
-export function maskPhoneInput(value: string): string {
-  const digits = digitsOnly(value).slice(0, 11);
-  if (digits.length <= 10) {
-    return digits
-      .replace(/^(\d{2})(\d)/, "($1) $2")
-      .replace(/^(\(\d{2}\) \d{4})(\d)/, "$1-$2");
+  for (const char of pattern) {
+    if (char === "0") {
+      if (index >= digits.length) break;
+      result += digits[index];
+      index += 1;
+    } else if (index < digits.length) {
+      result += char;
+    }
   }
 
-  return digits
-    .replace(/^(\d{2})(\d)/, "($1) $2")
-    .replace(/^(\(\d{2}\) \d{5})(\d)/, "$1-$2");
+  return result;
+}
+
+export function maskCpf(value: string) {
+  return applyPattern(digitsOnly(value).slice(0, 11), "000.000.000-00");
+}
+
+export function maskCnpj(value: string) {
+  return applyPattern(digitsOnly(value).slice(0, 14), "00.000.000/0000-00");
+}
+
+export function maskCustomerDocument(
+  value: string,
+  type: "PF" | "PJ" | undefined,
+) {
+  return type === "PJ" ? maskCnpj(value) : maskCpf(value);
+}
+
+export function maskPhone(value: string) {
+  const digits = digitsOnly(value).slice(0, 11);
+  if (digits.length <= 10) {
+    return applyPattern(digits, "(00) 0000-0000");
+  }
+  return applyPattern(digits, "(00) 00000-0000");
+}
+
+export function maskCep(value: string) {
+  return applyPattern(digitsOnly(value).slice(0, 8), "00000-000");
 }
 
 export function centsToBrl(cents: number): string {

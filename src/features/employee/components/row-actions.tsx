@@ -9,6 +9,9 @@ import { useRef, useState, useEffect } from "react";
 
 import { Icons } from "@/shared/lib/icons";
 
+import { ApiError } from "@/shared/api/errors";
+import { apiDelete } from "@/shared/api/client";
+
 import type { EmployeeWithUser } from "@/features/employee/types";
 
 type RowActionsProps = {
@@ -72,23 +75,16 @@ export function RowActions({ canManage, employee }: RowActionsProps) {
 
     setIsDeactivating(true);
     try {
-      const res = await fetch(`/api/employees/${id}`, { method: "DELETE" });
-
-      if (res.status === 401) {
-        router.push("/login?expired=1");
-        return;
-      }
-      if (res.status === 403) {
+      await apiDelete(`/api/employees/${id}`);
+      toast.success(`${name} foi desativado com sucesso.`);
+      router.refresh();
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 403) {
         toast.error("Sem permissão para desativar funcionários.");
         return;
       }
-      if (!res.ok) {
-        toast.error("Não foi possível desativar o funcionário.");
-        return;
-      }
-
-      toast.success(`${name} foi desativado com sucesso.`);
-      router.refresh();
+      if (error instanceof ApiError && error.status === 401) return;
+      toast.error("Não foi possível desativar o funcionário.");
     } finally {
       setIsDeactivating(false);
     }

@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { ApiError } from "@/shared/api/errors";
 import { isGerente } from "@/shared/auth/roles";
 import { ErrorState } from "@/shared/ui/error-state";
-import { maskCpfInput, maskPhoneInput } from "@/shared/lib/masks";
+import { maskCpf, maskPhone } from "@/shared/lib/masks";
 import { getCurrentUserRole } from "@/shared/auth/server";
 
 import { getEmployeeById } from "@/features/employee/api/employee.api";
@@ -73,8 +73,8 @@ export default async function EditEmployeePage({
     password: "",
     role: toEditableRole(user.role),
     name: employee.name,
-    cpf: maskCpfInput(employee.cpf),
-    phone: employee.phone ? maskPhoneInput(employee.phone) : "",
+    cpf: maskCpf(employee.cpf),
+    phone: employee.phone ? maskPhone(employee.phone) : "",
     email: employee.email ?? "",
   };
 

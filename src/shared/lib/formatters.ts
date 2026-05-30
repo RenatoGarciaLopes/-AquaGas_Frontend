@@ -18,6 +18,19 @@ export function formatCpf(value: string | null | undefined) {
   return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
 }
 
+export function formatCnpj(value: string | null | undefined) {
+  const digits = onlyDigits(value);
+
+  if (digits.length !== 14) {
+    return value || "-";
+  }
+
+  return digits.replace(
+    /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
+    "$1.$2.$3/$4-$5",
+  );
+}
+
 export function formatPhone(value: string | null | undefined) {
   const digits = onlyDigits(value);
 
@@ -41,6 +54,17 @@ export function formatCurrency(value: number | null | undefined) {
     style: "currency",
     currency: "BRL",
   }).format(value);
+}
+
+/**
+ * Converte o valor de um `<input type="date">` ("YYYY-MM-DD") em ISO ao
+ * meio-dia UTC. Backends que validam `data > UtcNow` rejeitam uma data sem hora
+ * (interpretada como meia-noite UTC) em fusos negativos como UTC−3, pois a
+ * meia-noite já está no passado. Meio-dia UTC garante o futuro e preserva o dia.
+ */
+export function dateInputToIso(value: string): string {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(Date.UTC(year!, month! - 1, day!, 12)).toISOString();
 }
 
 export function formatDate(value: string | null | undefined) {

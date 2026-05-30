@@ -10,12 +10,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Icons } from "@/shared/lib/icons";
 import { applyBackendErrors } from "@/shared/lib/errors";
-import { digitsOnly, maskCpfInput, maskPhoneInput } from "@/shared/lib/masks";
+import { digitsOnly, maskCpf, maskPhone } from "@/shared/lib/masks";
 
 import { FormField, TextField } from "@/shared/ui/form-field";
 
 import type { RegisterEmployeeInput } from "@/features/employee/types";
-import { parseEmployeeError } from "@/features/employee/lib/employee-errors";
+import { parseCreateEmployeeError } from "@/features/employee/lib/employee-errors";
 import { PasswordStrength } from "@/features/employee/components/password-strength";
 import {
   createEmployeeSchema,
@@ -98,7 +98,7 @@ export function CreateEmployeeForm() {
     }
 
     const payload = await response.json().catch(() => null);
-    const { fieldErrors, message } = parseEmployeeError(
+    const { fieldErrors, message } = parseCreateEmployeeError(
       payload,
       response.status,
     );
@@ -227,7 +227,7 @@ export function CreateEmployeeForm() {
               error={errors.cpf?.message}
               {...register("cpf", {
                 onChange: (event) => {
-                  const masked = maskCpfInput(event.target.value);
+                  const masked = maskCpf(event.target.value);
                   setValue("cpf", masked, {
                     shouldDirty: true,
                     shouldValidate: digitsOnly(masked).length === 11,
@@ -248,7 +248,7 @@ export function CreateEmployeeForm() {
               error={errors.phone?.message}
               {...register("phone", {
                 onChange: (event) => {
-                  const masked = maskPhoneInput(event.target.value);
+                  const masked = maskPhone(event.target.value);
                   setValue("phone", masked, {
                     shouldDirty: true,
                     shouldValidate: digitsOnly(masked).length >= 10,

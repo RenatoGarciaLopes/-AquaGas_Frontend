@@ -64,23 +64,27 @@ export default async function ProductsPage({
     }
     if (error instanceof ApiError && error.status === 403) {
       return (
-        <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+        <div className="space-y-6 p-4 sm:p-6 lg:p-8">
           <ErrorState
             title="Sem permissão"
             description="Seu usuário não possui acesso ao catálogo de produtos."
           />
-        </main>
+        </div>
       );
     }
     throw error;
   }
 
   return (
-    <main className="space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <PageHeader
         title="Produtos"
         description="Catálogo de produtos disponíveis"
-        actions={
+      />
+      <ProductsToolbar
+        key={`${query.search ?? ""}-${query.type ?? ""}`}
+        initialSearch={query.search}
+        actionSlot={
           canManage ? (
             <Link
               href="/products/new"
@@ -92,15 +96,11 @@ export default async function ProductsPage({
           ) : null
         }
       />
-      <ProductsToolbar
-        key={`${query.search ?? ""}-${query.type ?? ""}`}
-        initialSearch={query.search}
-      />
       <ProductsTable
         canManage={canManage}
         initialData={products}
         query={query}
       />
-    </main>
+    </div>
   );
 }

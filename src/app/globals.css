@@ -210,3 +210,54 @@ select:focus,
 select:focus-visible {
   outline: none;
 }
+
+/* ─────────────────────────────────────────────
+   Animações utilitárias (transform/opacity apenas)
+   Definidas apenas quando o usuário não pede movimento reduzido — assim,
+   sob `prefers-reduced-motion: reduce` as classes ficam sem regra e o
+   conteúdo aparece imediatamente, sem ficar preso em opacity:0.
+   ───────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes aq-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes aq-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes aq-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .aq-animate-fade-up {
+    animation: aq-fade-up 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .aq-animate-fade {
+    animation: aq-fade 0.2s ease-out both;
+  }
+
+  .aq-animate-pop {
+    animation: aq-pop 0.18s ease-out both;
+  }
+}

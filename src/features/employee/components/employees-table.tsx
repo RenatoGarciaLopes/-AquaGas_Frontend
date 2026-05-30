@@ -7,14 +7,14 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { Icons } from "@/shared/lib/icons";
-import {
-  formatDate,
-  formatPhone,
-  formatCpfMasked,
-} from "@/shared/lib/formatters";
+import { formatPhone, formatCpfMasked } from "@/shared/lib/formatters";
 
-import { DataTable } from "@/shared/ui/data-table";
 import { EmptyState } from "@/shared/ui/empty-state";
+import {
+  DataTable,
+  STICKY_RIGHT_CELL,
+  STICKY_RIGHT_HEADER,
+} from "@/shared/ui/data-table";
 
 import { RowActions } from "@/features/employee/components/row-actions";
 import type {
@@ -42,22 +42,6 @@ function RoleBadge({ role }: { role: string }) {
   return (
     <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
       {label}
-    </span>
-  );
-}
-
-function StatusBadge({ isActive }: { isActive?: boolean }) {
-  const active = isActive !== false;
-  if (active) {
-    return (
-      <span className="inline-flex items-center rounded-full border border-green-200 bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-700">
-        Ativo
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-xs font-semibold text-zinc-500">
-      Inativo
     </span>
   );
 }
@@ -105,7 +89,7 @@ export function EmployeesTable({
       {
         accessorFn: (row) => row.employee.cpf,
         cell: ({ getValue }) => (
-          <span className="text-muted-foreground font-mono">
+          <span className="text-muted-foreground font-mono whitespace-nowrap">
             {formatCpfMasked(getValue<string>())}
           </span>
         ),
@@ -116,7 +100,7 @@ export function EmployeesTable({
       {
         accessorFn: (row) => row.employee.phone,
         cell: ({ getValue }) => (
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground whitespace-nowrap">
             {formatPhone(getValue<string | null>())}
           </span>
         ),
@@ -127,7 +111,7 @@ export function EmployeesTable({
       {
         accessorFn: (row) => row.employee.email,
         cell: ({ getValue }) => (
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground whitespace-nowrap">
             {getValue<string | null>() ?? "—"}
           </span>
         ),
@@ -143,26 +127,6 @@ export function EmployeesTable({
         id: "role",
       },
       {
-        accessorFn: (row) => row.employee.isActive,
-        cell: ({ getValue }) => (
-          <StatusBadge isActive={getValue<boolean | undefined>()} />
-        ),
-        enableSorting: false,
-        header: "Status",
-        id: "status",
-      },
-      {
-        accessorFn: (row) => row.employee.createdAt,
-        cell: ({ getValue }) => (
-          <span className="text-muted-foreground">
-            {formatDate(getValue<string | undefined>())}
-          </span>
-        ),
-        enableSorting: false,
-        header: "Criado em",
-        id: "createdAt",
-      },
-      {
         cell: ({ row }) => (
           <div className="text-right">
             <RowActions canManage={canManage} employee={row.original} />
@@ -171,6 +135,10 @@ export function EmployeesTable({
         enableSorting: false,
         header: () => <span className="sr-only">Ações</span>,
         id: "actions",
+        meta: {
+          cellClassName: STICKY_RIGHT_CELL,
+          headerClassName: STICKY_RIGHT_HEADER,
+        },
       },
     ],
     [canManage],

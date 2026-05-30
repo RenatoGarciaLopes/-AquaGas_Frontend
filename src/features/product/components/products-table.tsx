@@ -9,13 +9,16 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Icons } from "@/shared/lib/icons";
 import { formatCurrency } from "@/shared/lib/formatters";
 
-import { DataTable } from "@/shared/ui/data-table";
 import { EmptyState } from "@/shared/ui/empty-state";
+import {
+  DataTable,
+  STICKY_RIGHT_CELL,
+  STICKY_RIGHT_HEADER,
+} from "@/shared/ui/data-table";
 
 import { RowActions } from "@/features/product/components/row-actions";
 import { ProductStockCell } from "@/features/product/components/product-stock-cell";
 import { ProductTypeBadge } from "@/features/product/components/product-type-badge";
-import { ProductStatusBadge } from "@/features/product/components/product-status-badge";
 import type {
   ProductsQuery,
   ProductResponse,
@@ -88,12 +91,6 @@ export function ProductsTable({
         id: "quantity",
       },
       {
-        cell: () => <ProductStatusBadge />,
-        enableSorting: false,
-        header: "Status",
-        id: "status",
-      },
-      {
         cell: ({ row }) => (
           <div className="text-right">
             <RowActions canManage={canManage} product={row.original} />
@@ -102,6 +99,10 @@ export function ProductsTable({
         enableSorting: false,
         header: () => <span className="sr-only">Ações</span>,
         id: "actions",
+        meta: {
+          cellClassName: STICKY_RIGHT_CELL,
+          headerClassName: STICKY_RIGHT_HEADER,
+        },
       },
     ],
     [canManage],

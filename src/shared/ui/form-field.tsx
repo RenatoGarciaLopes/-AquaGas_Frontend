@@ -35,7 +35,11 @@ export function FormField({
       {hint && !error ? (
         <p className="text-muted-foreground text-xs">{hint}</p>
       ) : null}
-      {error ? <p className="text-xs text-red-400">{error}</p> : null}
+      {error ? (
+        <p className="text-xs font-medium text-red-700 dark:text-red-300">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -64,7 +68,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         <div
           className={cn(
             "bg-muted/40 hover:bg-muted/60 focus-within:bg-muted/60 rounded-lg px-4 py-2.5 transition",
-            error ? "ring-1 ring-red-400/70" : "",
+            error ? "ring-1 ring-red-500/70 dark:ring-red-400/70" : "",
           )}
         >
           <label
@@ -87,7 +91,11 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         {hint && !error ? (
           <p className="text-muted-foreground px-1 text-xs">{hint}</p>
         ) : null}
-        {error ? <p className="px-1 text-xs text-red-400">{error}</p> : null}
+        {error ? (
+          <p className="px-1 text-xs font-medium text-red-700 dark:text-red-300">
+            {error}
+          </p>
+        ) : null}
       </div>
     );
   },

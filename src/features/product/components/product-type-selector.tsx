@@ -30,6 +30,8 @@ const OPTIONS: Option[] = [
 ];
 
 type ProductTypeSelectorProps = {
+  disabled?: boolean;
+  disabledReason?: string;
   error?: string;
   hint?: string;
   onChange: (value: ProductType) => void;
@@ -38,12 +40,16 @@ type ProductTypeSelectorProps = {
 };
 
 export function ProductTypeSelector({
+  disabled = false,
+  disabledReason,
   error,
   hint,
   onChange,
   required,
   value,
 }: ProductTypeSelectorProps) {
+  const showTooltip = disabled && Boolean(disabledReason);
+
   return (
     <fieldset className="space-y-2">
       <legend className="text-foreground text-sm font-medium">
@@ -52,39 +58,65 @@ export function ProductTypeSelector({
       <div className="grid gap-3 sm:grid-cols-2">
         {OPTIONS.map((option) => {
           const isActive = value === option.value;
+          const tooltipId = showTooltip
+            ? `product-type-${option.value}-tooltip`
+            : undefined;
+
           return (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => onChange(option.value)}
-              aria-pressed={isActive}
-              className={cn(
-                "bg-background flex items-start gap-3 rounded-xl border p-4 text-left transition",
-                "hover:border-cyan-400/60 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none",
-                isActive
-                  ? "border-cyan-400 ring-2 ring-cyan-400/30"
-                  : "border-border",
-              )}
-            >
-              <span
+            <div key={option.value} className="group relative">
+              <button
+                type="button"
+                onClick={() => onChange(option.value)}
+                aria-pressed={isActive}
+                aria-disabled={disabled}
+                aria-describedby={tooltipId}
+                disabled={disabled}
                 className={cn(
-                  "rounded-lg p-2",
+                  "bg-background flex w-full items-start gap-3 rounded-xl border p-4 text-left transition",
+                  "focus:ring-2 focus:ring-cyan-400/40 focus:outline-none",
+                  !disabled && "hover:border-cyan-400/60",
                   isActive
-                    ? "bg-cyan-500/15 text-cyan-400"
-                    : "bg-muted text-muted-foreground",
+                    ? "border-cyan-400 ring-2 ring-cyan-400/30"
+                    : "border-border",
+                  disabled && "cursor-not-allowed opacity-60",
                 )}
               >
-                <Icon icon={option.icon} className="h-5 w-5" aria-hidden />
-              </span>
-              <span className="flex-1">
-                <span className="text-foreground block text-sm font-semibold">
-                  {option.label}
+                <span
+                  className={cn(
+                    "rounded-lg p-2",
+                    isActive
+                      ? "bg-cyan-500/15 text-cyan-400"
+                      : "bg-muted text-muted-foreground",
+                  )}
+                >
+                  <Icon icon={option.icon} className="h-5 w-5" aria-hidden />
                 </span>
-                <span className="text-muted-foreground mt-1 block text-xs">
-                  {option.description}
+                <span className="flex-1">
+                  <span className="text-foreground block text-sm font-semibold">
+                    {option.label}
+                  </span>
+                  <span className="text-muted-foreground mt-1 block text-xs">
+                    {option.description}
+                  </span>
                 </span>
-              </span>
-            </button>
+              </button>
+
+              {showTooltip ? (
+                <span
+                  id={tooltipId}
+                  role="tooltip"
+                  className={cn(
+                    "pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max max-w-xs -translate-x-1/2",
+                    "rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white shadow-lg",
+                    "opacity-0 transition-opacity duration-150",
+                    "group-focus-within:opacity-100 group-hover:opacity-100",
+                    "after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-4 after:border-transparent after:border-t-slate-900 after:content-['']",
+                  )}
+                >
+                  {disabledReason}
+                </span>
+              ) : null}
+            </div>
           );
         })}
       </div>
