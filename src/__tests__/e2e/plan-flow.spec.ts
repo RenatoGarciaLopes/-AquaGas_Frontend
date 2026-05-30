@@ -33,7 +33,20 @@ test.describe("plan flow", () => {
     await page.goto("/plans/plan-1");
 
     await expect(page.getByRole("button", { name: "Upgrade" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Downgrade" })).toBeVisible();
+
+    // Em mobile (<768px) os itens de ciclo de vida ficam dentro do menu kebab.
+    // O viewport do projeto é determinístico; o .click() auto-espera o kebab
+    // aparecer após a hidratação (useIsMobile parte de desktop no SSR).
+    const viewport = page.viewportSize();
+    if (viewport && viewport.width < 768) {
+      await page.getByRole("button", { name: "Mais ações do plano" }).click();
+    }
+
+    await expect(
+      page
+        .getByRole("button", { name: "Downgrade" })
+        .or(page.getByRole("menuitem", { name: "Downgrade" })),
+    ).toBeVisible();
     await expect(page.getByTitle("Confirmar entrega")).toBeVisible();
     await expect(page.getByTitle("Cancelar entrega")).toBeVisible();
     await expect(page.getByTitle("Confirmar pagamento")).toBeVisible();
