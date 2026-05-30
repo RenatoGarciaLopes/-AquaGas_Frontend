@@ -22,8 +22,12 @@ export function ErrorState({
       <div className="mb-4 rounded-full bg-red-500/20 p-3 text-red-600 dark:bg-red-400/15 dark:text-red-100">
         <Icon icon={Icons.alertTriangle} className="h-6 w-6" aria-hidden />
       </div>
-      <h2 className="text-lg font-semibold text-red-900 dark:text-white">{title}</h2>
-      <p className="mt-2 max-w-md text-sm text-red-700 dark:text-red-100/80">{description}</p>
+      <h2 className="text-lg font-semibold text-red-900 dark:text-white">
+        {title}
+      </h2>
+      <p className="mt-2 max-w-md text-sm text-red-700 dark:text-red-100/80">
+        {description}
+      </p>
       <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
         {retry ? (
           <button

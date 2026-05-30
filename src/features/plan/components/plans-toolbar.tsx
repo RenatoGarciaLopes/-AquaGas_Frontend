@@ -14,8 +14,8 @@ type PlansToolbarProps = {
   actionSlot?: ReactNode;
 };
 
-const STATUS_OPTIONS: Array<{ label: string; value: "" | PlanStatus }> = [
-  { label: "Todos os status", value: "" },
+const STATUS_OPTIONS: Array<{ label: string; value: "all" | PlanStatus }> = [
+  { label: "Todos os status", value: "all" },
   { label: "Ativo", value: "Active" },
   { label: "Suspenso", value: "Suspended" },
   { label: "Cancelado", value: "Canceled" },
@@ -41,7 +41,7 @@ export function PlansToolbar({
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentSearch = searchParams.get("search") ?? "";
-  const currentStatus = searchParams.get("status") ?? "";
+  const currentStatus = searchParams.get("status") ?? "Active";
   const currentCycle = searchParams.get("cycle") ?? "";
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export function PlansToolbar({
 
   function handleFilterChange(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
-    if (value) {
+    if (value && !(key === "status" && value === "Active")) {
       params.set(key, value);
     } else {
       params.delete(key);

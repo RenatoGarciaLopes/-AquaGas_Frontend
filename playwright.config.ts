@@ -6,6 +6,7 @@ export default defineConfig({
   },
   fullyParallel: true,
   outputDir: "test-results/playwright",
+  workers: 2,
   projects: [
     {
       name: "chromium",

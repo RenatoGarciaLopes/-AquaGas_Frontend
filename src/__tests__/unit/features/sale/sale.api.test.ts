@@ -80,6 +80,26 @@ describe("sale.api", () => {
     expect(result.data.map((sale) => sale.id)).toEqual(["s1"]);
   });
 
+  it("mantém filtros de data e valor inclusivos nos limites", async () => {
+    serverFetchMock.mockResolvedValueOnce({
+      data: SALES,
+      error: null,
+      success: true,
+      timestamp: "2026-05-26T00:00:00Z",
+    });
+
+    const result = await listSales({
+      dateFrom: "2026-05-20",
+      dateTo: "2026-05-20",
+      maxTotal: 100,
+      minTotal: 100,
+      pageNumber: 1,
+      pageSize: 10,
+    });
+
+    expect(result.data.map((sale) => sale.id)).toEqual(["s1"]);
+  });
+
   it("busca venda por id e mapeia NOT_FOUND", async () => {
     serverFetchMock.mockResolvedValueOnce({
       data: null,

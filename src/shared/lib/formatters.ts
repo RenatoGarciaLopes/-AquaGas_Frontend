@@ -56,6 +56,17 @@ export function formatCurrency(value: number | null | undefined) {
   }).format(value);
 }
 
+/**
+ * Converte o valor de um `<input type="date">` ("YYYY-MM-DD") em ISO ao
+ * meio-dia UTC. Backends que validam `data > UtcNow` rejeitam uma data sem hora
+ * (interpretada como meia-noite UTC) em fusos negativos como UTC−3, pois a
+ * meia-noite já está no passado. Meio-dia UTC garante o futuro e preserva o dia.
+ */
+export function dateInputToIso(value: string): string {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(Date.UTC(year!, month! - 1, day!, 12)).toISOString();
+}
+
 export function formatDate(value: string | null | undefined) {
   if (!value) {
     return "-";

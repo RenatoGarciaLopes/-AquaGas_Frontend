@@ -63,18 +63,23 @@ describe("product error parsers", () => {
     });
   });
 
-  it("mapeia tipo bloqueado para type", () => {
+  it("roteia o conflito de tipo bloqueado (CONFLICT) para o campo type, traduzido", () => {
     const parsed = parseEditDetailsError(
       {
         error: {
-          code: "PRODUCT_TYPE_LOCKED",
-          message: "Tipo bloqueado.",
+          code: "CONFLICT",
+          message: "Cannot change product type while stock exists",
         },
         success: false,
       },
       409,
     );
 
-    expect(parsed.fieldErrors).toEqual({ type: "Tipo bloqueado." });
+    expect(parsed.fieldErrors).toEqual({
+      type: "Não é possível alterar o tipo enquanto houver estoque.",
+    });
+    expect(parsed.message).toBe(
+      "Não é possível alterar o tipo enquanto houver estoque.",
+    );
   });
 });
