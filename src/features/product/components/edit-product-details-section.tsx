@@ -73,7 +73,9 @@ export function EditProductDetailsSection({ onDirtyChange, product }: Props) {
 
       applyBackendErrors(form, fieldErrors);
 
-      if (status === 409 && !fieldErrors.name) {
+      // Conflito de nome-único (409 sem campo específico) cai no campo nome.
+      // Conflitos já roteados a um campo (ex.: tipo bloqueado) não são duplicados aqui.
+      if (status === 409 && Object.keys(fieldErrors).length === 0) {
         form.setError("name", { message });
       }
 

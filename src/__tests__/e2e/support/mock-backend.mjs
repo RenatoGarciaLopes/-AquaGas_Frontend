@@ -153,7 +153,7 @@ const employees = [
 
 const sales = [
   {
-    createdAt: "2026-05-20T12:00:00.000Z",
+    createdAt: new Date().toISOString(),
     customer: customers[0],
     discount: 0,
     employee: { id: "employee-1", name: "Ana Gerente" },
@@ -169,17 +169,181 @@ const sales = [
 
 const plans = [
   {
+    billingDay: 10,
+    billings: [
+      {
+        amount: 120,
+        dueDate: "2026-06-10T00:00:00.000Z",
+        id: "billing-1",
+        paidAt: null,
+        receivedBy: null,
+        status: "Pending",
+      },
+    ],
     cycle: "Monthly",
     customerId: "customer-1",
     customerName: "Maria Silva",
+    deliveries: [
+      {
+        deliveryDate: null,
+        dueDate: "2026-06-05T00:00:00.000Z",
+        id: "delivery-1",
+        period: 1,
+        status: "Pending",
+      },
+    ],
+    deliveryDay: 5,
+    discount: null,
     document: "52998224725",
+    employeeId: "employee-1",
+    employeeName: "Ana Gerente",
     endDate: "2026-12-31T00:00:00.000Z",
     id: "plan-1",
+    items: [
+      {
+        productId: "water-20l",
+        productName: "Água Mineral 20L",
+        quantity: 2,
+      },
+    ],
+    penalties: [
+      {
+        calculatedAmount: 30,
+        cancelReason: null,
+        canceledAt: null,
+        canceledBy: null,
+        dueDate: "2026-06-15T00:00:00.000Z",
+        id: "penalty-1",
+        notes: null,
+        originalValue: 120,
+        paidBy: null,
+        paidDate: null,
+        planId: "plan-1",
+        remainingValue: 30,
+        status: "PendingPayment",
+        timestamp: "2026-05-20T12:00:00.000Z",
+        type: "Downgrade",
+        waiveReason: null,
+        waivedAt: null,
+        waivedBy: null,
+      },
+    ],
     startDate: "2026-01-01T00:00:00.000Z",
     status: "Active",
     total: 120,
+    warning: null,
   },
 ];
+
+const salesReport = {
+  items: [
+    {
+      customer: { id: "customer-1", name: "Maria Silva" },
+      date: "2026-05-20T12:00:00.000Z",
+      employee: { id: "employee-1", name: "Ana Gerente" },
+      id: "sale-1",
+      items: [
+        {
+          productId: "water-20l",
+          productName: "Água Mineral 20L",
+          quantity: 2,
+          subtotal: 25,
+          unitPrice: 12.5,
+        },
+      ],
+      itemsCount: 1,
+      status: "FINISHED",
+      total: 25,
+      type: "SALE",
+    },
+    {
+      customer: { id: "customer-1", name: "Maria Silva" },
+      date: "2026-05-21T12:00:00.000Z",
+      employee: { id: "employee-1", name: "Ana Gerente" },
+      id: "plan-sale-1",
+      items: [],
+      itemsCount: 0,
+      status: "CANCELLED",
+      total: 120,
+      type: "PLAN",
+    },
+  ],
+  summary: {
+    averageTicket: 25,
+    cancelledSales: 1,
+    period: {
+      end: "2026-05-31T23:59:59.999Z",
+      start: "2026-05-01T00:00:00.000Z",
+    },
+    totalContractSales: 120,
+    totalRevenue: 25,
+    totalSales: 1,
+    totalSpotSales: 25,
+  },
+};
+
+const stockMovementReport = {
+  items: [
+    {
+      customer: null,
+      date: "2026-05-20T12:00:00.000Z",
+      employee: { id: "employee-1", name: "Ana Gerente" },
+      id: "stock-entry-1",
+      product: { id: "water-20l", name: "Água Mineral 20L" },
+      quantity: 4,
+      reason: "Reposição",
+      reference: null,
+      type: "Entry",
+    },
+    {
+      customer: { id: "customer-1", name: "Maria Silva" },
+      date: "2026-05-21T12:00:00.000Z",
+      employee: { id: "employee-1", name: "Ana Gerente" },
+      id: "stock-exit-1",
+      product: { id: "water-20l", name: "Água Mineral 20L" },
+      quantity: 2,
+      reason: "Venda",
+      reference: { id: "sale-1", type: "SALE" },
+      type: "Exit",
+    },
+  ],
+};
+
+const penaltyReport = {
+  items: [
+    {
+      audit: {
+        canBeCanceled: true,
+        canBePaid: true,
+        canBeWaived: true,
+      },
+      createdBy: { id: "employee-1", name: "Ana Gerente" },
+      customer: { id: "customer-1", name: "Maria Silva" },
+      date: "2026-05-20T12:00:00.000Z",
+      dueDate: "2026-06-15T00:00:00.000Z",
+      financial: {
+        calculatedValue: 30,
+        originalValue: 120,
+        remainingValue: 30,
+      },
+      id: "penalty-1",
+      notes: null,
+      origin: { id: "plan-1", type: "PLAN_DOWNGRADE" },
+      paidAt: null,
+      plan: { cycle: "MONTHLY", id: "plan-1", status: "ACTIVE" },
+      resolvedBy: null,
+      status: "PENDING_PAYMENT",
+      type: "DOWNGRADE",
+    },
+  ],
+  summary: {
+    overdueAmount: 0,
+    paidAmount: 0,
+    pendingAmount: 30,
+    totalPenalties: 1,
+    waivedAmount: 0,
+  },
+};
 
 function roleFromRequest(request) {
   const auth = request.headers.authorization ?? "";
@@ -307,6 +471,13 @@ const server = http.createServer(async (request, response) => {
     return json(response, 200, ok(sales));
   }
 
+  if (request.method === "GET" && url.pathname.startsWith("/api/sales/")) {
+    const id = url.pathname.split("/").at(-1);
+    const sale = sales.find((item) => item.id === id);
+    if (!sale) return json(response, 404, fail(404, "Venda não encontrada."));
+    return json(response, 200, ok(sale));
+  }
+
   if (request.method === "POST" && url.pathname === "/api/sales/register") {
     const body = await readBody(request);
     const hasExcessQuantity = body?.saleItems?.some(
@@ -329,8 +500,176 @@ const server = http.createServer(async (request, response) => {
     return json(response, 200, ok({ id: "sale-created" }));
   }
 
+  if (
+    request.method === "POST" &&
+    url.pathname.match(/^\/api\/sales\/[^/]+\/cancel$/)
+  ) {
+    const body = await readBody(request);
+    if (!body?.reason) {
+      return json(
+        response,
+        400,
+        fail(400, "Informe o motivo do cancelamento.", "VALIDATION_ERROR", [
+          { field: "reason", message: ["Informe o motivo do cancelamento."] },
+        ]),
+      );
+    }
+    return json(response, 200, ok({ id: "sale-1", status: "Canceled" }));
+  }
+
   if (request.method === "GET" && url.pathname === "/api/plans") {
     return json(response, 200, ok(plans));
+  }
+
+  if (request.method === "GET" && url.pathname.match(/^\/api\/plans\/[^/]+$/)) {
+    const id = url.pathname.split("/").at(-1);
+    const plan =
+      plans.find((item) => item.id === id) ??
+      (id === "plan-created" ? { ...plans[0], id } : null);
+    if (!plan) return json(response, 404, fail(404, "Plano não encontrado."));
+    return json(response, 200, ok(plan));
+  }
+
+  if (
+    request.method === "POST" &&
+    (url.pathname === "/api/plans" || url.pathname === "/api/plans/register")
+  ) {
+    const body = await readBody(request);
+    const hasExcessQuantity = body?.items?.some((item) => item.quantity > 10);
+    if (hasExcessQuantity) {
+      return json(
+        response,
+        409,
+        fail(409, "Estoque insuficiente.", "INSUFFICIENT_STOCK", [
+          { field: "items", message: ["Estoque insuficiente."] },
+        ]),
+      );
+    }
+    return json(response, 200, ok({ ...plans[0], id: "plan-created" }));
+  }
+
+  if (
+    request.method === "PATCH" &&
+    url.pathname.match(/^\/api\/plans\/[^/]+\/upgrade$/)
+  ) {
+    return json(response, 200, ok({ plan: { ...plans[0], total: 145 } }));
+  }
+
+  if (
+    request.method === "PATCH" &&
+    url.pathname.match(/^\/api\/plans\/[^/]+\/downgrade$/)
+  ) {
+    const body = await readBody(request);
+    if (!body?.reason) {
+      return json(
+        response,
+        400,
+        fail(400, "Informe o motivo do downgrade.", "VALIDATION_ERROR", [
+          { field: "reason", message: ["Informe o motivo do downgrade."] },
+        ]),
+      );
+    }
+    return json(
+      response,
+      200,
+      ok({ penalty: plans[0].penalties[0], plan: { ...plans[0], total: 95 } }),
+    );
+  }
+
+  if (
+    request.method === "PATCH" &&
+    url.pathname.match(/^\/api\/plans\/[^/]+\/suspend$/)
+  ) {
+    return json(
+      response,
+      200,
+      ok({ plan: { ...plans[0], status: "Suspended" } }),
+    );
+  }
+
+  if (
+    request.method === "PATCH" &&
+    url.pathname.match(/^\/api\/plans\/[^/]+\/reactivate$/)
+  ) {
+    return json(response, 200, ok({ plan: { ...plans[0], status: "Active" } }));
+  }
+
+  if (
+    request.method === "PATCH" &&
+    url.pathname.match(/^\/api\/plans\/[^/]+\/cancel$/)
+  ) {
+    return json(
+      response,
+      200,
+      ok({ plan: { ...plans[0], status: "Canceled" } }),
+    );
+  }
+
+  if (
+    request.method === "PATCH" &&
+    url.pathname === "/api/plans/confirm-delivery"
+  ) {
+    return json(response, 200, ok({ deliveryId: "delivery-1" }));
+  }
+
+  if (
+    request.method === "PATCH" &&
+    url.pathname === "/api/plans/cancel-delivery"
+  ) {
+    return json(response, 200, ok({ deliveryId: "delivery-1" }));
+  }
+
+  if (
+    request.method === "PATCH" &&
+    url.pathname === "/api/plans/reschedule-delivery"
+  ) {
+    return json(response, 200, ok({ deliveryId: "delivery-1" }));
+  }
+
+  if (
+    request.method === "PATCH" &&
+    url.pathname === "/api/plans/confirm-billing-payment"
+  ) {
+    return json(response, 200, ok({ billingId: "billing-1" }));
+  }
+
+  if (
+    request.method === "PATCH" &&
+    url.pathname.match(/^\/api\/penalties\/[^/]+\/confirm-payment$/)
+  ) {
+    return json(response, 200, ok({ penaltyId: "penalty-1" }));
+  }
+
+  if (
+    request.method === "PATCH" &&
+    url.pathname.match(/^\/api\/penalties\/[^/]+\/waive$/)
+  ) {
+    return json(response, 200, ok({ penaltyId: "penalty-1" }));
+  }
+
+  if (
+    request.method === "PATCH" &&
+    url.pathname.match(/^\/api\/penalties\/[^/]+\/cancel$/)
+  ) {
+    return json(response, 200, ok({ penaltyId: "penalty-1" }));
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/reports/sales") {
+    return json(response, 200, ok(salesReport));
+  }
+
+  if (
+    request.method === "GET" &&
+    url.pathname === "/api/reports/stock-movements"
+  ) {
+    return json(response, 200, ok(stockMovementReport));
+  }
+
+  if (
+    request.method === "GET" &&
+    url.pathname === "/api/reports/contract-penalties"
+  ) {
+    return json(response, 200, ok(penaltyReport));
   }
 
   return json(

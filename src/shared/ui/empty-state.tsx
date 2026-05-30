@@ -15,7 +15,9 @@ export function EmptyState({ action, description, title }: EmptyStateProps) {
       <div className="mb-4 rounded-full bg-cyan-100 p-3 text-cyan-600 dark:bg-cyan-400/10 dark:text-cyan-200">
         <Icon icon={Icons.inbox} className="h-6 w-6" aria-hidden />
       </div>
-      <h2 className="text-lg font-semibold text-slate-800 dark:text-white">{title}</h2>
+      <h2 className="text-lg font-semibold text-slate-800 dark:text-white">
+        {title}
+      </h2>
       {description ? (
         <p className="mt-2 max-w-md text-sm text-slate-500 dark:text-[var(--aquagas-muted)]">
           {description}

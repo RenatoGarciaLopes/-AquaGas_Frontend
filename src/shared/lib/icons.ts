@@ -29,8 +29,13 @@ export const SidebarIcons = {
 
 export const Icons = {
   alertTriangle: get("danger-triangle-line-duotone"),
+  arrowRight: get("arrow-right-line-duotone"),
+  billList: get("bill-list-line-duotone"),
   calendar: get("calendar-minimalistic-line-duotone"),
+  calendarMark: get("calendar-mark-line-duotone"),
   check: get("check-circle-line-duotone"),
+  clock: get("clock-circle-line-duotone"),
+  delivery: get("delivery-line-duotone"),
   arrowDown: get("alt-arrow-down-line-duotone"),
   arrowUp: get("alt-arrow-up-line-duotone"),
   arrowUpDown: get("round-sort-vertical-line-duotone"),
@@ -63,6 +68,7 @@ export const Icons = {
   shoppingCart: get("cart-large-2-line-duotone"),
   userCog: get("user-id-line-duotone"),
   users: get("users-group-rounded-line-duotone"),
+  wallet: get("wallet-money-line-duotone"),
   x: get("close-circle-line-duotone"),
   zap: get("lightning-line-duotone"),
 } as const;

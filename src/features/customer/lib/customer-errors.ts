@@ -1,6 +1,7 @@
-import { ApiError } from "@/shared/api/errors";
-
-import type { ApiResponse } from "@/shared/types/api";
+import {
+  type ParsedError,
+  createErrorParser,
+} from "@/shared/lib/create-error-parser";
 
 type CustomerField =
   | "address.cep"
@@ -30,70 +31,24 @@ const FIELD_ALIASES: Record<string, CustomerField> = {
   street: "address.street",
 };
 
-type ParsedCustomerError = {
-  code?: string;
-  fieldErrors: Partial<Record<CustomerField, string>>;
-  message: string;
-};
+const parseAny = createErrorParser<CustomerField>({
+  fieldAliases: FIELD_ALIASES,
+  translateMessages: true,
+  defaultMessage: defaultMessageForStatus,
+});
 
 export function parseCustomerError(
   envelope: unknown,
   status: number,
-): ParsedCustomerError {
-  const fieldErrors: Partial<Record<CustomerField, string>> = {};
+): ParsedError<CustomerField> {
+  const result = parseAny(envelope, status);
 
-  if (envelope instanceof ApiError) {
-    for (const [field, value] of Object.entries(envelope.fieldErrors ?? {})) {
-      const key = FIELD_ALIASES[field.toLowerCase()];
-      const message = Array.isArray(value) ? value[0] : value;
-      if (key && message && !fieldErrors[key]) {
-        fieldErrors[key] = message;
-      }
-    }
-
-    if (status === 409 && !fieldErrors.document) {
-      fieldErrors.document = envelope.message;
-    }
-
-    return {
-      code: envelope.code,
-      fieldErrors,
-      message: envelope.message || defaultMessageForStatus(status),
-    };
+  // Conflito de documento (409 sem campo específico) cai no campo document.
+  if (status === 409 && !result.fieldErrors.document) {
+    result.fieldErrors.document = result.message;
   }
 
-  const error =
-    envelope && typeof envelope === "object"
-      ? (envelope as ApiResponse<unknown>).error
-      : null;
-
-  if (Array.isArray(error?.details)) {
-    for (const detail of error.details) {
-      const key = FIELD_ALIASES[detail.field?.toLowerCase() ?? ""];
-      const messages = detail.messages ?? detail.message;
-      if (key && messages?.length && !fieldErrors[key]) {
-        fieldErrors[key] = messages[0];
-      }
-    }
-  } else if (error?.details && typeof error.details === "object") {
-    for (const [field, messages] of Object.entries(error.details)) {
-      const key = FIELD_ALIASES[field.toLowerCase()];
-      if (key && messages.length > 0 && !fieldErrors[key]) {
-        fieldErrors[key] = messages[0];
-      }
-    }
-  }
-
-  if (status === 409 && !fieldErrors.document) {
-    fieldErrors.document =
-      error?.message ?? "Já existe um cliente com esse documento.";
-  }
-
-  return {
-    code: error?.code,
-    fieldErrors,
-    message: error?.message ?? defaultMessageForStatus(status),
-  };
+  return result;
 }
 
 function defaultMessageForStatus(status: number) {

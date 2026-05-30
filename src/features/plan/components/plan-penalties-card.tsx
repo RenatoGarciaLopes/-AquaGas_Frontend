@@ -10,6 +10,7 @@ import {
   useConfirmPenaltyPayment,
 } from "@/features/plan/hooks/use-penalty-actions";
 
+import { cn } from "@/shared/lib/cn";
 import { Icons } from "@/shared/lib/icons";
 import { formatDate, formatCurrency } from "@/shared/lib/formatters";
 
@@ -93,20 +94,23 @@ export function PlanPenaltiesCard({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-border border-b">
-              <th className="text-muted-foreground pb-2 text-left font-medium whitespace-nowrap">
+              <th className="text-muted-foreground px-3 pb-3 text-left text-xs font-medium tracking-wide whitespace-nowrap uppercase first:pl-0">
                 Tipo
               </th>
-              <th className="text-muted-foreground pb-2 text-right font-medium whitespace-nowrap">
+              <th className="text-muted-foreground px-3 pb-3 text-left text-xs font-medium tracking-wide whitespace-nowrap uppercase">
                 Valor
               </th>
-              <th className="text-muted-foreground pb-2 text-left font-medium whitespace-nowrap">
+              <th className="text-muted-foreground px-3 pb-3 text-left text-xs font-medium tracking-wide whitespace-nowrap uppercase">
                 Status
               </th>
-              <th className="text-muted-foreground pb-2 text-left font-medium whitespace-nowrap">
+              <th className="text-muted-foreground px-3 pb-3 text-left text-xs font-medium tracking-wide whitespace-nowrap uppercase">
                 Vencimento
               </th>
               <th
-                className={`text-muted-foreground pb-2 text-right font-medium whitespace-nowrap ${STICKY_RIGHT_HEADER}`}
+                className={cn(
+                  "text-muted-foreground px-3 pb-3 text-right text-xs font-medium tracking-wide whitespace-nowrap uppercase last:pr-0",
+                  STICKY_RIGHT_HEADER,
+                )}
               >
                 Ações
               </th>
@@ -122,24 +126,32 @@ export function PlanPenaltiesCard({
               const canCancelPenalty = canManage && canPay;
 
               return (
-                <tr key={penalty.id}>
-                  <td className="text-foreground py-2.5 font-medium whitespace-nowrap">
+                <tr key={penalty.id} className="hover:bg-muted/20 transition">
+                  <td className="text-foreground py-3 pr-3 pl-0 font-medium whitespace-nowrap">
                     {TYPE_LABELS[penalty.type]}
                   </td>
-                  <td className="text-foreground py-2.5 text-right font-mono whitespace-nowrap">
+                  <td className="text-foreground px-3 py-3 font-mono whitespace-nowrap">
                     {formatCurrency(penalty.calculatedAmount)}
                   </td>
-                  <td className="py-2.5">
+                  <td className="px-3 py-3">
                     <span
-                      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${statusConfig.className}`}
+                      className={cn(
+                        "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold",
+                        statusConfig.className,
+                      )}
                     >
                       {statusConfig.label}
                     </span>
                   </td>
-                  <td className="text-muted-foreground py-2.5 whitespace-nowrap">
+                  <td className="text-muted-foreground px-3 py-3 whitespace-nowrap">
                     {formatDate(penalty.dueDate)}
                   </td>
-                  <td className={`py-2.5 text-right ${STICKY_RIGHT_CELL}`}>
+                  <td
+                    className={cn(
+                      "py-3 pr-0 pl-3 text-right",
+                      STICKY_RIGHT_CELL,
+                    )}
+                  >
                     <div className="inline-flex items-center gap-1">
                       {canPay ? (
                         <button

@@ -134,6 +134,10 @@ const CONFLICT_MESSAGE_MAP: Record<string, string> = {
   "cannot change product type while stock exists":
     "Não é possível alterar o tipo enquanto houver estoque.",
 
+  // Customer / Employee — documentos duplicados (código CONFLICT)
+  "cpf already registered": "CPF já cadastrado.",
+  "cnpj already registered": "CNPJ já cadastrado.",
+
   // Employee / User
   "user name already registered": "Nome de usuário já cadastrado.",
   "username already registered": "Nome de usuário já cadastrado.",
@@ -151,9 +155,26 @@ const CONFLICT_MESSAGE_MAP: Record<string, string> = {
   "cannot confirm a canceled delivery":
     "Não é possível confirmar uma entrega cancelada.",
   "cannot cancel past deliveries": "Não é possível cancelar entregas passadas.",
+  "cannot confirm delivery for a canceled plan":
+    "Não é possível confirmar a entrega de um plano cancelado.",
+  "cannot confirm delivery for a suspended plan":
+    "Não é possível confirmar a entrega de um plano suspenso.",
+  "cannot cancel delivery scheduled for today":
+    "Não é possível cancelar uma entrega agendada para hoje.",
+  "the new delivery date cannot be earlier than the original date":
+    "A nova data de entrega não pode ser anterior à data original.",
 
   // Billing
   "billing already paid": "Cobrança já paga.",
+  "cannot confirm payment for a canceled plan":
+    "Não é possível confirmar o pagamento de um plano cancelado.",
+
+  // Not found (404)
+  "delivery not found": "Entrega não encontrada.",
+  "billing not found": "Cobrança não encontrada.",
+  "plan not found": "Plano não encontrado.",
+  "contract penalty not found": "Multa contratual não encontrada.",
+  "contract penalty not found.": "Multa contratual não encontrada.",
 
   // Penalty
   "penalty is already paid": "Multa já paga.",
@@ -170,6 +191,16 @@ const CONFLICT_MESSAGE_MAP: Record<string, string> = {
     "Multas canceladas não podem ser pagas.",
   "cancelled penalties cannot be waived":
     "Multas canceladas não podem ser dispensadas.",
+  "the waiver period for this penalty has expired":
+    "O período para dispensa desta multa expirou.",
+  "this penalty can no longer be paid because it exceeds the allowed payment period":
+    "Esta multa não pode mais ser paga — período de pagamento encerrado.",
+  "this penalty is too old to be canceled.":
+    "Esta multa é antiga demais para ser cancelada.",
+  "cannot confirm payment for a zero amount penalty":
+    "Não é possível confirmar o pagamento de uma multa com valor zero.",
+  "customer has open contract penalties.":
+    "O cliente possui multas contratuais em aberto.",
 
   // Plan — cancel
   "cannot cancel a finished plan":
@@ -247,7 +278,104 @@ const CONFLICT_MESSAGE_MAP: Record<string, string> = {
     "Quite ou dispense a multa em aberto antes de reativar o plano.",
 };
 
+const PLAN_STATUS_PT: Record<string, string> = {
+  active: "ativo",
+  suspended: "suspenso",
+  canceled: "cancelado",
+  cancelled: "cancelado",
+  finished: "finalizado",
+  awaitingclosure: "aguardando encerramento",
+};
+
+function planStatusPt(status: string): string {
+  return PLAN_STATUS_PT[status.trim().toLowerCase()] ?? status.trim();
+}
+
 export function translateConflictMessage(backendMessage: string): string {
+  // ── Mensagens dinâmicas (preservam data/status/número do backend) ──────────
+
+  // Entrega — confirmar antes da data prevista
+  const beforeScheduled = backendMessage.match(
+    /^cannot confirm delivery before the scheduled date \((.+)\)$/i,
+  );
+  if (beforeScheduled) {
+    return `Não é possível confirmar a entrega antes da data prevista (${beforeScheduled[1]}).`;
+  }
+
+  // Entrega — bloqueada por cobrança em atraso
+  const overdueBilling = backendMessage.match(
+    /^cannot confirm delivery because there is an overdue billing \(due date: (.+)\)$/i,
+  );
+  if (overdueBilling) {
+    return `Não é possível confirmar a entrega: há uma cobrança em atraso (vencimento: ${overdueBilling[1]}).`;
+  }
+
+  // Reagendamento — janela de 7 dias
+  const within7Days = backendMessage.match(
+    /^the new date must be within 7 days of the original expected date \((.+)\)\.?$/i,
+  );
+  if (within7Days) {
+    return `A nova data deve estar dentro de 7 dias da data prevista original (${within7Days[1]}).`;
+  }
+
+  // Reagendamento — plano em status que não permite
+  const rescheduleStatus = backendMessage.match(
+    /^cannot reschedule delivery for a (.+) plan$/i,
+  );
+  if (rescheduleStatus) {
+    return `Não é possível reagendar a entrega de um plano ${planStatusPt(rescheduleStatus[1]!)}.`;
+  }
+
+  // Cobrança — cobrança anterior ainda pendente
+  const previousBilling = backendMessage.match(
+    /^cannot pay this billing because the billing due on (.+) is still pending or late\.?$/i,
+  );
+  if (previousBilling) {
+    return `Não é possível registrar este pagamento: a cobrança com vencimento em ${previousBilling[1]} ainda está pendente ou em atraso.`;
+  }
+
+  // Suspensão — status atual não permite
+  const suspendStatus = backendMessage.match(
+    /^cannot suspend a plan in (.+) status$/i,
+  );
+  if (suspendStatus) {
+    return `Não é possível suspender um plano no status "${planStatusPt(suspendStatus[1]!)}".`;
+  }
+
+  // Reativação — apenas planos suspensos
+  const reactivateStatus = backendMessage.match(
+    /^only suspended plans can be reactivated\. current status: (.+)$/i,
+  );
+  if (reactivateStatus) {
+    return `Apenas planos suspensos podem ser reativados. Status atual: ${planStatusPt(reactivateStatus[1]!)}.`;
+  }
+
+  // Multa — status não permite cancelamento/pagamento
+  if (
+    /^penalty status '.+' does not allow cancellation\.?$/i.test(backendMessage)
+  ) {
+    return "O status atual da multa não permite cancelamento.";
+  }
+  if (/^penalty status '.+' does not allow payment\.?$/i.test(backendMessage)) {
+    return "O status atual da multa não permite pagamento.";
+  }
+
+  // Downgrade — nova duração menor que a atual
+  const newDuration = backendMessage.match(
+    /^the new plan duration \((\d+) months?\) cannot be less than the current plan duration \((\d+) months?\)$/i,
+  );
+  if (newDuration) {
+    return `A nova duração do plano (${newDuration[1]} meses) não pode ser menor que a atual (${newDuration[2]} meses).`;
+  }
+
+  // Downgrade — redução de quantidade de um produto específico
+  const downgradeQty = backendMessage.match(
+    /^downgrade of quantity for product (.+) is not allowed in this endpoint$/i,
+  );
+  if (downgradeQty) {
+    return `A redução de quantidade do produto "${downgradeQty[1]}" não é permitida neste tipo de downgrade.`;
+  }
+
   // Dynamic: "Cannot cancel a plan in {status} status"
   const cancelStatusMatch = backendMessage
     .toLowerCase()

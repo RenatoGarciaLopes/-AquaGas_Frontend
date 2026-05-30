@@ -13,7 +13,11 @@ import {
 
 import { cn } from "@/shared/lib/cn";
 import { Icons } from "@/shared/lib/icons";
-import { formatDate, formatCurrency } from "@/shared/lib/formatters";
+import {
+  formatDate,
+  formatCurrency,
+  dateInputToIso,
+} from "@/shared/lib/formatters";
 
 import { ResponsiveTable } from "@/shared/ui/responsive-table";
 import { ResponsiveTabsList } from "@/shared/ui/responsive-tabs-list";
@@ -147,9 +151,11 @@ function TableHeadRight({
 function DeliveriesPanel({
   deliveries,
   planId,
+  planCanceled,
 }: {
   deliveries: PlanDeliveryResponse[];
   planId: string;
+  planCanceled: boolean;
 }) {
   const router = useRouter();
   const confirmMutation = useConfirmDelivery(planId);
@@ -157,7 +163,10 @@ function DeliveriesPanel({
   const rescheduleMutation = useRescheduleDelivery(planId);
 
   const [cancelTarget, setCancelTarget] = useState<string | null>(null);
-  const [rescheduleTarget, setRescheduleTarget] = useState<string | null>(null);
+  const [rescheduleTarget, setRescheduleTarget] = useState<{
+    id: string;
+    dueDate: string;
+  } | null>(null);
 
   if (deliveries.length === 0) {
     return (
@@ -189,7 +198,8 @@ function DeliveriesPanel({
                 delivery.status === "Pending" || delivery.status === "Late";
               const canCancel =
                 delivery.status === "Pending" || delivery.status === "Late";
-              const canReschedule = delivery.status === "Cancelled";
+              const canReschedule =
+                !planCanceled && delivery.status === "Cancelled";
 
               return (
                 <tr key={delivery.id} className="hover:bg-muted/20 transition">
@@ -256,7 +266,12 @@ function DeliveriesPanel({
                         <button
                           type="button"
                           disabled={rescheduleMutation.isPending}
-                          onClick={() => setRescheduleTarget(delivery.id)}
+                          onClick={() =>
+                            setRescheduleTarget({
+                              id: delivery.id,
+                              dueDate: delivery.dueDate,
+                            })
+                          }
                           className="p-1 text-cyan-500 transition hover:text-cyan-600 disabled:opacity-50"
                           title="Reagendar entrega"
                         >
@@ -306,13 +321,24 @@ function DeliveriesPanel({
         isPending={rescheduleMutation.isPending}
         schema={rescheduleDeliverySchema}
         showDateField
+        minDate={rescheduleTarget?.dueDate}
+        maxDate={
+          rescheduleTarget
+            ? new Date(
+                new Date(rescheduleTarget.dueDate).getTime() +
+                  7 * 24 * 60 * 60 * 1000,
+              )
+                .toISOString()
+                .slice(0, 10)
+            : undefined
+        }
         submitLabel="Reagendar"
         onConfirm={(data) => {
           if (!rescheduleTarget) return;
           rescheduleMutation.mutate(
             {
-              deliveryId: rescheduleTarget,
-              newDate: data.newDate,
+              deliveryId: rescheduleTarget.id,
+              newDate: dateInputToIso(data.newDate),
               reason: data.reason,
             },
             {
@@ -427,12 +453,14 @@ type PlanTablesCardProps = {
   billings: PlanBillingResponse[];
   deliveries: PlanDeliveryResponse[];
   planId: string;
+  planCanceled: boolean;
 };
 
 export function PlanTablesCard({
   billings,
   deliveries,
   planId,
+  planCanceled,
 }: PlanTablesCardProps) {
   const [activeTab, setActiveTab] = useState<TabId>("deliveries");
 
@@ -494,7 +522,11 @@ export function PlanTablesCard({
         className="p-4 sm:p-6"
       >
         {activeTab === "deliveries" ? (
-          <DeliveriesPanel planId={planId} deliveries={deliveries} />
+          <DeliveriesPanel
+            planId={planId}
+            deliveries={deliveries}
+            planCanceled={planCanceled}
+          />
         ) : (
           <BillingsPanel planId={planId} billings={billings} />
         )}

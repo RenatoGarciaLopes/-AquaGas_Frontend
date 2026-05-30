@@ -81,6 +81,7 @@ export function PlanDetail({ canManage, plan, products }: PlanDetailProps) {
         planId={plan.id}
         deliveries={plan.deliveries}
         billings={plan.billings}
+        planCanceled={plan.status === "Canceled"}
       />
       <PlanPenaltiesCard
         planId={plan.id}

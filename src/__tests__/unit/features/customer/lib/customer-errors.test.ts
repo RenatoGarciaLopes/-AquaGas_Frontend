@@ -53,6 +53,19 @@ describe("parseCustomerError", () => {
       expect(parsed.fieldErrors.document).toBe("Cliente duplicado.");
     });
 
+    it("traduz o conflito de CPF duplicado (CONFLICT) para o campo document", () => {
+      const apiError = new ApiError({
+        code: "CONFLICT",
+        message: "CPF already registered",
+        status: 409,
+      });
+
+      const parsed = parseCustomerError(apiError, 409);
+
+      expect(parsed.fieldErrors.document).toBe("CPF já cadastrado.");
+      expect(parsed.message).toBe("CPF já cadastrado.");
+    });
+
     it("preserva o code original", () => {
       const apiError = new ApiError({
         code: "CUSTOMER_DUPLICATE",

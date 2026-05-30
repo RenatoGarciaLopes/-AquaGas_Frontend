@@ -39,8 +39,9 @@ const VALID_STATUSES: PlanStatus[] = [
 const VALID_CYCLES: PlanCycle[] = ["Monthly", "Quarterly", "Annual", "Custom"];
 
 function parseStatus(value: string | undefined): PlanStatus | undefined {
+  if (value === "all") return undefined;
   if (VALID_STATUSES.includes(value as PlanStatus)) return value as PlanStatus;
-  return undefined;
+  return "Active";
 }
 
 function parseCycle(value: string | undefined): PlanCycle | undefined {

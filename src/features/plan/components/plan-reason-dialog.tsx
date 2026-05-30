@@ -3,15 +3,19 @@
 import type { z } from "zod";
 import { useId } from "react";
 import { createPortal } from "react-dom";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { cn } from "@/shared/lib/cn";
+
+import { DatePicker } from "@/shared/ui/date-picker";
 
 type ReasonDialogProps = {
   danger?: boolean;
   description?: string;
   isPending: boolean;
+  maxDate?: string;
+  minDate?: string;
   onCancel: () => void;
   onConfirm: (data: Record<string, string>) => void;
   open: boolean;
@@ -26,6 +30,8 @@ export function ReasonDialog({
   danger,
   description,
   isPending,
+  maxDate,
+  minDate,
   onCancel,
   onConfirm,
   open,
@@ -35,9 +41,9 @@ export function ReasonDialog({
   submitLabel,
   title,
 }: ReasonDialogProps) {
-  const dateId = useId();
   const reasonId = useId();
   const {
+    control,
     register,
     handleSubmit,
     reset,
@@ -80,18 +86,19 @@ export function ReasonDialog({
         >
           {showDateField ? (
             <div className="space-y-1.5">
-              <label
-                htmlFor={dateId}
-                className="text-foreground block text-sm font-medium"
-              >
-                Nova data <span className="text-red-500">*</span>
-              </label>
-              <input
-                id={dateId}
-                type="date"
-                {...register("newDate")}
-                disabled={isPending}
-                className="border-border bg-background text-foreground w-full rounded-lg border px-3 py-2.5 text-sm"
+              <Controller
+                name="newDate"
+                control={control}
+                render={({ field }) => (
+                  <DatePicker
+                    label="Nova data"
+                    value={field.value as string | undefined}
+                    min={minDate}
+                    max={maxDate}
+                    onChange={field.onChange}
+                    disabled={isPending}
+                  />
+                )}
               />
               {fieldErrors.newDate?.message ? (
                 <p className="px-1 text-xs font-medium text-red-700 dark:text-red-300">

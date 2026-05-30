@@ -109,7 +109,11 @@ describe("EditCustomerForm", () => {
     fireEvent.input(screen.getByLabelText(/telefone/i), {
       target: { value: "(11) 98888-7777" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /salvar alterações/i }));
+    fireEvent.click(
+      screen
+        .getAllByRole("button", { name: /salvar alterações/i })
+        .find((button) => !button.hasAttribute("disabled"))!,
+    );
 
     await waitFor(() => {
       expect(apiPatchMock).toHaveBeenCalledTimes(1);
